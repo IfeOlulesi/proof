@@ -1,6 +1,6 @@
 {
   "name": "proof",
-  "description": "proof for Claude Code: nothing is done until it's proven.",
+  "description": "proof: quit babysitting Claude. Make it check its own work.",
   "owner": {
     "name": "Ray",
     "email": "hello@ruachlabs.xyz"
@@ -9,7 +9,7 @@
     {
       "name": "proof",
       "source": "./plugins/proof",
-      "description": "Nothing is done until it's proven: phase skills (discover, design, build, quick), a fresh-context verifier, a two-tier gate — fast checks after each reply, the full suite before each commit — a guard and memory budget that keep runs and the machine in bounds, and a live dashboard of every session.",
+      "description": "Gives Claude a check to run at every step of building software, from spec to commit: specs where every requirement says how it's verified, mockups that double as tests, screen-by-screen fidelity checks, and a gate that runs your checks before Claude stops or commits. Also keeps parallel sessions inside your machine's memory and shows them on a live dashboard.",
       "homepage": "https://github.com/IfeOlulesi/proof",
       "repository": "https://github.com/IfeOlulesi/proof",
       "license": "MIT",
