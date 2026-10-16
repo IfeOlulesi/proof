@@ -1,0 +1,6 @@
+cd "$(git rev-parse --show-toplevel)" && git add src/a.ts && git commit -m "$(cat <<'EOF'
+Don't panic: "quotes" & ampersands; fine | pipes > arrows
+
+Co-Authored-By: Someone <x@y.z>
+EOF
+)"

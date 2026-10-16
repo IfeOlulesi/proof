@@ -1,0 +1,23 @@
+{
+  "name": "proof",
+  "displayName": "Proof",
+  "version": "0.4.0",
+  "description": "Nothing is done until it's proven. Session rules, phase skills (discover, design, build, quick), a fresh-context verifier and screen judge, a two-tier gate (fast checks after each reply, the full suite before each commit), a guard that stops runaway runs by memory and time, a machine-wide memory budget, keep-awake while work is in flight, and a live dashboard of every session.",
+  "author": {
+    "name": "Ray",
+    "email": "hello@ruachlabs.xyz",
+    "url": "https://github.com/IfeOlulesi"
+  },
+  "homepage": "https://github.com/IfeOlulesi/proof",
+  "repository": "https://github.com/IfeOlulesi/proof",
+  "license": "MIT",
+  "keywords": [
+    "quality",
+    "verification",
+    "hooks",
+    "design-fidelity",
+    "workflow",
+    "memory",
+    "dashboard"
+  ]
+}

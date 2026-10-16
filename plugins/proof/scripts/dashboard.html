@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>proof · live</title>
+<style>
+:root {
+  --bg: #eef1f0; --surface: #ffffff; --raised: #f7f8f8; --ink: #14181c; --muted: #5d666f; --faint: #8b949d; --line: #d9dee2;
+  --c-model: #6d55d0; --c-write: #3a78f2; --c-test: #1d9a68; --c-gate: #0b6f68; --c-screen: #d23f9b; --c-run: #e2722a;
+  --c-git: #7b8794; --c-agent: #9aa5b1; --c-wait: #efbd22; --c-sleep: #2c323b; --c-idle: #c7cdd3;
+  --ok: #1d9a68; --warn: #c97a06; --bad: #d23b30; --focus: #3a78f2;
+  --radius: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1114; --surface: #161a1f; --raised: #1c2127; --ink: #e8ebef; --muted: #9aa3ad; --faint: #6c7680; --line: #283039;
+    --c-model: #8f7af0; --c-write: #5d93ff; --c-test: #33b981; --c-gate: #2aa79c; --c-screen: #ec5fb4; --c-run: #f08a45;
+    --c-git: #8a96a3; --c-agent: #6f7a86; --c-wait: #f5c84a; --c-sleep: #4a5260; --c-idle: #3a424b;
+    --ok: #33b981; --warn: #e9a23b; --bad: #f0645a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1114; --surface: #161a1f; --raised: #1c2127; --ink: #e8ebef; --muted: #9aa3ad; --faint: #6c7680; --line: #283039;
+  --c-model: #8f7af0; --c-write: #5d93ff; --c-test: #33b981; --c-gate: #2aa79c; --c-screen: #ec5fb4; --c-run: #f08a45;
+  --c-git: #8a96a3; --c-agent: #6f7a86; --c-wait: #f5c84a; --c-sleep: #4a5260; --c-idle: #3a424b;
+  --ok: #33b981; --warn: #e9a23b; --bad: #f0645a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+
+/* top bar */
+.bar { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.bar-in { max-width: 1480px; margin: 0 auto; padding: 10px 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.brand { font-weight: 700; letter-spacing: -0.01em; display: flex; align-items: baseline; gap: 8px; }
+.brand small { font-weight: 500; color: var(--muted); }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); display: inline-block; box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 60%, transparent); animation: pulse 2s infinite; align-self: center; }
+.live-dot.off { background: var(--faint); animation: none; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent); } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.spacer { flex: 1; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.membar { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.membar .track { position: relative; width: 120px; height: 8px; border-radius: 4px; background: var(--raised); border: 1px solid var(--line); overflow: hidden; }
+.membar .fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.membar .tick { position: absolute; top: -2px; bottom: -2px; width: 1px; background: var(--muted); opacity: .6; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: transparent; padding: 4px 10px; font-size: 12.5px; color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.iconbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 4px 9px; cursor: pointer; color: var(--muted); font-size: 12.5px; }
+
+.replay { max-width: 1480px; margin: 14px auto 0; padding: 0 24px; }
+.replay-in { border: 1px dashed color-mix(in srgb, var(--c-wait) 70%, var(--line)); background: color-mix(in srgb, var(--c-wait) 10%, var(--surface)); border-radius: var(--radius); padding: 10px 14px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.replay-in b { font-weight: 600; }
+.moments { display: flex; gap: 6px; flex-wrap: wrap; }
+.moments button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; cursor: pointer; }
+.moments button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+
+main { max-width: 1480px; margin: 0 auto; padding: 18px 24px 60px; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.tab { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; cursor: pointer; max-width: 360px; }
+.tab[aria-selected="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.tab .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tab .p { color: var(--muted); font-size: 12.5px; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 18px; align-items: start; }
+@media (max-width: 1100px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+.panel + .panel { margin-top: 18px; }
+.col > .panel + .panel { margin-top: 18px; }
+h2 { font-size: 13.5px; font-weight: 600; margin: 0 0 12px; display: flex; align-items: baseline; gap: 8px; }
+h2 .sub { font-weight: 400; color: var(--muted); }
+
+/* session hero */
+.hero { padding: 18px 20px 16px; }
+.hero h1 { font-size: 21px; line-height: 1.25; margin: 0; letter-spacing: -0.015em; font-weight: 650; }
+.meta { color: var(--muted); font-size: 12.5px; margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
+.statusline { margin-top: 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.state { font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 9px; }
+.state .dot { width: 10px; height: 10px; border-radius: 50%; }
+.state.wait { background: color-mix(in srgb, var(--c-wait) 22%, transparent); padding: 3px 10px; border-radius: 8px; }
+.state.stalled { color: var(--bad); }
+.kpis { display: flex; gap: 22px; margin-top: 14px; flex-wrap: wrap; }
+.kpi .v { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; }
+.kpi .l { color: var(--muted); font-size: 12px; }
+.kpi .v.bad { color: var(--bad); }
+.progress { margin-top: 12px; height: 6px; border-radius: 3px; background: var(--raised); border: 1px solid var(--line); overflow: hidden; display: flex; }
+.progress span { display: block; height: 100%; }
+
+/* now */
+.now { margin: 0; padding: 0; list-style: none; }
+.now li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--line); align-items: start; }
+.now li:first-child { border-top: 0; padding-top: 2px; }
+.now .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 6px; }
+.now .who { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.now .where { font-weight: 400; color: var(--muted); font-size: 12.5px; margin-left: 6px; }
+.now .what { grid-column: 2; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.now .what .cat { display: inline-block; font-size: 11.5px; padding: 0 6px; border-radius: 4px; margin-right: 6px; color: var(--surface); vertical-align: 1px; }
+.timer { grid-row: 1 / span 2; grid-column: 3; text-align: right; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+.timer small { display: block; font-size: 11.5px; font-weight: 500; }
+.timer.amber { color: var(--warn); }
+.timer.red { color: var(--bad); }
+.more { color: var(--muted); font-size: 12.5px; padding-top: 8px; border-top: 1px solid var(--line); }
+
+/* timeline */
+.tl { position: relative; }
+.tl svg { display: block; width: 100%; overflow: visible; }
+.tl .lbl { font-size: 12.5px; fill: var(--ink); }
+.tl .lbl2 { font-size: 11px; fill: var(--muted); }
+.tl .axis { font-size: 11px; fill: var(--muted); }
+.tl .grid-l { stroke: var(--line); stroke-width: 1; }
+.tl .nowline { stroke: var(--ink); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); padding: 6px 9px; border-radius: 7px; font-size: 12px; max-width: 320px; z-index: 20; opacity: 0; transition: opacity .08s; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* lists */
+.feed { width: 100%; border-collapse: collapse; font-size: 13px; }
+.feed td { padding: 6px 8px 6px 0; border-top: 1px solid var(--line); vertical-align: top; }
+.feed tr:first-child td { border-top: 0; }
+.feed .tm { color: var(--muted); white-space: nowrap; width: 1%; }
+.feed .du { text-align: right; white-space: nowrap; color: var(--muted); width: 1%; }
+.feed .w { color: var(--muted); font-size: 12px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 520px; }
+.feed .ds { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.st-ok { color: var(--ok); } .st-bad { color: var(--bad); } .st-run { color: var(--warn); }
+
+.tasks { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.tasks li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; padding: 5px 0; }
+.tasks .ic { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--faint); margin-top: 2px; }
+.tasks .done .ic { background: var(--ok); border-color: var(--ok); }
+.tasks .done .tx { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--muted) 50%, transparent); }
+.tasks .doing .ic { border-color: var(--c-write); border-right-color: transparent; animation: spin 1.1s linear infinite; }
+.tasks .doing .tx { font-weight: 600; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.collapsed { color: var(--muted); font-size: 12.5px; cursor: pointer; background: none; border: 0; padding: 4px 0; text-align: left; }
+
+.stack { display: flex; height: 16px; border-radius: 5px; overflow: hidden; border: 1px solid var(--line); }
+.stack span { height: 100%; }
+.trows { margin-top: 12px; font-size: 13px; }
+.trow { display: grid; grid-template-columns: 12px 1fr auto 46px; gap: 8px; padding: 3px 0; align-items: center; }
+.trow .h { text-align: right; } .trow .p { text-align: right; color: var(--muted); font-size: 12px; }
+.finds { margin: 14px 0 0; padding: 0; list-style: none; font-size: 13px; }
+.finds li { padding: 8px 10px; border-radius: 8px; background: var(--raised); border: 1px solid var(--line); margin-top: 8px; }
+.finds b { font-weight: 600; }
+
+.memtop { display: flex; align-items: baseline; gap: 10px; }
+.memtop .big { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; }
+.memtop .of { color: var(--muted); }
+.apps { margin-top: 10px; font-size: 13px; }
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 130px 62px; gap: 10px; align-items: center; padding: 4px 0; }
+.app .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app .n em { font-style: normal; color: var(--muted); font-size: 12px; margin-left: 4px; }
+.app .b { height: 7px; border-radius: 4px; background: var(--raised); overflow: hidden; }
+.app .b span { display: block; height: 100%; border-radius: 4px; }
+.app .s { text-align: right; color: var(--muted); }
+.advice { margin-top: 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--c-run) 45%, var(--line)); background: color-mix(in srgb, var(--c-run) 8%, var(--surface)); font-size: 13px; }
+.note { color: var(--muted); font-size: 12px; margin-top: 10px; }
+
+.events { list-style: none; margin: 0; padding: 0; font-size: 13px; max-height: 420px; overflow: auto; }
+.events li { display: grid; grid-template-columns: 46px 18px 1fr; gap: 6px; padding: 6px 0; border-top: 1px solid var(--line); }
+.events li:first-child { border-top: 0; }
+.events .tm { color: var(--muted); }
+.events .w { color: var(--muted); font-size: 12px; display: block; }
+.empty { color: var(--muted); padding: 30px 0; text-align: center; }
+
+.limit { display: block; width: 76px; height: 3px; border-radius: 2px; background: var(--raised); margin: 5px 0 0 auto; overflow: hidden; }
+.limit i { display: block; height: 100%; background: var(--ok); }
+.timer.amber .limit i { background: var(--warn); } .timer.red .limit i { background: var(--bad); }
+.units { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.units li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.units li:first-child { border-top: 0; }
+.units .mid { min-width: 0; }
+.units .ds { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.units .run .ds { font-weight: 600; }
+.units .w { display: block; color: var(--muted); font-size: 12px; }
+.units .d { color: var(--muted); white-space: nowrap; }
+.units .ic { width: 14px; height: 14px; border-radius: 50%; margin-top: 2px; border: 1.5px solid var(--ok); background: var(--ok); }
+.units .run .ic { background: transparent; border-color: var(--c-write); border-right-color: transparent; animation: spin 1.1s linear infinite; }
+.showmore { margin-top: 8px; border: 1px solid var(--line); background: var(--raised); border-radius: 8px; padding: 5px 10px; font-size: 12.5px; color: var(--muted); cursor: pointer; }
+@media (max-width: 640px) {
+  .bar-in, main, .replay { padding-left: 16px; padding-right: 16px; }
+  .hero h1 { font-size: 18px; }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  h2 { flex-wrap: wrap; }
+  .app { grid-template-columns: minmax(0, 1fr) 70px 56px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="bar"><div class="bar-in">
+  <div class="brand"><span class="live-dot" id="liveDot"></span>proof <small id="clock"></small></div>
+  <span class="chip" id="sessionsChip"></span>
+  <span class="chip" id="awakeChip" hidden></span>
+  <div class="spacer"></div>
+  <div class="membar" id="memBar" title="Machine memory, with proof's warning and ceiling lines"></div>
+  <div class="seg" id="windowSeg" role="group" aria-label="Time window"></div>
+  <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch light or dark">Theme</button>
+</div></div>
+<div class="replay" id="replay" hidden></div>
+<main id="app"></main>
+<div class="tip" id="tip" role="tooltip"></div>
+<script>
+/*__PROOF_DATA__*/
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const COLOR = { model: 'model', edit: 'write', read: 'write', plan: 'write', web: 'write', test: 'test', typecheck: 'test', gate: 'gate', fidelity: 'screen', build: 'run', devserver: 'run', git: 'git', shell: 'git', hooks: 'git', subagent: 'agent', api: 'idle', compact: 'idle', idle: 'idle', waitUser: 'wait', asleep: 'sleep' };
+  const col = c => `var(--c-${COLOR[c] || 'agent'})`;
+  const GROUPS = [['model', 'Thinking'], ['write', 'Reading & editing'], ['test', 'Tests & checks'], ['gate', 'proof gate'], ['screen', 'Screens & browser'], ['run', 'Builds & dev servers'], ['git', 'Git & other commands'], ['wait', 'Waiting on you'], ['sleep', 'Mac asleep mid-work'], ['idle', 'Stalls & gaps']];
+  const STATE = {
+    working: ['Working', 'var(--ok)'], thinking: ['Thinking', 'var(--c-model)'], agents: ['Agents working', 'var(--c-write)'], approval: ['Waiting for your approval', 'var(--c-wait)'],
+    waiting: ['Waiting for you', 'var(--c-wait)'], needsInput: ['Needs your answer', 'var(--c-wait)'], stalled: ['No activity', 'var(--bad)'],
+  };
+
+  const pad = n => String(n).padStart(2, '0');
+  const dur = ms => {
+    ms = Math.max(0, ms); const s = Math.floor(ms / 1000), m = Math.floor(s / 60), h = Math.floor(m / 60), d = Math.floor(h / 24);
+    if (d) return `${d}d ${h % 24}h`; if (h) return `${h}h ${pad(m % 60)}m`; if (m) return `${m}m ${pad(s % 60)}s`; return `${s}s`;
+  };
+  const hrs = ms => (ms >= 3600e3 ? `${(ms / 3600e3).toFixed(1)}h` : `${Math.round(ms / 60e3)}m`);
+  const clock = t => { const d = new Date(t); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  const day = t => new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  const gb = mb => (mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${Math.round(mb)} MB`);
+
+  let data = window.__PROOF_DATA__ || null;
+  const examples = data && data.moments ? data.moments : null;
+  if (examples) data = examples[examples.length > 1 ? 1 : 0].data;
+  let fetchedAt = Date.now();
+  let selected = (() => { try { const m = location.hash.match(/s=([^&]+)/); return m ? decodeURIComponent(m[1]) : null; } catch { return null; } })();
+  let windowH = data ? Math.round(data.windowMs / 3600e3) : 6;
+  const live = !window.__PROOF_DATA__;
+  const nowT = () => (data && !data.live ? data.now : data ? data.now + (Date.now() - fetchedAt) : Date.now());
+
+  // ---- theme ----
+  const savedTheme = (() => { try { return localStorage.getItem('proof-theme'); } catch { return null; } })();
+  if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+  $('#themeBtn').onclick = () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('proof-theme', document.documentElement.dataset.theme); } catch {}
+    render();
+  };
+
+  // ---- window control ----
+  const windows = [[1, '1h'], [6, '6h'], [12, '12h'], [24, '24h']];
+  function renderWindow() {
+    const seg = $('#windowSeg');
+    if (!live) { seg.hidden = true; return; }
+    seg.innerHTML = windows.map(([h, l]) => `<button type="button" data-h="${h}" aria-pressed="${h === windowH}">${l}</button>`).join('');
+    seg.querySelectorAll('button').forEach(b => b.onclick = () => { windowH = Number(b.dataset.h); refresh(); });
+  }
+
+  // ---- top bar ----
+  function renderBar() {
+    const t = nowT();
+    $('#clock').textContent = data && !data.live ? `${day(t)}, ${clock(t)}` : clock(t);
+    $('#liveDot').classList.toggle('off', !!(data && !data.live));
+    const n = data ? data.sessions.length : 0;
+    const busy = data ? data.sessions.filter(s => /working|thinking|agents|approval/.test(s.status.state)).length : 0;
+    $('#sessionsChip').textContent = n ? `${n} session${n > 1 ? 's' : ''} · ${busy} working` : 'No sessions';
+    const m = data && data.machine;
+    const aw = $('#awakeChip');
+    if (m && m.keepAwake) { aw.hidden = false; aw.textContent = m.keepAwake.on ? 'Keeping your Mac awake while Claude works' : 'Mac may sleep: nothing is working'; } else aw.hidden = true;
+    const mb = $('#memBar');
+    if (m && m.system) {
+      const s = m.system, p = s.pct;
+      const color = p >= s.ceilingPct ? 'var(--bad)' : p >= s.warnPct ? 'var(--warn)' : 'var(--ok)';
+      mb.innerHTML = `<span>Memory</span><span class="track"><span class="fill" style="width:${p.toFixed(1)}%;background:${color}"></span><span class="tick" style="left:${s.warnPct}%"></span><span class="tick" style="left:${s.ceilingPct}%"></span></span><b>${p.toFixed(0)}%</b>`;
+    } else mb.innerHTML = '';
+  }
+
+  function renderReplay() {
+    const el = $('#replay');
+    if (!data || data.live || !data.replay) { el.hidden = true; return; }
+    el.hidden = false;
+    document.title = `proof · replay of ${data.replay.source || 'a build'}`;
+    const btns = examples ? `<div class="moments" role="group" aria-label="Moment in the build">${examples.map((e, i) => `<button type="button" data-i="${i}" aria-pressed="${e.data === data}">${esc(e.label)}</button>`).join('')}</div>` : '';
+    el.innerHTML = `<div class="replay-in"><span><b>Replay of your ${esc(data.replay.source || 'build')} build</b>, as the dashboard would have shown it at ${day(data.now)}, ${clock(data.now)}. Live, it refreshes every 2 seconds and the timers tick. The memory panel uses sample data: Claude Code's logs don't record memory.</span>${btns}</div>`;
+    el.querySelectorAll('.moments button').forEach(b => b.onclick = () => { data = examples[Number(b.dataset.i)].data; selected = null; render(); });
+  }
+
+  // ---- session ----
+  function stateLine(v, t) {
+    const [label, color] = STATE[v.status.state] || ['', 'var(--faint)'];
+    const since = v.status.since ? dur(t - v.status.since) : '';
+    if (v.status.state === 'agents') return `<span class="state"><span class="dot" style="background:${color}"></span>${v.agents.active} agent${v.agents.active === 1 ? '' : 's'} working</span><span class="chip">main thread waiting for them · ${since}</span>`;
+    if (v.status.state === 'waiting' || v.status.state === 'needsInput' || v.status.state === 'approval') return `<span class="state wait"><span class="dot" style="background:${color}"></span>${label} · ${since}</span>${v.agents.active ? `<span class="chip">${v.agents.active} agents still working</span>` : ''}`;
+    if (v.status.state === 'stalled') return `<span class="state stalled"><span class="dot" style="background:${color}"></span>No activity for ${since}</span>`;
+    return `<span class="state"><span class="dot" style="background:${color}"></span>${label}</span><span class="chip">${esc(v.status.label || '')}</span>`;
+  }
+
+  function hero(v, t) {
+    const done = v.tasks.filter(x => x.status === 'completed').length, doing = v.tasks.filter(x => x.status === 'in_progress').length, total = v.tasks.length;
+    const pct = total ? (100 * done) / total : 0, pctD = total ? (100 * doing) / total : 0;
+    const kpi = (val, l, bad) => `<div class="kpi"><div class="v${bad ? ' bad' : ''}">${val}</div><div class="l">${l}</div></div>`;
+    return `<section class="panel hero">
+      <h1>${esc(v.title)}</h1>
+      <div class="meta"><span>${esc(v.project || '')}${v.branch ? ` · ${esc(v.branch)}` : ''}</span><span>started ${day(v.start)} ${clock(v.start)}</span><span>running ${dur(t - v.start)}</span>${v.model ? `<span>${esc(v.model)}</span>` : ''}</div>
+      <div class="statusline">${stateLine(v, t)}</div>
+      <div class="kpis">
+        ${total ? kpi(`${done}/${total}`, 'plan items done') : ''}
+        ${kpi(v.commits.length ? v.commits.length : '0', 'commits')}
+        ${kpi(v.agents.total, 'agents launched')}
+        ${kpi(v.counts.gateRounds || 0, 'times the gate sent work back')}
+        ${kpi(v.stuck, 'calls running past 5 min', v.stuck > 0)}
+      </div>
+      ${total ? `<div class="progress" aria-label="${done} of ${total} plan items done"><span style="width:${pct}%;background:var(--ok)"></span><span style="width:${pctD}%;background:var(--c-write)"></span></div>` : ''}
+    </section>`;
+  }
+
+  function nowPanel(v, t) {
+    const items = v.now.slice().sort((a, b) => (a.type === 'main' ? -1 : b.type === 'main' ? 1 : (b.since ? t - b.since : 0) - (a.since ? t - a.since : 0)));
+    const max = 12;
+    const rows = items.slice(0, max).map(n => {
+      const [, color] = STATE[n.state] || ['', 'var(--faint)'];
+      const el = n.since ? t - n.since : 0;
+      const working = n.state === 'working';
+      const cls = working && el >= 10 * 60e3 ? 'red' : working && el >= 5 * 60e3 ? 'amber' : '';
+      const note = (cls === 'red' ? '<small>past the 10-min limit</small>' : cls === 'amber' ? '<small>past 5 min</small>' : '') + (working ? `<span class="limit" title="Time against the 10-minute limit"><i style="width:${Math.min(100, el / 6000).toFixed(0)}%"></i></span>` : '');
+      const catChip = n.cat ? `<span class="cat" style="background:${col(n.cat)}">${esc(data.categories[n.cat] || n.cat)}</span>` : '';
+      const what = n.state === 'agents' ? 'Waiting for its agents' : n.state === 'waiting' ? 'Waiting for your next message' : n.state === 'needsInput' ? 'Asked you something' : n.label || '';
+      return `<li><span class="dot" style="background:${color}"></span><div class="who">${esc(n.who)}${n.where ? `<span class="where">${esc(n.where)}</span>` : ''}</div><div class="timer ${cls}" data-since="${n.since || ''}" data-working="${working}">${n.since ? dur(el) : ''}${note}</div><div class="what">${catChip}${esc(what)}</div></li>`;
+    }).join('');
+    const extra = items.length > max ? `<div class="more">and ${items.length - max} more agents working</div>` : '';
+    return `<section class="panel"><h2>Right now <span class="sub">${items.length - 1} agent${items.length === 2 ? '' : 's'} mid-work</span></h2><ul class="now">${rows}</ul>${extra}</section>`;
+  }
+
+  function timelinePanel(v) {
+    return `<section class="panel"><h2>Timeline <span class="sub">${hrs(v.to - v.from)} · one row per worktree</span></h2><div class="tl" id="tl"></div>
+      <div class="legend">${GROUPS.map(([k, l]) => `<span><i class="sw" style="background:var(--c-${k})"></i>${l}</span>`).join('')}</div></section>`;
+  }
+
+  function drawTimeline(v) {
+    const host = $('#tl'); if (!host) return;
+    const W = Math.max(320, host.clientWidth), labelW = W < 560 ? 92 : 170, rowH = 20, gap = 10, top = 22;
+    const H = top + v.rows.length * (rowH + gap) + 4;
+    const x = t => labelW + ((t - v.from) / (v.to - v.from)) * (W - labelW - 8);
+    const span = v.to - v.from;
+    const step = [15, 30, 60, 120, 180, 360, 720].map(m => m * 60e3).find(s => span / s <= 8) || 1440 * 60e3;
+    let ticks = '';
+    for (let t = Math.ceil(v.from / step) * step; t <= v.to; t += step) ticks += `<line class="grid-l" x1="${x(t)}" x2="${x(t)}" y1="${top - 6}" y2="${H}"/><text class="axis" x="${x(t)}" y="11" text-anchor="middle">${clock(t)}</text>`;
+    let sleep = '';
+    for (const [a, b] of v.asleep || []) {
+      const x1 = x(Math.max(a, v.from)), x2 = x(Math.min(b, v.to));
+      if (x2 - x1 > 1) sleep += `<rect x="${x1}" y="${top - 6}" width="${x2 - x1}" height="${H - top + 6}" fill="url(#hatch)" opacity=".9"/>${x2 - x1 > 70 ? `<text class="axis" x="${(x1 + x2) / 2}" y="${H - 2}" text-anchor="middle">Mac asleep ${hrs(b - a)}</text>` : ''}`;
+    }
+    let rows = '';
+    v.rows.forEach((r, i) => {
+      const y = top + i * (rowH + gap);
+      rows += `<text class="lbl" x="0" y="${y + 9}">${esc(trim(r.label, labelW < 100 ? 11 : 22))}</text><text class="lbl2" x="0" y="${y + 21}">${esc(trim(r.sub || '', labelW < 100 ? 12 : 26))}</text>`;
+      rows += `<rect x="${labelW}" y="${y}" width="${W - labelW - 8}" height="${rowH}" rx="4" fill="var(--raised)"/>`;
+      for (const [a, b, c] of r.lane) {
+        if (c === 'asleep') continue;
+        const x1 = x(Math.max(a, v.from)), x2 = x(Math.min(b, v.to));
+        if (x2 - x1 < 0.6) continue;
+        rows += `<rect class="tseg" x="${x1.toFixed(1)}" y="${y + 2}" width="${(x2 - x1).toFixed(1)}" height="${rowH - 4}" rx="2" fill="${col(c)}" data-c="${c}" data-a="${a}" data-b="${b}" data-r="${esc(r.label)}"/>`;
+      }
+    });
+    const nx = x(v.to);
+    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Timeline of what each worktree did"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="color-mix(in srgb, var(--c-sleep) 16%, transparent)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--c-sleep)" stroke-width="2" opacity=".35"/></pattern></defs>${ticks}${sleep}${rows}<line class="nowline" x1="${nx}" x2="${nx}" y1="${top - 8}" y2="${H}"/></svg>`;
+    const tip = $('#tip');
+    host.querySelectorAll('rect.tseg').forEach(el => {
+      el.addEventListener('mousemove', e => {
+        const a = Number(el.dataset.a), b = Number(el.dataset.b);
+        tip.innerHTML = `<b>${esc(data.categories[el.dataset.c] || el.dataset.c)}</b><br>${esc(el.dataset.r)} · ${clock(a)}–${clock(b)} · ${dur(b - a)}`;
+        tip.style.left = `${Math.min(e.clientX + 12, innerWidth - 330)}px`; tip.style.top = `${e.clientY + 14}px`; tip.style.opacity = 1;
+      });
+      el.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
+    });
+  }
+  const trim = (s, n) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
+
+  let feedAll = false;
+  function feedPanel(v, t) {
+    const rows = v.feed.slice(0, feedAll ? 120 : 15).map(f => {
+      const running = f.end == null;
+      const st = running ? (f.bg ? '<span class="st-run" title="Started in the background">↗</span>' : '<span class="st-run" title="Running">●</span>') : f.ok === false ? '<span class="st-bad" title="Failed">✕</span>' : '<span class="st-ok" title="Done">✓</span>';
+      const d = running ? (f.bg ? '' : dur(t - f.t)) : f.bg ? 'bg' : dur(f.end - f.t);
+      return `<tr><td class="tm">${clock(f.t)}</td><td>${st}</td><td><span class="ds">${esc(f.desc)}</span><span class="w">${esc(f.who)}</span></td><td class="du">${d}</td></tr>`;
+    }).join('');
+    const more = v.feed.length > 15 ? `<button type="button" class="showmore" id="feedMore">${feedAll ? 'Show fewer' : `Show ${Math.min(120, v.feed.length) - 15} more`}</button>` : '';
+    return `<section class="panel"><h2>Recent activity <span class="sub">every command and edit, newest first</span></h2>${rows ? `<table class="feed">${rows}</table>${more}` : '<div class="empty">Nothing yet.</div>'}</section>`;
+  }
+
+  function planPanel(v, t) {
+    if (v.tasks.length) {
+      const order = { in_progress: 0, pending: 1, completed: 2 };
+      const list = v.tasks.slice().sort((a, b) => (order[a.status] ?? 1) - (order[b.status] ?? 1) || Number(a.id) - Number(b.id));
+      const done = list.filter(x => x.status === 'completed');
+      const open = list.filter(x => x.status !== 'completed');
+      const li = x => `<li class="${x.status === 'completed' ? 'done' : x.status === 'in_progress' ? 'doing' : ''}"><span class="ic"></span><span class="tx">${esc(x.status === 'in_progress' && x.active ? x.active : x.subject)}</span></li>`;
+      return `<section class="panel"><h2>Plan <span class="sub">${done.length} of ${list.length} done</span></h2><ul class="tasks">${open.map(li).join('')}</ul>${done.length ? `<details><summary class="collapsed">${done.length} done</summary><ul class="tasks">${done.slice().reverse().map(li).join('')}</ul></details>` : ''}</section>`;
+    }
+    if (!v.units || !v.units.length) return `<section class="panel"><h2>Plan</h2><div class="empty" style="padding:10px 0">No task list or agents yet. For long work, Claude keeps its task list current and it shows here.</div></section>`;
+    const running = v.units.filter(u => u.running), done = v.units.filter(u => !u.running);
+    const li = u => `<li class="${u.running ? 'run' : ''}"><span class="ic"></span><span class="mid"><span class="ds" title="${esc(u.desc)}">${esc(u.desc)}</span><span class="w">${esc(u.where || u.type)}${u.commits ? ` · ${u.commits} commit${u.commits > 1 ? 's' : ''}` : ''}</span></span><span class="d">${u.running ? dur(t - u.start) : dur(u.end - u.start)}</span></li>`;
+    return `<section class="panel"><h2>Work items <span class="sub">agents: ${running.length} running, ${v.unitsDone} done</span></h2><ul class="units">${running.map(li).join('')}${done.slice(0, 6).map(li).join('')}</ul>${done.length > 6 ? `<details><summary class="collapsed">${done.length - 6} more done</summary><ul class="units">${done.slice(6).map(li).join('')}</ul></details>` : ''}<div class="note">No task list in this session, so these are the agents Claude launched.</div></section>`;
+  }
+
+  function timePanel(v) {
+    const share = v.share; let total = 0; for (const k in share) total += share[k];
+    const byGroup = {};
+    for (const [k, ms] of Object.entries(share)) { const g = COLOR[k] || 'agent'; byGroup[g] = (byGroup[g] || 0) + ms; }
+    const items = GROUPS.map(([g, l]) => [g, l, byGroup[g] || 0]).filter(x => x[2] > 0).sort((a, b) => b[2] - a[2]);
+    const bar = items.map(([g, l, ms]) => `<span title="${l}: ${hrs(ms)}" style="width:${(100 * ms / total).toFixed(2)}%;background:var(--c-${g})"></span>`).join('');
+    const rows = items.map(([g, l, ms]) => `<div class="trow"><i class="sw" style="background:var(--c-${g})"></i><span>${l}</span><span class="h">${hrs(ms)}</span><span class="p">${(100 * ms / total).toFixed(0)}%</span></div>`).join('');
+    const f = v.findings, finds = [];
+    if (f.asleepMs > 0) finds.push(`<li><b>Mac asleep mid-work: ${hrs(f.asleepMs)}</b> (${f.asleepN}×). Nothing ran while commands were in flight. proof now keeps the Mac awake while Claude works.</li>`);
+    if (f.waitMs > 30 * 60e3) finds.push(`<li><b>Waiting on you: ${hrs(f.waitMs)}</b>. Claude had stopped to ask or report.</li>`);
+    if (f.ceilingN) finds.push(`<li><b>${f.ceilingN} command${f.ceilingN === 1 ? '' : 's'} ran into the 10-minute limit</b> (${hrs(f.ceilingMs)}), mostly loops waiting for a log line that never came.</li>`);
+    const times = n => (n === 1 ? 'once' : n === 2 ? 'twice' : `${n} times`);
+    if (f.e2eN) finds.push(`<li><b>${f.e2eN} end-to-end run${f.e2eN === 1 ? '' : 's'}</b> (${hrs(f.e2eMs)} of agent time)${f.topSpec && f.topSpec.n > 1 ? `; ${esc(f.topSpec.name)} ran ${times(f.topSpec.n)}` : ''}.</li>`);
+    const par = v.parallel ? `<div class="note">On average ${v.parallel.toFixed(1)} things ran at once while anything was running.</div>` : '';
+    return `<section class="panel"><h2>Where the time went <span class="sub">${hrs(total)} since the session began</span></h2><div class="stack" role="img" aria-label="Share of time by activity">${bar}</div><div class="trows">${rows}</div>${par}${finds.length ? `<ul class="finds">${finds.join('')}</ul>` : ''}</section>`;
+  }
+
+  function memoryPanel(m) {
+    if (!m || !m.system) return '';
+    const s = m.system;
+    const W = 340, H = 92;
+    const pts = (m.samples || []);
+    let chart = '';
+    if (pts.length > 1) {
+      const t0 = pts[0][0], t1 = pts[pts.length - 1][0];
+      const X = t => ((t - t0) / Math.max(1, t1 - t0)) * W, Y = p => H - (p / 100) * H;
+      const line = pts.map(([t, p], i) => `${i ? 'L' : 'M'}${X(t).toFixed(1)},${Y(p).toFixed(1)}`).join('');
+      chart = `<svg viewBox="0 0 ${W} ${H + 14}" width="100%" role="img" aria-label="Memory over the last hours">
+        <path d="${line}L${W},${H}L0,${H}Z" fill="color-mix(in srgb, var(--c-write) 16%, transparent)"/>
+        <path d="${line}" fill="none" stroke="var(--c-write)" stroke-width="1.6"/>
+        <line x1="0" x2="${W}" y1="${Y(s.warnPct)}" y2="${Y(s.warnPct)}" stroke="var(--warn)" stroke-dasharray="4 3"/><text x="2" y="${Y(s.warnPct) + 11}" font-size="10.5" fill="var(--warn)">warn ${s.warnPct}%</text>
+        <line x1="0" x2="${W}" y1="${Y(s.ceilingPct)}" y2="${Y(s.ceilingPct)}" stroke="var(--bad)" stroke-dasharray="4 3"/><text x="${W}" y="${Y(s.ceilingPct) - 3}" text-anchor="end" font-size="10.5" fill="var(--bad)">ceiling ${s.ceilingPct}%</text>
+        <text x="0" y="${H + 12}" font-size="10.5" fill="var(--muted)">${clock(t0)}</text><text x="${W}" y="${H + 12}" font-size="10.5" fill="var(--muted)" text-anchor="end">${clock(t1)}</text></svg>`;
+    }
+    const maxMb = Math.max(...(m.apps || []).map(a => a.mb), 1);
+    const apps = (m.apps || []).slice(0, 7).map(a => `<div class="app"><span class="n">${esc(a.name)}${a.claude ? '<em>Claude</em>' : ''}</span><span class="b"><span style="width:${(100 * a.mb / maxMb).toFixed(1)}%;background:${a.claude ? 'var(--c-write)' : 'var(--c-git)'}"></span></span><span class="s">${gb(a.mb)}</span></div>`).join('');
+    const adv = m.advice && m.advice.userApps && m.advice.userApps.length && s.pct >= s.warnPct - 5 ? `<div class="advice">${esc(m.advice.text.split('\n').pop())}</div>` : '';
+    return `<section class="panel"><h2>Memory <span class="sub">${m.example ? 'sample data' : 'this Mac, live'}</span></h2>
+      <div class="memtop"><span class="big" style="color:${s.pct >= s.ceilingPct ? 'var(--bad)' : s.pct >= s.warnPct ? 'var(--warn)' : 'inherit'}">${s.pct.toFixed(0)}%</span><span class="of">${gb(s.usedMB)} of ${gb(s.totalMB)} · ${s.headroomMB > 0 ? `${gb(s.headroomMB)} before the ceiling` : 'over the ceiling'}</span></div>
+      ${chart}<div class="apps">${apps}</div>${adv}
+      <div class="note">Heavy jobs wait their turn when there isn't room, and the newest run Claude started is stopped first if the machine reaches ${s.ceilingPct}%. Claude never closes your apps.</div></section>`;
+  }
+
+  const ICON = { commit: ['●', 'var(--ok)'], gatePass: ['✓', 'var(--ok)'], gateFail: ['✕', 'var(--bad)'], commitBlocked: ['⊘', 'var(--bad)'], guard: ['■', 'var(--bad)'], memory: ['■', 'var(--warn)'], compact: ['◌', 'var(--muted)'], needsInput: ['?', 'var(--warn)'], gaveUp: ['!', 'var(--bad)'], interrupt: ['‖', 'var(--muted)'], agentDone: ['↩', 'var(--c-write)'], error: ['!', 'var(--warn)'] };
+  // Event lines come straight from logs; keep the first sentence and drop paths and process ids.
+  function tidyEvent(e) {
+    let x = String(e.text || '');
+    if (e.kind === 'guard' || e.kind === 'memory') x = x.replace(/^\[proof guard\] stopped this run — /, 'proof guard stopped a run: ').replace(/; largest pid[\s\S]*$/, '').replace(/ \(pid \d+:[\s\S]*$/, '');
+    if (e.kind === 'commitBlocked') x = x.replace(/^proof: commit (blocked|refused) — /, 'Commit $1: ').split(/\. /)[0];
+    x = x.replace(/\/Users\/[^\s]+\//g, '…/');
+    return x.length > 160 ? `${x.slice(0, 157)}…` : x;
+  }
+  function eventsPanel(v) {
+    const list = v.events.filter(e => e.kind !== 'gatePass').slice(0, 60).map(e => {
+      const [ic, c] = ICON[e.kind] || ['·', 'var(--muted)'];
+      return `<li><span class="tm">${clock(e.t)}</span><span style="color:${c}" aria-hidden="true">${ic}</span><span>${esc(tidyEvent(e))}<span class="w">${esc(e.who || '')}</span></span></li>`;
+    }).join('');
+    return `<section class="panel"><h2>Events <span class="sub">commits, gate results, agents finishing, guard stops</span></h2>${list ? `<ul class="events">${list}</ul>` : '<div class="empty" style="padding:10px 0">None in this window.</div>'}</section>`;
+  }
+
+  // ---- page ----
+  function render() {
+    renderBar(); renderReplay(); renderWindow();
+    const app = $('#app');
+    if (!data) { app.innerHTML = '<div class="empty">Connecting to the proof monitor…</div>'; return; }
+    if (!data.sessions.length) { app.innerHTML = '<div class="empty">No Claude Code sessions in this window. Start one and it shows up here.</div>'; return; }
+    const v = data.sessions.find(s => s.id === selected) || data.sessions[0];
+    selected = v.id;
+    const t = nowT();
+    const tabs = data.sessions.length > 1 ? `<div class="tabs" role="tablist">${data.sessions.map(s => {
+      const [, color] = STATE[s.status.state] || ['', 'var(--faint)'];
+      return `<button class="tab" role="tab" aria-selected="${s.id === v.id}" data-id="${s.id}"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${color}"></span><span class="t">${esc(s.title)}</span><span class="p">${esc(s.project || '')}</span></button>`;
+    }).join('')}</div>` : '';
+    app.innerHTML = `${tabs}<div class="grid"><div class="col">${hero(v, t)}${nowPanel(v, t)}${timelinePanel(v)}${feedPanel(v, t)}</div><div class="col">${planPanel(v, t)}${timePanel(v)}${memoryPanel(data.machine)}${eventsPanel(v)}</div></div>`;
+    app.querySelectorAll('.tab').forEach(b => b.onclick = () => { selected = b.dataset.id; render(); });
+    const fm = $('#feedMore'); if (fm) fm.onclick = () => { feedAll = !feedAll; render(); };
+    drawTimeline(v);
+  }
+
+  // Live timers tick between refreshes.
+  function tick() {
+    if (!data || !data.live) return;
+    const t = nowT();
+    $('#clock').textContent = clock(t);
+    document.querySelectorAll('.timer[data-since]').forEach(el => {
+      const since = Number(el.dataset.since); if (!since) return;
+      const el2 = t - since, working = el.dataset.working === 'true';
+      const cls = working && el2 >= 10 * 60e3 ? 'red' : working && el2 >= 5 * 60e3 ? 'amber' : '';
+      el.className = `timer ${cls}`;
+      el.innerHTML = `${dur(el2)}${cls === 'red' ? '<small>past the 10-min limit</small>' : cls === 'amber' ? '<small>past 5 min</small>' : ''}${working ? `<span class="limit"><i style="width:${Math.min(100, el2 / 6000).toFixed(0)}%"></i></span>` : ''}`;
+    });
+  }
+
+  async function refresh() {
+    try {
+      const r = await fetch(`data.json?hours=${windowH}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error(r.status);
+      data = await r.json(); fetchedAt = Date.now();
+      render();
+    } catch { $('#liveDot').classList.add('off'); }
+  }
+
+  let resizeT;
+  addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => data && drawTimeline(data.sessions.find(s => s.id === selected) || data.sessions[0]), 120); });
+  render();
+  if (live) { refresh(); setInterval(refresh, 2000); setInterval(tick, 1000); }
+})();
+</script>
+</body>
+</html>
