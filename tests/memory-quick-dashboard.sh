@@ -171,4 +171,17 @@ expect "a frozen stretch (like the Mac sleeping) is recorded" "node -e 'const a=
 node "$S/monitor.mjs" --stop; sleep 0.5
 expect "--stop stops it" "! curl -s --max-time 1 http://127.0.0.1:47399/health >/dev/null"
 
+echo "== a monitor whose plugin folder moved (an update, or the old install sent to the Trash)"
+monitor_pid() { node -e 'console.log(require(process.argv[1]).pid)' "$T/data/monitor.json" 2>/dev/null; }
+page_code() { curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:47399/; }
+cp -R "$S" "$T/install"; node "$T/install/monitor.mjs" --ensure >/dev/null; MP=$(monitor_pid)
+mv "$T/install" "$T/trashed"
+expect "it still serves the page after its folder moves" "curl -s http://127.0.0.1:47399/ | grep -q 'proof · live'"
+node "$S/monitor.mjs" --stop; sleep 0.5
+cp -R "$S" "$T/broken"; rm "$T/broken/dashboard.html"; node "$T/broken/monitor.mjs" --ensure >/dev/null; MP=$(monitor_pid)
+expect "(setup) a monitor that can't read its page answers 500" "[ \$(page_code) = 500 ]"
+node "$S/monitor.mjs" --ensure >/dev/null; MP=$(monitor_pid)
+expect "--ensure replaces a monitor whose page fails" "curl -s http://127.0.0.1:47399/ | grep -q 'proof · live'"
+node "$S/monitor.mjs" --stop; sleep 0.5
+
 finish

@@ -35,6 +35,15 @@ else { console.error('usage: node monitor.mjs --ensure | --open | --stop'); proc
 
 // ---- client side: start, open, stop ---------------------------------------------------------------------------------
 
+// The status code of a page, or 0 when nothing answers.
+function status(path, timeout = 1000) {
+  return new Promise(resolve => {
+    const req = http.get(`${BASE}${path}`, { timeout, headers: { host: `127.0.0.1:${PORT}` } }, res => { res.resume(); resolve(res.statusCode); });
+    req.on('timeout', () => { req.destroy(); resolve(0); });
+    req.on('error', () => resolve(0));
+  });
+}
+
 function get(path, timeout = 500) {
   return new Promise(resolve => {
     const req = http.get(`${BASE}${path}`, { timeout, headers: { host: `127.0.0.1:${PORT}` } }, res => {
@@ -47,6 +56,12 @@ function get(path, timeout = 500) {
 
 export async function ensure(open = false) {
   let h = await get('health');
+  // A monitor started from a plugin folder that has since moved (an update, or the old install sent to the Trash)
+  // still answers /health but can't serve the page. Replace it.
+  if (h?.proof && await status('') !== 200) {
+    try { process.kill(h.pid, 'SIGTERM'); } catch {}
+    for (let i = 0; i < 20 && h?.proof; i++) { await new Promise(r => setTimeout(r, 150)); h = await get('health', 300); }
+  }
   if (!h?.proof) {
     const child = spawn(process.execPath, [fileURLToPath(import.meta.url), '--daemon'], { detached: true, stdio: 'ignore', env: { ...process.env, PROOF_DATA_DIR: dataDir() } });
     child.unref();
@@ -234,6 +249,11 @@ function serve() {
     return body;
   };
 
+  // Read the page now too, so it is still served if the plugin folder moves while the monitor runs.
+  const pagePath = join(here, 'dashboard.html');
+  let page = null;
+  try { page = readFileSync(pagePath, 'utf8'); } catch {}
+
   const server = http.createServer((req, res) => {
     // Only this machine, and only under our own host name (no DNS rebinding).
     const host = String(req.headers.host || '');
@@ -247,7 +267,9 @@ function serve() {
     }
     st.lastReq = Date.now();
     if (url.pathname === '/' || url.pathname === '/index.html') {
-      try { return send(res, 200, 'text/html; charset=utf-8', readFileSync(join(here, 'dashboard.html'), 'utf8')); } catch { res.writeHead(500); return res.end(); }
+      try { page = readFileSync(pagePath, 'utf8'); } catch {}
+      if (page == null) { res.writeHead(500); return res.end(); }
+      return send(res, 200, 'text/html; charset=utf-8', page);
     }
     if (url.pathname === '/data.json') {
       try { return send(res, 200, 'application/json', data(Number(url.searchParams.get('hours')) || 6)); }
