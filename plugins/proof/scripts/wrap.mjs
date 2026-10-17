@@ -89,14 +89,14 @@ async function main() {
     if (!a.ok) {
       const adv = advice(snapshot({ env: true }), need);
       process.stderr.write([
-        `proof memory: not starting this ${kind === 'e2e' ? 'end-to-end' : kind} run. The ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}) and this run needs about ${gb(need)}, which would take it past proof's ${a.system.ceilingPct}% ceiling.${waited > 2 ? ` Waited ${waited}s for other runs to free room.` : ''}`,
+        `proof memory: not starting this ${kind === 'e2e' ? 'end-to-end' : kind} run. The ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}) and this run needs about ${gb(need)}, ${a.critical ? `under proof's ${a.system.ceilingPct}% ceiling, but macOS reports critical memory pressure.` : `which would take it past proof's ${a.system.ceilingPct}% ceiling.`}${waited > 2 ? ` Waited ${waited}s for other runs to free room.` : ''}`,
         adv.text,
         'Free room first: stop your own processes you no longer need, or run a narrower command (one test file or spec). If the user\'s apps hold the memory, tell them what closing them would free and end your message with a line starting NEEDS-INPUT:.',
       ].join('\n'));
       process.exit(2);
     }
     if (waited > 2) notes.push(`proof memory: this run waited ${waited}s for memory to free up (the ${MACHINE} is at ${a.system.pct.toFixed(0)}%).`);
-    else if (a.warn && warnDue(input.session_id)) notes.push(`proof memory: the ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}); proof keeps it under ${a.system.ceilingPct}%. Run heavy jobs one at a time and stop dev servers, simulators and browsers you no longer need. \`node "${join(dirname(GUARD), 'mem.mjs')}"\` shows what is using it.`);
+    else if (a.warn && warnDue(input.session_id)) notes.push(`proof memory: the ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}); proof keeps it under ${a.system.ceilingPct}%.${a.system.strain ? ` ${a.system.strain}` : ''} Run heavy jobs one at a time and stop dev servers, simulators and browsers you no longer need. \`node "${join(dirname(GUARD), 'mem.mjs')}"\` shows what is using it.`);
   }
 
   const command = `${shq(process.execPath)} ${shq(GUARD)} --timeout ${timeout} --mem ${memLimit} --proc-mem ${procLimit} --kind ${kind} --data ${shq(dataDir())} -- ${shq(cmd)}`;

@@ -1,0 +1,7 @@
+{
+  "checks": [
+    { "name": "memory-reading", "run": "bash tests/run.sh memory-reading", "when": ["plugins/", "tests/"], "cache": false },
+    { "name": "all", "run": "bash tests/run.sh", "when": ["plugins/", "tests/"], "timeout": 600, "cache": false }
+  ],
+  "maxRounds": 5
+}

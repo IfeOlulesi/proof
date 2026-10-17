@@ -92,7 +92,7 @@ function serve() {
     let sys;
     try { sys = readSystem(); } catch { return; }
     st.samples.push([now, Math.round(sys.pct * 10) / 10]);
-    try { writeFileSync(join(dataDir(), 'memory-now.json'), JSON.stringify({ t: now, pct: sys.pct, usedMB: sys.usedMB, totalMB: sys.totalMB, ceilingPct: sys.ceilingPct, warnPct: sys.warnPct, headroomMB: sys.headroomMB })); } catch {}
+    try { writeFileSync(join(dataDir(), 'memory-now.json'), JSON.stringify({ t: now, pct: sys.pct, usedMB: sys.usedMB, totalMB: sys.totalMB, ceilingPct: sys.ceilingPct, warnPct: sys.warnPct, headroomMB: sys.headroomMB, pressure: sys.pressure, swapMB: sys.swapMB })); } catch {}
     if (st.samples.length > 21600) st.samples.splice(0, st.samples.length - 21600);   // 12 hours
     st.system = sys;
     enforceCeiling(sys, now);

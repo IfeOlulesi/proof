@@ -71,6 +71,12 @@ export function readSystem() {
       try { level = Number(run('sysctl', ['-n', 'kern.memorystatus_vm_pressure_level']).trim()); } catch {}
       return finish({ platform: 'darwin', totalMB, usedMB: v.appMB + v.wiredMB + v.compressedMB, ...v, swapMB, pressure: level === 4 ? 'critical' : level === 2 ? 'warn' : level === 1 ? 'normal' : null });
     }
+    // Windows: Node reads GlobalMemoryStatusEx, so total minus available is Task Manager's "In use" (plus the small
+    // modified list). Windows reports no swap or pressure level that maps onto macOS's.
+    if (process.platform === 'win32') {
+      const totalMB = os.totalmem() / 2 ** 20;
+      return finish({ platform: 'win32', totalMB, usedMB: totalMB - os.freemem() / 2 ** 20, pressure: null, swapMB: 0 });
+    }
     return finish({ platform: process.platform, pressure: null, ...parseMeminfo(readFileSync('/proc/meminfo', 'utf8')) });
   } catch {
     const totalMB = os.totalmem() / 2 ** 20;
@@ -83,7 +89,17 @@ function finish(s) {
   s.pct = s.totalMB ? (100 * s.usedMB) / s.totalMB : 0;
   s.warnPct = cfg.warnPct; s.ceilingPct = cfg.ceilingPct;
   s.headroomMB = (cfg.ceilingPct / 100) * s.totalMB - s.usedMB;      // room left before the ceiling
+  s.strain = strain(s);
   return s;
+}
+
+// The used percentage alone can look calm while the machine is struggling: macOS keeps "used" down by compressing
+// memory and swapping it to disk, which slows everything. Its own pressure level says when that is happening.
+// Swap on its own stays high long after the pressure has passed, so it is reported, not acted on.
+function strain(s) {
+  const swap = s.swapMB >= 1024 ? `${gb(s.swapMB)} is swapped to disk` : '';
+  if (s.pressure === 'critical' || s.pressure === 'warn') return `macOS reports ${s.pressure === 'critical' ? 'critical' : 'raised'} memory pressure${swap ? ` and ${swap}` : ''}: it is compressing and swapping memory to keep up, which slows every build.`;
+  return '';
 }
 
 // ---- processes --------------------------------------------------------------------------------------------------------
@@ -95,20 +111,60 @@ export function parseEtime(e) {
 }
 
 export function readProcesses() {
+  if (process.platform === 'win32') return readWinProcesses();
   let out = '';
   try { out = run('ps', ['-A', '-ww', '-o', 'pid=,ppid=,pgid=,rss=,etime=,command=']); } catch { return []; }
   const now = Date.now();
+  const fp = IS_MAC ? readFootprints() : new Map();
   const list = [];
   for (const line of out.split('\n')) {
     const m = line.trim().match(/^(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\S+)\s+(.*)$/);
-    if (m) list.push({ pid: +m[1], ppid: +m[2], pgid: +m[3], mb: +m[4] / 1024, start: now - parseEtime(m[5]), command: m[6] });
+    if (m) list.push({ pid: +m[1], ppid: +m[2], pgid: +m[3], mb: fp.get(+m[1]) ?? +m[4] / 1024, start: now - parseEtime(m[5]), command: m[6] });
   }
   return list;
 }
 
+// macOS: each process's memory as Activity Monitor counts it (phys_footprint: what it holds in RAM plus what has been
+// compressed or swapped out, without shared pages). Resident size from ps misses swapped memory and double-counts
+// shared memory. top reports phys_footprint for every process in one call.
+export function parseTopMem(text) {
+  const out = new Map();
+  const unit = { B: 1 / 2 ** 20, K: 1 / 1024, M: 1, G: 1024, T: 2 ** 20 };
+  for (const line of String(text).split('\n')) {
+    const m = line.trim().match(/^(\d+)\s+([\d.]+)([BKMGT])[+-]?$/);
+    if (m) out.set(+m[1], Number(m[2]) * unit[m[3]]);
+  }
+  return out;
+}
+
+function readFootprints() {
+  try { return parseTopMem(run('top', ['-l', '1', '-s', '0', '-stats', 'pid,mem'])); } catch { return new Map(); }
+}
+
+// Windows has no ps. PowerShell lists every process with its private working set, the figure Task Manager's Memory
+// column shows (the working set where that counter is missing). Windows has no process groups, so each process is
+// its own. Output: [{ p: pid, pp: parent pid, m: bytes, c: command line, n: name, t: start time in ms }]. System
+// processes with no command line (Registry, Memory Compression) are labelled by their name as it is.
+const WIN_PS = [
+  "$ErrorActionPreference = 'SilentlyContinue'; $ws = @{}",
+  "Get-CimInstance Win32_PerfFormattedData_PerfProc_Process | Where-Object { $_.Name -ne '_Total' -and $_.IDProcess -gt 0 } | ForEach-Object { $ws[[int]$_.IDProcess] = [long]$_.WorkingSetPrivate }",
+  "Get-CimInstance Win32_Process | ForEach-Object { $id = [int]$_.ProcessId; [pscustomobject]@{ p = $id; pp = [int]$_.ParentProcessId; m = $(if ($ws.ContainsKey($id)) { $ws[$id] } else { [long]$_.WorkingSetSize }); c = $(if ($_.CommandLine) { $_.CommandLine } else { [string]$_.ExecutablePath }); n = $_.Name; t = $(if ($_.CreationDate) { [long]($_.CreationDate.ToUniversalTime() - [datetime]'1970-01-01').TotalMilliseconds } else { 0 }) } } | ConvertTo-Json -Compress",
+].join('; ');
+
+export function parseWinProcs(text) {
+  let rows = JSON.parse(text);
+  if (!Array.isArray(rows)) rows = rows ? [rows] : [];
+  const now = Date.now();
+  return rows.filter(r => r && Number(r.p) > 0).map(r => ({ pid: +r.p, ppid: +r.pp || 0, pgid: +r.p, mb: (Number(r.m) || 0) / 2 ** 20, start: Number(r.t) || now, command: String(r.c || r.n || ''), ...(!r.c && r.n ? { label: String(r.n) } : {}) }));
+}
+
+function readWinProcesses() {
+  try { return parseWinProcs(run('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', WIN_PS], 64)); } catch { return []; }
+}
+
 // Claude Code itself: the CLI (native or npm build), not the desktop app.
-export const isClaudeCli = c => !/\.app\//.test(c) && /(^|\/)claude(\s|$)|@anthropic-ai\/claude-code|claude-code\/cli\.js|\/claude\/versions\/[^/\s]+(\s|$)/.test(c);
-const isShell = c => /shell-snapshots|^(\/bin\/)?(ba|z)?sh -c/.test(c);
+export const isClaudeCli = c => !/\.app\//.test(c) && /(^|[\/\\])claude(\.exe)?("|\s|$)|@anthropic-ai[\\/]claude-code|claude-code[\\/]cli\.js|\/claude\/versions\/[^/\s]+(\s|$)/.test(c);
+const isShell = c => /shell-snapshots|^(\/bin\/)?(ba|z)?sh -c|[\\/]bash\.exe"? -c/i.test(c);
 
 // Group a process under the app a person would recognise.
 export function appName(command) {
@@ -121,7 +177,8 @@ export function appName(command) {
   if (/OrbStack/.test(c)) return 'OrbStack';
   const app = c.match(/\/([^/]+)\.app\//);
   if (app) return app[1];
-  const bin = basename(c.split(/\s+/)[0] || '');
+  const exe = c.match(/^"?(?:[A-Za-z]:\\[^"]*?\\)?([^\\/"\s]+)\.exe\b/i);   // Windows: "C:\...\node.exe" args, or node.exe
+  const bin = exe ? exe[1] : basename(c.split(/\s+/)[0] || '');
   if (/^(node|bun|deno)$/.test(bin)) {
     if (/expo|metro/.test(c)) return 'Expo / Metro';
     if (/next[\s/]/.test(c)) return 'Next.js';
@@ -197,7 +254,7 @@ export function snapshot({ env = false } = {}) {
   const cwds = cwdOf(sessions.map(s => s.pid));
   const apps = new Map();
   for (const p of procs) {
-    const name = ran.has(p.pid) ? `${appName(p.command)}` : appName(p.command);
+    const name = p.label || appName(p.command);
     const claude = ran.has(p.pid) || name === 'Claude Code';
     const key = `${claude ? 'c' : 'o'}|${name}`;
     const e = apps.get(key) || { name, mb: 0, n: 0, claude };
@@ -233,7 +290,7 @@ const where = cwd => (cwd ? ` in ${cwd.split('/').slice(-1)[0]}` : '');
 // what closing them buys (speed), never as an instruction to close them for you.
 export function advice(snap, needMB = 0) {
   const s = snap.system;
-  const lines = [`Memory: ${gb(s.usedMB)} of ${gb(s.totalMB)} used (${s.pct.toFixed(0)}%); proof keeps it under ${s.ceilingPct}% (${gb((s.ceilingPct / 100) * s.totalMB)}).${needMB ? ` This job needs about ${gb(needMB)}; ${s.headroomMB > 0 ? `${gb(s.headroomMB)} is left` : 'there is no room left'}.` : ''}`];
+  const lines = [`Memory: ${gb(s.usedMB)} of ${gb(s.totalMB)} used (${s.pct.toFixed(0)}%); proof keeps it under ${s.ceilingPct}% (${gb((s.ceilingPct / 100) * s.totalMB)}).${needMB ? ` This job needs about ${gb(needMB)}; ${s.headroomMB > 0 ? `${gb(s.headroomMB)} is left` : 'there is no room left'}.` : ''}${s.strain ? ` ${s.strain}` : ''}`];
   const mine = snap.runs.slice(0, 6);
   if (mine.length) {
     lines.push('Claude\'s own processes you may no longer need (stop the ones you aren\'t using; never kill another session\'s run):');
@@ -316,18 +373,20 @@ export function readSystemFast() {
   if (!process.env.PROOF_FAKE_MEM) {
     try {
       const j = JSON.parse(readFileSync(join(dataDir(), 'memory-now.json'), 'utf8'));
-      if (Date.now() - j.t < 5000 && j.totalMB) return finish({ ...j, platform: process.platform, pressure: null });
+      if (Date.now() - j.t < 5000 && j.totalMB) return finish({ pressure: null, swapMB: 0, ...j, platform: process.platform });
     } catch {}
   }
   return readSystem();
 }
 
-// Can a job that needs `needMB` start now without taking the machine past the ceiling?
+// Can a job that needs `needMB` start now without taking the machine past the ceiling? Critical memory pressure
+// also says no, whatever the percentage: the machine is already swapping hard.
 export function admit(needMB) {
   const s = readSystemFast();
   const after = s.usedMB + needMB;
   const limit = (s.ceilingPct / 100) * s.totalMB;
-  return { ok: after <= limit, warn: s.pct >= s.warnPct || after > (s.warnPct / 100) * s.totalMB, system: s, needMB };
+  const critical = s.pressure === 'critical';
+  return { ok: after <= limit && !critical, critical: critical && after <= limit, warn: s.pct >= s.warnPct || after > (s.warnPct / 100) * s.totalMB || !!s.pressure && s.pressure !== 'normal', system: s, needMB };
 }
 
 // ---- CLI --------------------------------------------------------------------------------------------------------------

@@ -45,6 +45,18 @@ expect "93%: clicking in a browser that's already open is fine" "grep -q 'exit=0
 expect "93%: Claude in Chrome (your own browser) is never blocked" "grep -q 'exit=0' <<<\"\$(admit mcp__claude-in-chrome__navigate)\""
 fake_mem 9000; expect "40%: a new agent starts" "[ \"\$(admit Agent)\" = 'exit=0' ]"
 
+echo "== memory pressure and swap (the percentage alone can look calm)"
+printf '{"totalMB":24576,"usedMB":17000,"pressure":"critical","swapMB":9000}' > "$T/mem.json"
+out=$(wrap s6 'npx jest --ci')
+expect "69% but critical pressure: a heavy run is refused, and the reason is the pressure, not the ceiling" "grep -q 'exit=2' <<<\"\$out\" && grep -q 'critical memory pressure and 8.8 GB is swapped' $T/err && ! grep -q 'past proof' $T/err && [ \$(grep -o 'is swapped to disk' $T/err | wc -l) -eq 1 ]"
+expect "critical pressure: a new agent is refused too" "grep -q 'exit=2' <<<\"\$(admit Agent)\" && grep -q 'critical memory pressure' $T/err"
+printf '{"totalMB":24576,"usedMB":12000,"pressure":"warn","swapMB":9000}' > "$T/mem.json"
+out=$(wrap s7 'npx jest --ci')
+expect "49% with raised pressure: runs, with a note that names the pressure and the swap" "grep -q -- '--kind test' <<<\"\$out\" && grep -q 'raised memory pressure and 8.8 GB is swapped' <<<\"\$out\""
+printf '{"totalMB":24576,"usedMB":12000,"pressure":"normal","swapMB":9000}' > "$T/mem.json"
+expect "normal pressure with old swap: no note (swap stays high after the pressure passes)" "! wrap s8 'npx jest --ci' | grep -q 'pressure\\|swapped' && [ \"\$(admit Agent)\" = 'exit=0' ]"
+fake_mem 9000
+
 echo "== the guard: wait loops, the machine ceiling, learned needs"
 node "$S/guard.mjs" --timeout 2 --kind wait -- 'sleep 30 # waitprobe' 2>"$T/g1"; r=$?
 expect "a wait loop stops at its limit with advice to check the run itself" "[ $r -eq 124 ] && grep -q 'its condition never came true' $T/g1 && ! grep -q 'Find the cause' $T/g1"
