@@ -1,0 +1,836 @@
+{
+  "screen": "job",
+  "source": "mockup/app.html",
+  "scope": "[data-screen=\"job\"]",
+  "route": "/plugins/proof/scripts/dashboard.html?data=/tests/fixtures/dashboard/home--working.json&theme=light#v=job&j=Lane%20B%20unit%2013%3A%20payment%20screen",
+  "device": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 2,
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "items": [
+    {
+      "id": "brand",
+      "text": "",
+      "box": {
+        "x": 18,
+        "y": 19,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-1",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 96,
+        "y": 13,
+        "w": 190,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "999px",
+        "shadow": "rgba(14, 17, 22, 0.04) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-2",
+      "text": "Admin access on production\nneeds you",
+      "box": {
+        "x": 290,
+        "y": 13,
+        "w": 322,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-3",
+      "text": "Dashboard UI redesign",
+      "box": {
+        "x": 616,
+        "y": 13,
+        "w": 205,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-4",
+      "text": "Proof v0.4.0 release",
+      "box": {
+        "x": 825,
+        "y": 13,
+        "w": 189,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-more",
+      "text": "+4 more",
+      "box": {
+        "x": 1018,
+        "y": 13,
+        "w": 99,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-chip",
+      "text": "Memory\n68%",
+      "box": {
+        "x": 1160,
+        "y": 13,
+        "w": 218,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "theme-toggle",
+      "text": "Switch to dark theme",
+      "box": {
+        "x": 1388,
+        "y": 13,
+        "w": 34,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "back",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 28,
+        "y": 82,
+        "w": 164,
+        "h": 30
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "crumb-here",
+      "text": "Lane B unit 13: payment screen",
+      "box": {
+        "x": 202,
+        "y": 87,
+        "w": 201,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-icon",
+      "text": "",
+      "box": {
+        "x": 53,
+        "y": 168,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(22, 163, 74)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-text",
+      "text": "Running e2e tests",
+      "box": {
+        "x": 93,
+        "y": 151,
+        "w": 909,
+        "h": 33
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 23px/33.35px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-sub",
+      "text": "checkout.spec.ts › pays with saved card",
+      "box": {
+        "x": 93,
+        "y": 186,
+        "w": 909,
+        "h": 21
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-timer",
+      "text": "6:12",
+      "box": {
+        "x": 1020,
+        "y": 162,
+        "w": 49,
+        "h": 33
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 500 23px/33.35px",
+        "color": "rgb(143, 79, 0)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-limit",
+      "text": "Against the 10-minute limit\n62%",
+      "box": {
+        "x": 1087,
+        "y": 164,
+        "w": 300,
+        "h": 31
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "steps-title",
+      "text": "Steps",
+      "box": {
+        "x": 47,
+        "y": 263,
+        "w": 39,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "steps-total",
+      "text": "20m",
+      "box": {
+        "x": 251,
+        "y": 263,
+        "w": 28,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-1",
+      "text": "Reading & searching\n1m",
+      "box": {
+        "x": 47,
+        "y": 297,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-2",
+      "text": "Editing code\n5m",
+      "box": {
+        "x": 47,
+        "y": 333,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-3",
+      "text": "Tests\n41s",
+      "box": {
+        "x": 47,
+        "y": 369,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-4",
+      "text": "Git\n1s",
+      "box": {
+        "x": 47,
+        "y": 406,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-5",
+      "text": "proof gate\n58s",
+      "box": {
+        "x": 47,
+        "y": 442,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-6",
+      "text": "Reading & searching\n1s",
+      "box": {
+        "x": 47,
+        "y": 478,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-7",
+      "text": "Editing code\n2s",
+      "box": {
+        "x": 47,
+        "y": 515,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "jstep-8",
+      "text": "Tests\n6m",
+      "box": {
+        "x": 47,
+        "y": 551,
+        "w": 232,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgb(241, 241, 238)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "activity-title",
+      "text": "Activity",
+      "box": {
+        "x": 333,
+        "y": 263,
+        "w": 51,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "activity-sub",
+      "text": "every tool call, newest first",
+      "box": {
+        "x": 870,
+        "y": 263,
+        "w": 167,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "act-1",
+      "text": "14:31\nnpx playwright test checkout.spec.ts\n6:12",
+      "box": {
+        "x": 333,
+        "y": 297,
+        "w": 704,
+        "h": 40
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "act-2",
+      "text": "14:30\nEdit src/screens/Payment.tsx\n2s",
+      "box": {
+        "x": 333,
+        "y": 337,
+        "w": 704,
+        "h": 40
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "act-3",
+      "text": "14:29\nRead src/lib/card.ts\n1s",
+      "box": {
+        "x": 333,
+        "y": 376,
+        "w": 704,
+        "h": 40
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "act-4",
+      "text": "14:27\nGate: test failed, rejects expired card\n58s",
+      "box": {
+        "x": 333,
+        "y": 416,
+        "w": 704,
+        "h": 39
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "act-5",
+      "text": "14:25\nCommit the payment form\n1s",
+      "box": {
+        "x": 333,
+        "y": 456,
+        "w": 704,
+        "h": 39
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "act-6",
+      "text": "14:24\nRun the unit tests\n41s",
+      "box": {
+        "x": 333,
+        "y": 495,
+        "w": 704,
+        "h": 39
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "act-more",
+      "text": "Show 34 earlier",
+      "box": {
+        "x": 333,
+        "y": 540,
+        "w": 112,
+        "h": 30
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
+        "color": "rgb(43, 48, 56)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "brief-title",
+      "text": "Brief",
+      "box": {
+        "x": 1091,
+        "y": 263,
+        "w": 32,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "brief-sub",
+      "text": "what it was asked",
+      "box": {
+        "x": 1282,
+        "y": 263,
+        "w": 111,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "brief-text",
+      "text": "Build the payment screen to mockup/app.html#payment. Acceptance criteria F13.1 to F13.4. Commit when the gate passes.",
+      "box": {
+        "x": 1091,
+        "y": 297,
+        "w": 302,
+        "h": 81
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(43, 48, 56)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "output-title",
+      "text": "Output",
+      "box": {
+        "x": 1091,
+        "y": 428,
+        "w": 48,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "output-facts",
+      "text": "Commits\n2\nErrors\n1\nWorktree\nlane-b\nStarted\n20m ago\nResult\nStill running",
+      "box": {
+        "x": 1091,
+        "y": 462,
+        "w": 302,
+        "h": 133
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    }
+  ]
+}

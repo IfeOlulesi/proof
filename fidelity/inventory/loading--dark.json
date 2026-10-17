@@ -1,0 +1,59 @@
+{
+  "screen": "loading--dark",
+  "source": "mockup/app.html",
+  "scope": "[data-screen=\"loading--dark\"]",
+  "route": "/plugins/proof/scripts/dashboard.html?data=/tests/fixtures/dashboard/home--working.json&theme=dark&simulate=loading",
+  "device": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 2,
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "items": [
+    {
+      "id": "brand",
+      "text": "",
+      "box": {
+        "x": 18,
+        "y": 19,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "loading-text",
+      "text": "Reading session logs…",
+      "box": {
+        "x": 1274,
+        "y": 19,
+        "w": 148,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    }
+  ]
+}

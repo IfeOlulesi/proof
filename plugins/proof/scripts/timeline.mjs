@@ -54,9 +54,9 @@ export function classifyTool(name, input = {}) {
   if (/^(Edit|Write|MultiEdit|NotebookEdit)$/.test(name)) return 'edit';
   if (/^(Read|Grep|Glob|LS|NotebookRead|ToolSearch|LSP)$/.test(name)) return 'read';
   if (/^(Task|Agent)$/.test(name)) return 'subagent';
-  if (/^(TodoWrite|TaskCreate|TaskUpdate|TaskList|TaskGet|ExitPlanMode|EnterPlanMode|Skill)$/.test(name)) return 'plan';
+  if (/^(TodoWrite|TaskCreate|TaskUpdate|TaskList|TaskGet|EnterPlanMode|Skill)$/.test(name)) return 'plan';
   if (/^(WebFetch|WebSearch)$/.test(name)) return 'web';
-  if (/^(AskUserQuestion)$/.test(name)) return 'waitUser';
+  if (/^(AskUserQuestion|ExitPlanMode)$/.test(name)) return 'waitUser';   // both wait for your answer
   if (/playwright|chrome|browser|puppeteer|preview_/i.test(name)) return 'fidelity';
   if (/mobile|simulator|expo|maestro|xcode|ios|android/i.test(name)) return 'devserver';
   return 'shell';
@@ -80,6 +80,7 @@ export function describe(name, input = {}) {
     case 'WebFetch': return `Read ${tidy(input.url || '').slice(0, 80)}`;
     case 'Skill': return `Load skill ${input.skill || input.command || ''}`;
     case 'AskUserQuestion': return 'Ask you a question';
+    case 'ExitPlanMode': return 'Ask you to approve the plan';
     case 'TaskStop': case 'KillShell': case 'KillBash': return 'Stop a background run';
     case 'TaskOutput': case 'BashOutput': return 'Wait for a background run';
     case 'ToolSearch': return 'Load more tools';
@@ -199,7 +200,7 @@ export class Session {
       if (c.name === 'Bash') { rec.cmd = String(input.command || '').slice(0, 400); if (input.run_in_background) rec.background = true; }
       const fp = input.file_path || input.notebook_path || input.path;
       if (typeof fp === 'string' && fp.startsWith('/')) rec.file = fp;
-      if (/^(Task|Agent)$/.test(c.name)) { rec.agentType = input.subagent_type || 'general-purpose'; rec.agentDesc = input.description || ''; if (input.run_in_background) rec.background = true; }
+      if (/^(Task|Agent)$/.test(c.name)) { rec.agentType = input.subagent_type || 'general-purpose'; rec.agentDesc = input.description || ''; rec.agentPrompt = String(input.prompt || '').slice(0, 600); if (input.run_in_background) rec.background = true; }
       // Waiting on a background task counts as whatever that task is doing.
       if (/^(TaskStop|KillShell|KillBash)$/.test(c.name) && (input.task_id || input.shell_id)) this.finished.set(String(input.task_id || input.shell_id), t);
       if (/^(TaskOutput|BashOutput)$/.test(c.name)) {
@@ -254,7 +255,10 @@ export class Session {
         if (/\[proof guard\] stopped this run — (?:machine memory|the machine)/.test(text)) { this.counts.memoryStops++; this.event(t, 'memory', firstLine(text, /\[proof guard\][^\n]*/)); }
         else if (/\[proof guard\] stopped this run/.test(text)) { this.counts.guardStops++; this.event(t, 'guard', firstLine(text, /\[proof guard\][^\n]*/)); }
         if (/proof: commit (blocked|refused)/.test(text)) { this.counts.commitBlocks++; this.event(t, 'commitBlocked', firstLine(text, /proof: commit (?:blocked|refused)[^\n]*/)); }
-        if (/proof memory:/.test(text)) this.event(t, 'memory', firstLine(text, /proof memory:[^\n]*/));
+        // proof's notices start a line; the same words inside code (a grep of proof's own source) don't count.
+        // A hook's refusal arrives as "PreToolUse:Bash hook error: [node …/wrap.mjs]: proof memory: …".
+        const mem = text.match(/(?:^|\]: )(proof memory:[^\n]*)/m)?.slice(1);
+        if (mem && !mem[0].includes('${')) this.event(t, 'memory', mem[0].slice(0, 240));
       }
       this.lastKind = 'result';
       this.lastT = t;
@@ -364,6 +368,11 @@ export class Session {
 
   // What the session is doing at `now`.
   status(now = Date.now()) {
+    // A question or a plan waiting for your answer: however long ago it was asked, the session needs you, unless the
+    // session moved on after it (you typed something else, or more tools ran).
+    const asking = [...this.open.values()].find(x => x.cat === 'waitUser' && !x.background
+      && !this.tools.some(t => t !== x && t.start > x.start) && !this.prompts.some(p => p.t > x.start));
+    if (asking) return { state: 'needsInput', since: asking.start, cat: 'waitUser', label: asking.name === 'ExitPlanMode' ? 'Claude wants you to approve the plan' : 'Claude asked you something' };
     const running = [...this.open.values()].filter(x => !x.background && now - x.start < 6 * 3600e3);
     if (running.length) {
       const cur = running.reduce((a, b) => (CATEGORIES[b.cat].prio > CATEGORIES[a.cat].prio ? b : a));

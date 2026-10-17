@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>proof dashboard: design v1</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   proof dashboard — design v1 ("Calm": Raycast clarity, Arc softness)
+   Rules: colour only ever means state. Green = live / running / Claude working.
+   Coral = needs you. Amber = warning (timer past 5 min, memory past warn line).
+   Red = failed. Everything else is neutral ink on neutral surfaces.
+   ===================================================================== */
+
+/* ---------- tokens: light (default) ---------- */
+:root, .theme-light {
+  color-scheme: light;
+  /* surfaces */
+  --bg: #f7f7f5; --surface: #ffffff; --surface-2: #fbfbfa; --hl: #f1f1ee; --track: #ebeae6;
+  --line: #e7e6e2; --line-strong: #d9d8d3; --wire: #d9d8d3;
+  /* ink */
+  --ink: #0E1116; --ink-2: #2b3038; --muted: #545a64; --faint: #686d76;
+  /* state */
+  --brand: #16A34A; --run: #16A34A; --ok: #16A34A; --ok-soft: #e8f6ed;
+  --you: #ea5a24; --you-strong: #c2410c; --you-ink: #a8360b; --you-soft: #fff3ec; --you-line: #f6cdb9; --on-you: #ffffff;
+  --warn: #d97706; --warn-ink: #8f4f00; --warn-soft: #fff6e5; --warn-line: #f3d49a;
+  --bad: #dc3d43; --bad-ink: #b4232a; --bad-soft: #fdecec;
+  /* top glow (the only background colour) */
+  --glow: rgba(22,163,74,.07); --glow-you: rgba(234,90,36,.10); --glow-warn: rgba(217,119,6,.09);
+  /* tooltip */
+  --tip-bg: #0E1116; --tip-ink: #F5F5F4; --tip-muted: #b9bcc2;
+  --shadow-1: 0 1px 2px rgba(14,17,22,.04); --shadow-2: 0 10px 30px rgba(14,17,22,.14);
+}
+/* ---------- tokens: dark ---------- */
+.theme-dark {
+  color-scheme: dark;
+  --bg: #0e0f11; --surface: #151619; --surface-2: #18191d; --hl: #1f2125; --track: #26282d;
+  --line: #24262a; --line-strong: #303237; --wire: #34363b;
+  --ink: #F5F5F4; --ink-2: #d6d6d3; --muted: #a8abb1; --faint: #8d9199;
+  --brand: #22C55E; --run: #22C55E; --ok: #22C55E; --ok-soft: #14261b;
+  --you: #ff7a45; --you-strong: #ff7a45; --you-ink: #ff9d73; --you-soft: #24170f; --you-line: #5a3220; --on-you: #1a0b04;
+  --warn: #fbbf24; --warn-ink: #fbbf24; --warn-soft: #251d0b; --warn-line: #5a4512;
+  --bad: #f87171; --bad-ink: #fca5a5; --bad-soft: #2a1617;
+  --glow: rgba(34,197,94,.07); --glow-you: rgba(255,122,69,.10); --glow-warn: rgba(251,191,36,.08);
+  --tip-bg: #2a2c31; --tip-ink: #F5F5F4; --tip-muted: #b9bcc2;
+  --shadow-1: 0 1px 0 rgba(255,255,255,.035) inset; --shadow-2: 0 12px 34px rgba(0,0,0,.5);
+}
+/* the real app follows the system, with a toggle that wins both ways */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; } }
+
+:root {
+  /* type */
+  --font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --fs-xs: 11px; --fs-sm: 12.5px; --fs: 14px; --fs-md: 15px; --fs-lg: 17px; --fs-xl: 22px; --fs-2xl: 23px; --fs-3xl: 26px;
+  /* space */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s7: 28px;
+  /* radius */
+  --r-lg: 16px; --r-md: 12px; --r-sm: 9px; --r-xs: 5px; --r-pill: 999px;
+  /* motion */
+  --dur-fast: 120ms; --dur: 200ms; --dur-slow: 320ms; --ease: cubic-bezier(0.2, 0, 0, 1);
+  --pulse: 1800ms; --halo: 2000ms;
+}
+
+/* ---------- document chrome (outside the frames) ---------- */
+* { box-sizing: border-box; }
+body { margin: 0; padding: 40px; background: #2a2a2e; color: #e8e8ea; font: 14px/1.5 var(--font); }
+.doc h1 { margin: 0 0 6px; font-size: 22px; }
+.doc p { margin: 0 0 8px; max-width: 980px; color: #b8b8be; }
+.doc nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 32px; }
+.doc nav a { color: #ddd; text-decoration: none; padding: 5px 10px; border-radius: 7px; background: #3a3a40; font-size: 12.5px; }
+.flabel { margin: 0 0 10px; color: #c8c8cc; font-size: 13px; }
+.flabel b { color: #fff; }
+[data-screen] { width: 1440px; height: 900px; flex-shrink: 0; overflow: hidden; position: relative; margin-bottom: 44px; border-radius: 12px; }
+
+/* ---------- app shell ---------- */
+.app { height: 100%; display: flex; flex-direction: column; position: relative; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: var(--fs); line-height: 1.45; }
+.app::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 360px; background: radial-gradient(1100px 300px at 35% -80px, var(--glow), transparent 70%); pointer-events: none; }
+.app.you::before { background: radial-gradient(1100px 320px at 35% -80px, var(--glow-you), transparent 70%); }
+.app.warn::before { background: radial-gradient(1100px 320px at 35% -80px, var(--glow-warn), transparent 70%); }
+.app.calm::before { display: none; }
+.num { font-variant-numeric: tabular-nums; }
+code, .mono { font-family: var(--mono); font-size: .88em; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
+
+/* switcher */
+.bar { height: 60px; display: flex; align-items: center; gap: 4px; padding: 0 18px; flex-shrink: 0; border-bottom: 1px solid var(--line); position: relative; z-index: 3; background: var(--bg); }
+.brand { display: flex; align-items: center; margin-right: 14px; color: var(--ink); }
+.brand svg { height: 22px; width: auto; overflow: visible; display: block; }
+.brand .live, .brand .halo { fill: var(--brand); transform-box: fill-box; transform-origin: center; }
+.brand .halo { animation: halo var(--halo) var(--ease) infinite; }
+.brand.off .live { fill: var(--faint); } .brand.off .halo { display: none; }
+.tab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: var(--r-pill); border: 1px solid transparent; color: var(--muted); white-space: nowrap; transition: background var(--dur-fast) var(--ease); }
+.tab:hover { background: var(--hl); }
+.tab .nm { overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+.tab.on { background: var(--surface); border-color: var(--line-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow-1); }
+.badge { font-size: var(--fs-xs); font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill); background: var(--you-strong); color: var(--on-you); }
+.more { height: 34px; padding: 0 12px; border-radius: var(--r-pill); color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.more:hover, .more.on { background: var(--hl); color: var(--ink); }
+.more .badge { padding: 1px 7px; }
+.spacer { flex: 1; }
+.bar { overflow: hidden; }
+.bar .tab { min-width: 0; flex-shrink: 1; }
+.bar .more, .bar .mem, .bar .theme, .bar .brand { flex-shrink: 0; white-space: nowrap; }
+.bar.stale .tab .ic, .bar.stale .mem .track i { filter: grayscale(1); opacity: .55; }
+.bar.stale .tab .ic.pulse::after { animation: none; }
+.mem { display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); }
+.mem b { color: var(--ink); font-weight: 600; }
+.mem.on { background: var(--surface); border-color: var(--line-strong); }
+.mem .track { width: 96px; height: 6px; border-radius: 3px; background: var(--track); position: relative; }
+.mem .track i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--warn); }
+.mem .track b { position: absolute; top: -3px; width: 2px; height: 12px; border-radius: 1px; background: var(--muted); }
+.mem.ok .track i { background: var(--faint); }
+.theme { width: 34px; height: 34px; border-radius: var(--r-pill); display: flex; align-items: center; justify-content: center; color: var(--muted); margin-left: 6px; }
+.theme:hover { background: var(--hl); }
+.theme svg { width: 17px; height: 17px; }
+
+/* body */
+.body { flex: 1; display: flex; flex-direction: column; gap: var(--s4); padding: 22px 28px 0; min-height: 0; position: relative; z-index: 1; }
+.head { display: flex; align-items: baseline; gap: 14px; }
+.head h1 { margin: 0; font-size: var(--fs-xl); font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
+.head .meta { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.crumb { display: flex; align-items: center; gap: 10px; color: var(--muted); }
+.back { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 8px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-weight: 600; font-size: var(--fs-sm); }
+.back svg { width: 15px; height: 15px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
+.status { display: flex; align-items: center; gap: 18px; padding: 22px 24px; }
+.status .big { font-size: var(--fs-2xl); font-weight: 600; letter-spacing: -.015em; }
+.status .sub { color: var(--muted); margin-top: 2px; }
+.status .timer { font-size: var(--fs-2xl); color: var(--muted); font-weight: 500; }
+.status.you { background: var(--you-soft); border-color: var(--you-line); }
+.status.you .big { color: var(--ink); }
+.status.compact { padding: 12px 20px; }
+.status.compact .big { font-size: var(--fs-md); }
+.where { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; color: var(--muted); font-size: var(--fs-sm); text-align: right; }
+.where code { color: var(--ink-2); background: var(--surface); border: 1px solid var(--you-line); padding: 3px 8px; border-radius: var(--r-xs); }
+.prog { width: 300px; color: var(--muted); font-size: var(--fs-sm); }
+.prog .row { display: flex; justify-content: space-between; margin-bottom: 7px; }
+.prog .row b { color: var(--ink); font-weight: 600; }
+.seg { display: flex; gap: 3px; height: 6px; }
+.seg i { flex: 1; border-radius: 3px; background: var(--track); }
+.seg i.d { background: var(--ok); }
+.seg i.c { background: var(--run); opacity: .35; }
+
+.grid { display: grid; grid-template-columns: 1fr 380px; gap: var(--s4); flex: 1; min-height: 0; }
+.panel { padding: 16px 18px; min-height: 0; overflow: hidden; }
+.ph { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font-size: 13.5px; font-weight: 700; }
+.ph .r { margin-left: auto; font-weight: 400; color: var(--muted); }
+
+/* run graph */
+.graph { display: grid; grid-template-columns: 230px 36px 1fr; align-items: start; }
+.node { display: block; width: 100%; padding: 11px 13px; border-radius: var(--r-md); background: var(--surface-2); border: 1px solid var(--line); transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+.node:hover { border-color: var(--line-strong); box-shadow: var(--shadow-2); }
+.node .t { display: flex; align-items: center; gap: 9px; font-weight: 600; }
+.node .t .open { margin-left: auto; font-weight: 500; color: var(--muted); font-size: var(--fs-sm); }
+.node .d { color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.node .d code { color: var(--ink-2); }
+.node .f { display: flex; gap: 12px; color: var(--muted); margin-top: 7px; font-size: var(--fs-sm); }
+.node .f .warn { color: var(--warn-ink); font-weight: 600; }
+.node.run { background: var(--surface); border-color: var(--line-strong); }
+.node.done { background: transparent; }
+.node.done .t { font-weight: 500; color: var(--muted); }
+.node.done .t .rt { margin-left: auto; font-weight: 400; font-size: var(--fs-sm); }
+.wire { position: relative; height: 100%; }
+.wire::before { content: ""; position: absolute; left: 0; right: 50%; top: 30px; border-top: 1px solid var(--wire); }
+.wire::after { content: ""; position: absolute; left: 50%; top: 30px; bottom: 24px; border-left: 1px solid var(--wire); }
+.jobs { display: flex; flex-direction: column; gap: 8px; }
+.jobs .node { position: relative; }
+.jobs .node::before { content: ""; position: absolute; left: -19px; top: 21px; width: 18px; border-top: 1px solid var(--wire); }
+.glabel { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 4px 0 -2px; }
+.tbar { height: 3px; border-radius: 2px; background: var(--track); margin-top: 9px; position: relative; overflow: hidden; }
+.tbar i { position: absolute; inset: 0 auto 0 0; background: var(--run); border-radius: 2px; }
+.tbar.warn i { background: var(--warn); }
+
+/* plan */
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.steps li { display: flex; align-items: center; gap: 10px; padding: 7px 9px; border-radius: var(--r-sm); }
+.steps li.d { color: var(--muted); }
+.steps li.c { background: var(--hl); font-weight: 600; }
+.steps .who { margin-left: auto; font-size: var(--fs-sm); font-weight: 500; color: var(--muted); }
+
+/* drawer bar */
+.drawer { flex-shrink: 0; display: flex; align-items: center; gap: 4px; height: 52px; margin: 0 -28px; padding: 0 28px; border-top: 1px solid var(--line); background: var(--bg); }
+.dtab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: var(--r-sm); color: var(--muted); }
+.dtab:hover { background: var(--hl); color: var(--ink); }
+.dtab.on { background: var(--hl); color: var(--ink); font-weight: 600; }
+.k { font-family: var(--mono); font-size: var(--fs-xs); padding: 1px 6px; border-radius: var(--r-xs); background: var(--surface); color: var(--muted); border: 1px solid var(--line-strong); font-weight: 500; }
+.cnt { font-size: var(--fs-xs); font-weight: 700; padding: 1px 7px; border-radius: var(--r-pill); background: var(--bad-soft); color: var(--bad-ink); }
+.drawer .hint { margin-left: auto; color: var(--muted); font-size: var(--fs-sm); }
+.close { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: var(--r-sm); color: var(--muted); font-size: var(--fs-sm); margin-left: auto; }
+.close:hover { background: var(--hl); }
+.drawer.top { margin: 0 -28px; border-top: 0; border-bottom: 1px solid var(--line); }
+
+/* events / feeds */
+.ev { display: grid; grid-template-columns: 52px 20px 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.ev:last-child { border-bottom: 0; }
+.ev .tm { color: var(--muted); font-family: var(--mono); font-size: var(--fs-sm); }
+.ev .tag { font-size: var(--fs-sm); color: var(--muted); font-family: var(--mono); }
+.ev .tx { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev .tx em { font-style: normal; color: var(--muted); }
+.ev.fail .tx { color: var(--bad-ink); font-weight: 600; }
+
+/* banners */
+.banner { display: flex; align-items: center; gap: 14px; padding: 12px 28px; flex-shrink: 0; border-bottom: 1px solid var(--warn-line); background: var(--warn-soft); position: relative; z-index: 2; }
+.banner .bt { flex: 1; }
+.banner .bt b { font-weight: 700; }
+.banner .bt .bs { color: var(--muted); }
+.banner.off { border-color: var(--line-strong); background: var(--hl); }
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 16px; border-radius: var(--r-pill); font-weight: 600; white-space: nowrap; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
+.btn:hover { border-color: var(--muted); }
+
+/* icons */
+.ic { width: 16px; height: 16px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; position: relative; }
+.ic svg { width: 100%; height: 100%; display: block; }
+.ic.lg { width: 22px; height: 22px; }
+.pulse::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: currentColor; animation: pulse var(--pulse) var(--ease) infinite; }
+@keyframes pulse { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(2.2); opacity: 0; } }
+@keyframes halo { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+@media (prefers-reduced-motion: reduce) { .pulse::after, .brand .halo, .sk { animation: none !important; } .brand .halo { opacity: 0; } }
+
+/* where the time went */
+.tw { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; }
+.tw .split { padding: 14px 22px; } .tw .split .lead { margin-bottom: 10px; } .tw .find { padding: 7px 0; } .tw .brow { padding: 4px 8px; }
+.split { padding: 18px 22px; }
+.split .lead { display: flex; align-items: center; gap: 28px; margin-bottom: 14px; }
+.stat .v { font-size: var(--fs-3xl); font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+.stat .v small { font-size: var(--fs-md); font-weight: 600; color: var(--muted); margin-left: 6px; }
+.stat .l { color: var(--muted); font-size: var(--fs-sm); }
+.headline { margin-left: auto; max-width: 430px; color: var(--muted); text-align: right; }
+.headline b { color: var(--ink); font-weight: 600; }
+.scope { display: inline-flex; padding: 3px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); }
+.scope button { height: 28px; padding: 0 12px; border-radius: var(--r-pill); color: var(--muted); font-size: var(--fs-sm); }
+.scope button.on { background: var(--hl); color: var(--ink); font-weight: 600; }
+.sbar { display: flex; gap: 2px; height: 14px; }
+.sbar i { border-radius: 4px; min-width: 4px; }
+.sbar i.w { background: var(--run); }
+.sbar i.y { background: var(--you); }
+.sbar i.s { background: repeating-linear-gradient(135deg, var(--faint) 0 2px, transparent 2px 6px), var(--track); }
+.legend { display: flex; gap: 22px; margin-top: 10px; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 8px; }
+.legend b { color: var(--ink); font-weight: 600; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+.sw.w { background: var(--run); } .sw.y { background: var(--you); } .sw.s { background: repeating-linear-gradient(135deg, var(--faint) 0 2px, var(--track) 2px 5px); }
+.sw.z { background: repeating-linear-gradient(135deg, var(--ink-2) 0 2px, var(--track) 2px 5px); }
+.tw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); flex: 1; min-height: 0; }
+.brow { display: grid; grid-template-columns: 170px 1fr 64px 40px; align-items: center; gap: 12px; padding: 6px 8px; margin: 0 -8px; border-radius: var(--r-sm); position: relative; width: calc(100% + 16px); }
+.brow:hover, .brow.hov { background: var(--hl); }
+.brow .tr { height: 10px; position: relative; }
+.brow .tr i { position: absolute; inset: 0 auto 0 0; background: var(--run); border-radius: 0 4px 4px 0; }
+.brow .du { text-align: right; font-weight: 600; }
+.brow .pc { text-align: right; color: var(--muted); font-size: var(--fs-sm); }
+.tip { position: absolute; z-index: 5; width: 270px; padding: 12px 14px; border-radius: var(--r-md); background: var(--tip-bg); color: var(--tip-ink); box-shadow: var(--shadow-2); font-size: 13px; }
+.tip .h { font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 12px; }
+.tip .r { display: flex; justify-content: space-between; color: var(--tip-muted); padding: 2px 0; gap: 12px; }
+.find { display: grid; grid-template-columns: 104px 1fr; gap: 14px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.find .m { white-space: nowrap; font-size: 20px; font-weight: 700; letter-spacing: -.02em; display: flex; align-items: center; gap: 7px; }
+.find .m .sw { width: 8px; height: 8px; border-radius: 50%; }
+.find .t { font-weight: 600; }
+.find .x { color: var(--muted); }
+.find .fix { color: var(--muted); margin-top: 3px; font-size: var(--fs-sm); font-style: italic; }
+.subh { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 14px 0 4px; }
+.long { display: grid; grid-template-columns: 62px 1fr auto; gap: 10px; padding: 5px 0; color: var(--muted); }
+.long b { color: var(--ink); font-weight: 600; text-align: right; }
+.long .lt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+.long em { font-style: normal; font-family: var(--mono); font-size: var(--fs-sm); }
+
+/* timeline */
+.lanes { display: flex; flex-direction: column; gap: 10px; position: relative; }
+.lane { display: grid; grid-template-columns: 190px 1fr; align-items: center; gap: 14px; border-radius: var(--r-sm); }
+.lane .ln { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lane .ln em { font-style: normal; color: var(--muted); font-family: var(--mono); font-size: var(--fs-sm); margin-left: 6px; }
+.lane .trk { height: 26px; background: var(--hl); border-radius: 6px; position: relative; }
+.lane .trk i { position: absolute; top: 4px; bottom: 4px; border-radius: 4px; }
+.lane .trk i.w { background: var(--run); } .lane .trk i.y { background: var(--you); }
+.lane .trk i.s { background: repeating-linear-gradient(135deg, var(--faint) 0 2px, transparent 2px 6px); }
+.lane .trk i.z { background: repeating-linear-gradient(135deg, var(--ink-2) 0 2px, transparent 2px 6px); }
+.lane .trk i.sel { outline: 2px solid var(--ink); outline-offset: 1px; }
+.lane .trk u { position: absolute; top: -4px; width: 2px; height: 34px; border-radius: 1px; background: var(--ink); text-decoration: none; }
+.lane .trk u.bad { background: var(--bad); }
+.lane .trk u::after { content: ""; position: absolute; top: -3px; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: inherit; }
+.axis { display: grid; grid-template-columns: 190px 1fr; gap: 14px; color: var(--muted); font-size: var(--fs-sm); margin-top: 8px; }
+.axis .ticks { display: flex; justify-content: space-between; }
+.nowline { position: absolute; top: -6px; bottom: 0; right: 0; width: 0; border-right: 1px solid var(--run); }
+
+/* log */
+.filters { display: flex; gap: 6px; margin-bottom: 8px; }
+.chip { height: 30px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); display: inline-flex; align-items: center; gap: 6px; }
+.chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+.chip:hover { border-color: var(--line-strong); }
+.linkbtn { color: var(--ink-2); font-weight: 600; font-size: var(--fs-sm); height: 30px; padding: 0 10px; border-radius: var(--r-sm); margin-top: 6px; }
+.linkbtn:hover { background: var(--hl); }
+
+/* memory */
+.gauge { position: relative; height: 12px; border-radius: 6px; background: var(--track); margin: 18px 0 30px; }
+.gauge i { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: var(--warn); }
+.gauge .mk { position: absolute; top: -6px; height: 24px; width: 2px; background: var(--muted); border-radius: 1px; }
+.gauge .mkl { position: absolute; top: 22px; font-size: var(--fs-sm); color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.chart .cl { position: absolute; right: 0; font-size: var(--fs-xs); color: var(--muted); transform: translateY(-120%); }
+.app-row { display: grid; grid-template-columns: 150px 1fr 70px; align-items: center; gap: 12px; padding: 6px 0; }
+.app-row .tr { height: 8px; background: transparent; position: relative; }
+.app-row .tr i { position: absolute; inset: 0 auto 0 0; background: var(--faint); border-radius: 0 4px 4px 0; }
+.app-row.claude .tr i { background: var(--run); }
+.app-row .v { text-align: right; font-weight: 600; }
+.app-row .nm { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.app-row .nm em { font-style: normal; font-size: var(--fs-xs); color: var(--muted); border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: 0 6px; }
+.advice { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-md); background: var(--warn-soft); border: 1px solid var(--warn-line); }
+.run-row { display: grid; grid-template-columns: 1fr 90px 80px 70px; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.run-row:last-child { border-bottom: 0; }
+.run-row code { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.run-row .v { text-align: right; font-weight: 600; }
+.run-row .m { color: var(--muted); font-size: var(--fs-sm); }
+.run-row.h { color: var(--muted); font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding-top: 0; }
+
+/* menu */
+.menu { position: absolute; z-index: 10; top: 54px; width: 470px; padding: 8px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow-2); }
+.menu .mh { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 8px 10px 4px; }
+.mi { display: grid; grid-template-columns: 18px 1fr auto; gap: 10px; align-items: center; width: 100%; padding: 8px 10px; border-radius: var(--r-sm); }
+.mi:hover, .mi.hov { background: var(--hl); }
+.mi .mt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mi .mt em { font-style: normal; color: var(--muted); margin-left: 6px; font-size: var(--fs-sm); }
+.mi .ms { color: var(--muted); font-size: var(--fs-sm); white-space: nowrap; }
+.msearch { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 10px; margin-bottom: 6px; border-radius: var(--r-sm); background: var(--hl); border: 1px solid var(--line); }
+.msearch input { flex: 1; min-width: 0; height: 32px; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; }
+.msearch input::placeholder { color: var(--muted); }
+.msearch:focus-within { border-color: var(--run); }
+.mscroll { max-height: 520px; overflow: auto; }
+.mp { display: flex; align-items: center; gap: 8px; padding: 10px 10px 4px; font-weight: 700; font-size: var(--fs-sm); }
+.mp em { font-style: normal; font-weight: 400; color: var(--muted); margin-left: auto; }
+.mfoot { display: flex; align-items: center; gap: 6px; padding: 10px 10px 4px; margin-top: 6px; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); }
+.mfoot .k:nth-of-type(3), .mfoot .k:nth-of-type(4) { margin-left: 10px; }
+.scrim { position: absolute; inset: 60px 0 0 0; z-index: 4; }
+
+/* skeleton / empty */
+.sk { border-radius: var(--r-sm); background: linear-gradient(90deg, var(--hl) 0, var(--track) 50%, var(--hl) 100%); background-size: 800px 100%; animation: shimmer 1.4s linear infinite; }
+.empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding-bottom: 80px; }
+.empty .e1 { font-size: var(--fs-lg); font-weight: 700; }
+.empty .e2 { color: var(--muted); max-width: 460px; }
+.empty .glyph { width: 56px; height: 56px; border-radius: 16px; border: 1px solid var(--line-strong); display: flex; align-items: center; justify-content: center; background: var(--surface); color: var(--muted); margin-bottom: 6px; }
+.empty .glyph svg { width: 26px; height: 26px; }
+.dim { opacity: .45; filter: saturate(.2); pointer-events: none; }
+
+.sample { position: absolute; right: 14px; bottom: 12px; z-index: 20; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .04em; padding: 3px 9px; border-radius: var(--r-pill); background: var(--ink); color: var(--bg); }
+.kv { display: grid; grid-template-columns: 1fr auto; row-gap: 8px; color: var(--muted); }
+.kv b { color: var(--ink); font-weight: 600; text-align: right; }
+</style>
+</head>
+<body>
+<div class="doc">
+  <h1>proof dashboard · design v1</h1>
+  <p>Locked direction: <b>Calm</b>. Raycast clarity with Arc softness. Colour only means state: green for live, running and Claude working; coral when a session needs you; amber for warnings; red for failures. Each screen is shown in light, then dark. The live app follows the system theme, with a toggle in the top bar.</p>
+  <p>Data: session titles, the memory figures and apps, and the "Admin access on production" and "Proof v0.4.0 release" sessions come from the live feed (17 Oct 2026). The "Checkout flow build" session (its agents, tasks, timings and events), the "API docs refresh" stalled session, the memory history curve and Claude's runs are <b>sample data</b>, because no running session has them right now.</p>
+  <nav id="nav"></nav>
+</div>
+<div id="root"></div>
+
+<script>
+/* ------------------------------------------------------------------ icons */
+const SVG = {
+  check: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="currentColor" opacity=".16"/><path d="M5 8.2l2 2 4-4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  cross: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="var(--surface)" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  todo: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.4 2.4"/></svg>',
+  dot: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.5" fill="currentColor"/></svg>',
+  you: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><rect x="7.1" y="3.8" width="1.8" height="5.4" rx=".9" fill="var(--surface)"/><circle cx="8" cy="11.6" r="1.1" fill="var(--surface)"/></svg>',
+  idle: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/></svg>',
+  stall: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.8V8l2.2 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  commit: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M1.5 8H5M11 8h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  mem: '<svg viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M5 7v2M8 7v2M11 7v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  warn: '<svg viewBox="0 0 16 16"><path d="M8 1.8l6.6 11.6H1.4z" fill="currentColor"/><rect x="7.2" y="5.6" width="1.6" height="4.2" rx=".8" fill="var(--surface)"/><circle cx="8" cy="11.5" r=".95" fill="var(--surface)"/></svg>',
+  tool: '<svg viewBox="0 0 16 16" fill="none"><path d="M4 5l3 3-3 3M8.5 11H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  plug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5M9 8V2M15 8V2M18 8v5a6 6 0 0 1-12 0V8z"/></svg>',
+  inbox: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4l2 2.5h9A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></svg>',
+  chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m6 9 6 6 6-6"/></svg>',
+};
+const COLOR = { run: 'var(--run)', you: 'var(--you)', done: 'var(--ok)', todo: 'var(--faint)', fail: 'var(--bad)', idle: 'var(--faint)', stall: 'var(--faint)', commit: 'var(--ink-2)', mem: 'var(--warn)', warn: 'var(--warn)', tool: 'var(--muted)' };
+// ic(): an icon. With an id it is its own tagged element; without one it sits inside a tagged parent.
+function ic(state, id, lg) {
+  const svg = { run: SVG.dot, you: SVG.you, done: SVG.check, fail: SVG.cross, idle: SVG.idle, stall: SVG.stall, todo: SVG.todo, commit: SVG.commit, mem: SVG.mem, warn: SVG.warn, tool: SVG.tool }[state];
+  return `<span class="ic ${lg ? 'lg' : ''} ${state === 'run' ? 'pulse' : ''}" style="color:${COLOR[state]}"${id ? ` data-testid="${id}"` : ''} aria-hidden="true">${svg}</span>`;
+}
+const LOGO = live => `<span class="brand ${live ? '' : 'off'}" data-testid="brand" title="${live ? 'Live: updated 2s ago' : 'Not live'}"><svg viewBox="0 10 332 122" role="img" aria-label="proof, ${live ? 'live' : 'not live'}"><g fill="none" stroke="currentColor" stroke-width="14"><path d="M7 40V132"/><circle cx="30" cy="70" r="23"/><path d="M82 100V40M82 68C82 52 94 47 112 47"/><circle cx="148" cy="70" r="23"/><circle cx="214" cy="70" r="23"/><path d="M262 100V38C262 24 270 17 286 17M246 47H284"/></g><circle class="halo" cx="314" cy="83" r="17"/><circle class="live" cx="314" cy="83" r="17"/></svg></span>`;
+const fm = m => m >= 60 ? `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m` : `${m}m`;
+
+/* ------------------------------------------------------------------ switcher */
+const TABS = [['run', 'Checkout flow build'], ['you', 'Admin access on production', true], ['run', 'Dashboard UI redesign'], ['idle', 'Proof v0.4.0 release']];
+function bar(o = {}) {
+  const { hidden = false, active = 0, live = true, memOn = false, menu = false, theme = 'light', memOk = true, tabs = TABS } = o;
+  return `<div class="bar ${live ? '' : 'stale'}">
+    ${LOGO(live)}
+    ${tabs.map(([s, n, badge], k) => `<button class="tab ${k === active ? 'on' : ''}" data-testid="tab-${k + 1}" aria-current="${k === active}">${ic(s)}<span class="nm">${n}</span>${badge ? '<span class="badge">needs you</span>' : ''}</button>`).join('')}
+    ${tabs.length ? `<button class="more ${menu ? 'on' : ''}" data-testid="tab-more" aria-expanded="${menu}">+4 more${hidden ? ' <span class="badge">1 needs you</span>' : ''} ${SVG.chev}</button>` : ''}
+    <div class="spacer"></div>
+    <button class="mem ${memOn ? 'on' : ''} ${memOk ? 'ok' : ''}" data-testid="mem-chip">Memory <b class="num">${memOk ? '68%' : '85%'}</b><span class="track"><i style="width:${memOk ? 68 : 85}%"></i><b style="left:93%"></b></span></button>
+    <button class="theme" data-testid="theme-toggle" aria-label="Switch to ${theme === 'light' ? 'dark' : 'light'} theme">${theme === 'light' ? SVG.moon : SVG.sun}</button>
+  </div>`;
+}
+function drawerBar(o = {}) {
+  const { on = null, fails = 0, top = false } = o;
+  return `<div class="drawer ${top ? 'top' : ''}">
+    <button class="dtab ${on === 'timeline' ? 'on' : ''}" data-testid="dtab-timeline"><span class="k">T</span>Timeline</button>
+    <button class="dtab ${on === 'time' ? 'on' : ''}" data-testid="dtab-time"><span class="k">W</span>Where the time went</button>
+    <button class="dtab ${on === 'log' ? 'on' : ''}" data-testid="dtab-log"><span class="k">L</span>Log${fails ? `<span class="cnt">${fails} gate failure</span>` : ''}</button>
+    ${on ? `<button class="close" data-testid="drawer-close"><span class="k">Esc</span>Close</button>` : `<span class="hint" data-testid="updated">Updated 2s ago</span>`}
+  </div>`;
+}
+const wrap = (theme, cls, inner, sample) => `<div class="app theme-${theme} ${cls}">${inner}${sample ? `<span class="sample" data-testid="sample-tag">${sample}</span>` : ''}</div>`;
+const headCheckout = `<div class="head"><h1 data-testid="session-title">Checkout flow build</h1><span class="meta" data-testid="session-meta">shop-app · <code>feat/checkout</code> · started 1h 42m ago · Opus 5.5</span></div>`;
+const seg = '<i class="d"></i>'.repeat(4) + '<i class="c"></i>'.repeat(3) + '<i></i>'.repeat(2);
+const progress = `<div class="prog" data-testid="progress"><div class="row"><span>Tasks</span><span><b class="num">4 of 9</b> done</span></div><div class="seg">${seg}</div><div class="row" style="margin:8px 0 0"><span>Features</span><span class="num"><b>12</b> / 20 passing</span></div></div>`;
+const statusWorking = (compact) => `<div class="card status ${compact ? 'compact' : ''}">
+  ${ic('run', 'status-icon', !compact)}
+  <div style="flex:1"><div class="big" data-testid="status-text">Working: 3 agents running</div>${compact ? '' : '<div class="sub" data-testid="status-sub">Main thread is waiting on them · last commit 4m ago · gate passed 12m ago</div>'}</div>
+  ${compact ? '' : '<div class="timer num" data-testid="status-timer">6:12</div>'}
+  ${progress}
+</div>`;
+
+/* ------------------------------------------------------------------ 1. home: working */
+function home(theme) {
+  return wrap(theme, '', `${bar({ theme })}
+  <div class="body">
+    ${headCheckout}
+    ${statusWorking(false)}
+    <div class="grid">
+      <div class="card panel">
+        <div class="ph"><span data-testid="run-title">Run</span><span class="r" data-testid="run-count">3 running · 2 done</span></div>
+        <div class="graph">
+          <button class="node" data-testid="job-main"><div class="t">${ic('idle')}Main thread</div><div class="d">Waiting on 3 agents</div><div class="f num"><span>1h 42m</span><span>14 commits</span></div></button>
+          <div class="wire"></div>
+          <div class="jobs">
+            <div class="glabel" data-testid="run-group-running">Running</div>
+            <button class="node run" data-testid="job-1"><div class="t">${ic('run')}Lane B unit 13: payment screen<span class="open">Open ›</span></div><div class="d">Running e2e tests · <code>checkout.spec.ts › pays with saved card</code></div><div class="tbar warn"><i style="width:62%"></i></div><div class="f num"><span class="warn">6:12 of 10:00 limit</span><span class="mono">lane-b</span><span>2 commits</span></div></button>
+            <button class="node run" data-testid="job-2"><div class="t">${ic('run')}Lane C unit 14: order API</div><div class="d">Editing <code>src/api/orders.ts</code></div><div class="f num"><span>2:40</span><span class="mono">lane-c</span><span>1 commit</span></div></button>
+            <button class="node run" data-testid="job-3"><div class="t">${ic('run')}Verifier: cart screen</div><div class="d">Reading <code>cart.tsx</code> and its acceptance criteria</div><div class="f num"><span>0:48</span><span class="mono">main</span></div></button>
+            <div class="glabel" data-testid="run-group-done">Done</div>
+            <button class="node done" data-testid="job-4"><div class="t">${ic('done')}Lane A unit 12: cart screen<span class="rt num">18m · 3 commits</span></div></button>
+            <button class="node done" data-testid="job-5"><div class="t">${ic('done')}Explore: existing payment code<span class="rt num">4m</span></div></button>
+          </div>
+        </div>
+      </div>
+      <div class="card panel">
+        <div class="ph"><span data-testid="plan-title">Plan</span><span class="r num" data-testid="plan-count">4 / 9</span></div>
+        <ul class="steps">
+          ${['Set up proof gate', 'Product list screen', 'Product detail screen', 'Cart screen'].map((s, k) => `<li class="d" data-testid="step-${k + 1}">${ic('done')}${s}</li>`).join('')}
+          <li class="c" data-testid="step-5">${ic('run')}Payment screen<span class="who">Lane B</span></li>
+          <li class="c" data-testid="step-6">${ic('run')}Order API<span class="who">Lane C</span></li>
+          <li class="c" data-testid="step-7">${ic('run')}Verify cart screen<span class="who">Verifier</span></li>
+          <li data-testid="step-8">${ic('todo')}Order confirmation screen</li>
+          <li data-testid="step-9">${ic('todo')}Full e2e pass</li>
+        </ul>
+      </div>
+    </div>
+    ${drawerBar({ fails: 1 })}
+  </div>`, 'Sample data');
+}
+
+/* ------------------------------------------------------------------ 2. home: needs you */
+function needsYou(theme) {
+  return wrap(theme, 'you', `${bar({ theme, active: 1 })}
+  <div class="body">
+    <div class="head"><h1 data-testid="session-title">Admin access on production</h1><span class="meta" data-testid="session-meta">eap_multi_agent_backend · <code>feat/langfuse-tracing</code> · started 2 days ago</span></div>
+    <div class="card status you">
+      ${ic('you', 'status-icon', true)}
+      <div style="flex:1"><div class="big" data-testid="status-text">Claude asked you something</div><div class="sub" data-testid="status-sub">The gate found a failing check, so Claude stopped to ask you · waiting 49h 35m</div></div>
+      <div class="where" data-testid="status-where">Answer it in the terminal running this session<code>~/…/eap_multi_agent_backend</code></div>
+    </div>
+    <div class="grid">
+      <div class="card panel">
+        <div class="ph"><span data-testid="led-title">What led here</span><span class="r" data-testid="led-order">newest first</span></div>
+        <div class="ev" data-testid="led-1"><span class="tm">13:02</span>${ic('you')}<span class="tx">Claude stopped to ask you something</span><span class="tag"></span></div>
+        <div class="ev fail" data-testid="led-2"><span class="tm">13:02</span>${ic('fail')}<span class="tx">Gate failed: test still failing</span><span class="tag">gate</span></div>
+        <div class="ev" data-testid="led-3"><span class="tm">13:01</span>${ic('mem')}<span class="tx">Memory: didn't start this test run. The Mac is at 85% and the run needs about 1.5 GB</span><span class="tag">memory</span></div>
+      </div>
+      <div class="card panel">
+        <div class="ph"><span data-testid="plan-title">Plan</span></div>
+        <div style="height:150px;border:1px dashed var(--line-strong);border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;padding:0 16px">
+          <span data-testid="plan-empty">No task list in this session</span>
+          <span data-testid="plan-empty-sub" style="color:var(--muted);font-size:var(--fs-sm)">Agents show here as work items when there are any</span>
+        </div>
+      </div>
+    </div>
+    ${drawerBar()}
+  </div>`, 'Real data · 17 Oct');
+}
+
+/* ------------------------------------------------------------------ 3. home: finished (real) */
+function finished(theme) {
+  return wrap(theme, 'calm', `${bar({ theme, active: 3 })}
+  <div class="body">
+    <div class="head"><h1 data-testid="session-title">Proof v0.4.0 release</h1><span class="meta" data-testid="session-meta">proof · <code>main</code> · started 1h 05m ago · Opus 5.5</span></div>
+    <div class="card status">
+      ${ic('idle', 'status-icon', true)}
+      <div style="flex:1"><div class="big" data-testid="status-text">Finished, waiting for your next message</div><div class="sub" data-testid="status-sub">Idle 41m · 1 commit: 1a27553 proof 0.4.0: first public release</div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div class="card panel">
+        <div class="ph"><span data-testid="happened-title">What happened</span><span class="r" data-testid="happened-scope">this session</span></div>
+        <div class="ev" data-testid="happened-1"><span class="tm">13:56</span>${ic('commit')}<span class="tx">Commit 1a27553 <em>proof 0.4.0: first public release</em></span><span class="tag">commit</span></div>
+        <div class="ev fail" data-testid="happened-2"><span class="tm">13:56</span>${ic('fail')}<span class="tx">Commit blocked: the command edits files before committing</span><span class="tag">gate</span></div>
+        <div class="ev" data-testid="happened-3"><span class="tm">13:51</span>${ic('done')}<span class="tx">Wait for both CI runs to finish <em>2m 16s</em></span><span class="tag">shell</span></div>
+        <div class="kv" style="margin-top:18px" data-testid="happened-totals"><span>Tool calls</span><b class="num">18</b><span>Commits</span><b class="num">1</b><span>Commit blocks</span><b class="num">1</b><span>Tool errors</span><b class="num">1</b></div>
+      </div>
+      <div class="card panel">
+        <div class="ph"><span data-testid="time-mini-title">Where the time went</span><button class="linkbtn" style="margin:0 0 0 auto" data-testid="time-mini-open">Open in full ›</button></div>
+        <div class="sbar" data-testid="time-mini-bar" role="img" aria-label="Claude working 6m, waiting on you 58m, stalls under 1m"><i class="w" style="flex:6"></i><i class="y" style="flex:58"></i><i class="s" style="flex:.3"></i></div>
+        <div class="legend" data-testid="time-mini-legend" style="flex-wrap:wrap;row-gap:4px"><span><i class="sw w"></i>Claude working <b class="num">6m</b></span><span><i class="sw y"></i>Waiting on you <b class="num">58m</b></span><span><i class="sw s"></i>Stalls <b class="num">&lt;1m</b></span><span>includes the 41m since it finished</span></div>
+        <div class="subh" data-testid="time-mini-long-title">Longest single steps</div>
+        <div class="long" data-testid="time-mini-long-1"><b class="num">2m 16s</b><span class="lt">Wait for both CI runs to finish</span><em>Other commands</em></div>
+        <div class="long" data-testid="time-mini-long-2"><b class="num">1m 24s</b><span class="lt">Wait for the tag's CI run to finish</span><em>Other commands</em></div>
+        <div class="long" data-testid="time-mini-long-3"><b class="num">11s</b><span class="lt">Verify identical tree, re-point tag, force-push main and tag</span><em>Git</em></div>
+      </div>
+    </div>
+    ${drawerBar()}
+  </div>`, 'Real data · 17 Oct');
+}
+
+/* ------------------------------------------------------------------ 4. home: stalled (sample) */
+function stalled(theme) {
+  const tabs = [['run', 'Checkout flow build'], ['you', 'Admin access on production', true], ['stall', 'API docs refresh'], ['idle', 'Proof v0.4.0 release']];
+  return wrap(theme, 'calm', `${bar({ theme, active: 2, tabs })}
+  <div class="body">
+    <div class="head"><h1 data-testid="session-title">API docs refresh</h1><span class="meta" data-testid="session-meta">shop-app · <code>docs/api</code> · started 52m ago</span></div>
+    <div class="card status">
+      ${ic('stall', 'status-icon', true)}
+      <div style="flex:1"><div class="big" data-testid="status-text">No activity for 18 minutes</div><div class="sub" data-testid="status-sub">Nothing is running and Claude isn't waiting on you. The last step was <code>pnpm docs:build</code>, which finished 18m ago.</div></div>
+      <div class="timer num" data-testid="status-timer">18:04</div>
+    </div>
+    <div class="grid">
+      <div class="card panel">
+        <div class="ph"><span data-testid="happened-title">Last activity</span><span class="r" data-testid="happened-scope">newest first</span></div>
+        <div class="ev" data-testid="happened-1"><span class="tm">14:19</span>${ic('done')}<span class="tx"><code>pnpm docs:build</code></span><span class="tag">build</span></div>
+        <div class="ev" data-testid="happened-2"><span class="tm">14:18</span>${ic('done')}<span class="tx">Edit <code>docs/api/orders.md</code></span><span class="tag">edit</span></div>
+        <div class="ev" data-testid="happened-3"><span class="tm">14:16</span>${ic('commit')}<span class="tx">Commit 7c1e0b2 <em>docs: order endpoints</em></span><span class="tag">commit</span></div>
+      </div>
+      <div class="card panel">
+        <div class="ph"><span data-testid="plan-title">Plan</span><span class="r num" data-testid="plan-count">2 / 3</span></div>
+        <ul class="steps">
+          <li class="d" data-testid="step-1">${ic('done')}Audit endpoints against code</li>
+          <li class="d" data-testid="step-2">${ic('done')}Rewrite order endpoints</li>
+          <li data-testid="step-3">${ic('todo')}Rewrite payment endpoints</li>
+        </ul>
+      </div>
+    </div>
+    ${drawerBar()}
+  </div>`, 'Sample data');
+}
+
+/* ------------------------------------------------------------------ 5. home: memory warning */
+function memoryWarn(theme) {
+  return wrap(theme, 'warn', `${bar({ theme, memOk: false })}
+  <div class="banner" data-testid="mem-banner">
+    ${ic('warn', 'mem-banner-icon', true)}
+    <div class="bt"><div data-testid="mem-banner-title"><b>Memory is at 85%: 20.3 of 24 GB.</b> Runs and agents now wait their turn.</div><div class="bs" data-testid="mem-banner-advice">Closing Brave Browser (3.8 GB) and OrbStack (2.6 GB) would free about 6.5 GB, so checks and agents run side by side again.</div></div>
+    <button class="btn" data-testid="mem-banner-open">What's using it</button>
+  </div>
+  <div class="body">
+    ${headCheckout}
+    ${statusWorking(false)}
+    <div class="grid">
+      <div class="card panel">
+        <div class="ph"><span data-testid="run-title">Run</span><span class="r" data-testid="run-count">3 running · 2 done</span></div>
+        <div class="graph">
+          <button class="node" data-testid="job-main"><div class="t">${ic('idle')}Main thread</div><div class="d">Waiting on 3 agents</div><div class="f num"><span>1h 42m</span><span>14 commits</span></div></button>
+          <div class="wire"></div>
+          <div class="jobs">
+            <div class="glabel" data-testid="run-group-running">Running</div>
+            <button class="node run" data-testid="job-1"><div class="t">${ic('run')}Lane B unit 13: payment screen<span class="open">Open ›</span></div><div class="d">Running e2e tests · <code>checkout.spec.ts › pays with saved card</code></div><div class="tbar warn"><i style="width:62%"></i></div><div class="f num"><span class="warn">6:12 of 10:00 limit</span><span class="mono">lane-b</span><span>2 commits</span></div></button>
+            <button class="node run" data-testid="job-2"><div class="t">${ic('run')}Lane C unit 14: order API</div><div class="d">Editing <code>src/api/orders.ts</code></div><div class="f num"><span>2:40</span><span class="mono">lane-c</span><span>1 commit</span></div></button>
+            <button class="node run" data-testid="job-3"><div class="t">${ic('run')}Verifier: cart screen</div><div class="d">Reading <code>cart.tsx</code> and its acceptance criteria</div><div class="f num"><span>0:48</span><span class="mono">main</span></div></button>
+            <div class="glabel" data-testid="run-group-done">Done · 2 more, folded to fit</div>
+          </div>
+        </div>
+      </div>
+      <div class="card panel">
+        <div class="ph"><span data-testid="plan-title">Plan</span><span class="r num" data-testid="plan-count">4 / 9</span></div>
+        <ul class="steps">
+          <li class="d" data-testid="step-4">${ic('done')}Cart screen <span class="who">and 3 earlier</span></li>
+          <li class="c" data-testid="step-5">${ic('run')}Payment screen<span class="who">Lane B</span></li>
+          <li class="c" data-testid="step-6">${ic('run')}Order API<span class="who">Lane C</span></li>
+          <li class="c" data-testid="step-7">${ic('run')}Verify cart screen<span class="who">Verifier</span></li>
+          <li data-testid="step-8">${ic('todo')}2 more to do</li>
+        </ul>
+      </div>
+    </div>
+    ${drawerBar({ fails: 1 })}
+  </div>`, 'Sample session · real memory');
+}
+
+/* ------------------------------------------------------------------ 6. memory detail */
+function memoryView(theme) {
+  // sample history: 6 hours, percent used
+  const pts = [62, 63, 63, 65, 64, 66, 68, 70, 69, 72, 74, 73, 76, 78, 77, 79, 80, 82, 81, 83, 84, 86, 85, 84, 85];
+  const W = 820, H = 210, y = p => H - (p - 40) / 60 * H, x = i => i / (pts.length - 1) * W;
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p).toFixed(1)}`).join('');
+  const area = `${line}L${W},${H}L0,${H}Z`;
+  const apps = [['Brave Browser', 3.8], ['OrbStack', 2.6], ['Claude Code', 2.1, true], ['Orca', 0.8], ['Visual Studio Code', 0.5], ['Claude', 0.5]];
+  return wrap(theme, 'warn', `${bar({ theme, memOn: true, memOk: false })}
+  <div class="body" style="padding-bottom:20px">
+    <div class="crumb"><button class="back" data-testid="back">${SVG.left}Checkout flow build</button><span data-testid="crumb-here">Memory, this Mac</span></div>
+    <div class="card" style="padding:20px 24px">
+      <div style="display:flex;align-items:center;gap:16px">
+        ${ic('warn', 'mem-icon', true)}
+        <div style="flex:1"><div style="font-size:var(--fs-2xl);font-weight:600;letter-spacing:-.015em" data-testid="mem-title">85% used: 20.3 of 24 GB</div><div style="color:var(--muted)" data-testid="mem-sub">Past the 75% warning line. proof holds the Mac under 93%, so new runs and agents wait their turn.</div></div>
+        <div class="kv num" style="width:250px" data-testid="mem-facts"><span>Headroom to ceiling</span><b>2.0 GB</b><span>Swap in use</span><b>14.6 GB</b><span>Memory pressure</span><b>Warning</b></div>
+      </div>
+      <div class="gauge" data-testid="mem-gauge"><i style="width:85%"></i><span class="mk" style="left:75%"></span><span class="mkl" style="left:75%">Warning 75%</span><span class="mk" style="left:93%"></span><span class="mkl" style="left:93%">Ceiling 93%</span></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 440px">
+      <div class="card panel" style="display:flex;flex-direction:column">
+        <div class="ph"><span data-testid="hist-title">Last 6 hours</span><span class="r" data-testid="hist-scale">% of memory used</span></div>
+        <div class="chart" style="height:210px;margin:8px 0 6px" data-testid="hist-chart" role="img" aria-label="Memory used rose from 62% to 85% over 6 hours">
+          <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+            <line x1="0" x2="${W}" y1="${y(93)}" y2="${y(93)}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
+            <line x1="0" x2="${W}" y1="${y(75)}" y2="${y(75)}" stroke="var(--warn)" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
+            <path d="${area}" fill="var(--hl)"/>
+            <path d="${line}" fill="none" stroke="var(--ink-2)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+            <circle cx="${W}" cy="${y(85)}" r="4" fill="var(--warn)" stroke="var(--surface)" stroke-width="2"/>
+          </svg>
+          <span class="cl" style="top:${y(93) / H * 100}%">Ceiling 93%</span>
+          <span class="cl" style="top:${y(75) / H * 100}%">Warning 75%</span>
+        </div>
+        <div class="axis" style="grid-template-columns:1fr;margin:0" data-testid="hist-axis"><div class="ticks"><span>09:00</span><span>10:30</span><span>12:00</span><span>13:30</span><span>now</span></div></div>
+        <div class="subh" data-testid="runs-title">Claude's runs, the ones proof may stop</div>
+        <div class="run-row h" data-testid="runs-head"><span>Command</span><span>Session</span><span>Running</span><span style="text-align:right">Memory</span></div>
+        <div class="run-row" data-testid="run-1"><code>npx playwright test checkout.spec.ts</code><span class="m">lane-b</span><span class="m num">6m 12s</span><span class="v num">1.4 GB</span></div>
+        <div class="run-row" data-testid="run-2"><code>pnpm dev</code><span class="m">main</span><span class="m num">1h 12m</span><span class="v num">610 MB</span></div>
+        <div class="run-row" data-testid="run-3"><code>vitest run src/api</code><span class="m">lane-c</span><span class="m num">40s</span><span class="v num">380 MB</span></div>
+      </div>
+      <div class="card panel">
+        <div class="ph"><span data-testid="apps-title">Using the most memory</span><span class="r" data-testid="apps-sub">by app</span></div>
+        ${apps.map(([n, gb, c], k) => `<div class="app-row ${c ? 'claude' : ''}" data-testid="app-${k + 1}"><span class="nm">${n}${c ? '<em>Claude</em>' : ''}</span><span class="tr"><i style="width:${gb / 3.8 * 100}%"></i></span><span class="v num">${gb.toFixed(1)} GB</span></div>`).join('')}
+        <div class="advice" data-testid="apps-advice"><b>Close Brave Browser and OrbStack</b> to free about 6.5 GB. Checks and agents then run side by side instead of waiting their turn, and macOS stops swapping.</div>
+        <div class="subh" data-testid="stops-title">Stopped or held back by proof</div>
+        <div class="ev" data-testid="stop-1"><span class="tm">01:33</span>${ic('mem')}<span class="tx">Held back an agent <em>TRB test case documents review</em></span><span class="tag">1.2 GB</span></div>
+        <div class="ev" data-testid="stop-2"><span class="tm">13:01</span>${ic('mem')}<span class="tx">Didn't start a test run <em>Admin access on production</em></span><span class="tag">1.5 GB</span></div>
+      </div>
+    </div>
+  </div>`, 'Real memory · sample history and runs');
+}
+
+/* ------------------------------------------------------------------ 7. agent drill-down */
+function job(theme) {
+  return wrap(theme, '', `${bar({ theme })}
+  <div class="body" style="padding-bottom:20px">
+    <div class="crumb"><button class="back" data-testid="back">${SVG.left}Checkout flow build</button><span data-testid="crumb-here">Lane B unit 13: payment screen</span></div>
+    <div class="card status">
+      ${ic('run', 'status-icon', true)}
+      <div style="flex:1"><div class="big" data-testid="status-text">Running e2e tests</div><div class="sub" data-testid="status-sub"><code>checkout.spec.ts › pays with saved card</code></div></div>
+      <div class="timer num" data-testid="status-timer" style="color:var(--warn-ink)">6:12</div>
+      <div class="prog" data-testid="status-limit"><div class="row"><span>Against the 10-minute limit</span><b class="num">62%</b></div><div class="tbar warn" style="margin:0;height:6px"><i style="width:62%"></i></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:270px 1fr 340px">
+      <div class="card panel">
+        <div class="ph"><span data-testid="steps-title">Steps</span><span class="r num" data-testid="steps-total">20m</span></div>
+        <ul class="steps">
+          <li class="d" data-testid="jstep-1">${ic('done')}Reading &amp; searching<span class="who num">1m</span></li>
+          <li class="d" data-testid="jstep-2">${ic('done')}Editing code<span class="who num">5m</span></li>
+          <li class="d" data-testid="jstep-3">${ic('done')}Tests<span class="who num">41s</span></li>
+          <li class="d" data-testid="jstep-4">${ic('done')}Git<span class="who num">1s</span></li>
+          <li class="d" data-testid="jstep-5">${ic('fail')}proof gate<span class="who num">58s</span></li>
+          <li class="d" data-testid="jstep-6">${ic('done')}Reading &amp; searching<span class="who num">1s</span></li>
+          <li class="d" data-testid="jstep-7">${ic('done')}Editing code<span class="who num">2s</span></li>
+          <li class="c" data-testid="jstep-8">${ic('run')}Tests<span class="who num">6m</span></li>
+        </ul>
+      </div>
+      <div class="card panel">
+        <div class="ph"><span data-testid="activity-title">Activity</span><span class="r" data-testid="activity-sub">every tool call, newest first</span></div>
+        <div class="ev" data-testid="act-1"><span class="tm">14:31</span>${ic('run')}<span class="tx"><code>npx playwright test checkout.spec.ts</code></span><span class="tag num">6:12</span></div>
+        <div class="ev" data-testid="act-2"><span class="tm">14:30</span>${ic('done')}<span class="tx">Edit <code>src/screens/Payment.tsx</code></span><span class="tag num">2s</span></div>
+        <div class="ev" data-testid="act-3"><span class="tm">14:29</span>${ic('done')}<span class="tx">Read <code>src/lib/card.ts</code></span><span class="tag num">1s</span></div>
+        <div class="ev fail" data-testid="act-4"><span class="tm">14:27</span>${ic('fail')}<span class="tx">Gate: test failed, rejects expired card</span><span class="tag num">58s</span></div>
+        <div class="ev" data-testid="act-5"><span class="tm">14:25</span>${ic('done')}<span class="tx">Commit the payment form</span><span class="tag num">1s</span></div>
+        <div class="ev" data-testid="act-6"><span class="tm">14:24</span>${ic('done')}<span class="tx">Run the unit tests</span><span class="tag num">41s</span></div>
+        <button class="linkbtn" data-testid="act-more">Show 34 earlier</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:var(--s4);min-height:0">
+        <div class="card panel">
+          <div class="ph"><span data-testid="brief-title">Brief</span><span class="r" data-testid="brief-sub">what it was asked</span></div>
+          <div data-testid="brief-text" style="color:var(--ink-2)">Build the payment screen to mockup/app.html#payment. Acceptance criteria F13.1 to F13.4. Commit when the gate passes.</div>
+        </div>
+        <div class="card panel" style="flex:1">
+          <div class="ph"><span data-testid="output-title">Output</span></div>
+          <div class="kv num" data-testid="output-facts"><span>Commits</span><b>2</b><span>Errors</span><b>1</b><span>Worktree</span><b class="mono">lane-b</b><span>Started</span><b>20m ago</b><span>Result</span><b>Still running</b></div>
+        </div>
+      </div>
+    </div>
+  </div>`, 'Sample data');
+}
+
+/* ------------------------------------------------------------------ 8. drawer: timeline */
+function timeline(theme) {
+  const L = [
+    ['Main thread', '', [['w', 0, 16], ['y', 16, 9], ['w', 25, 12], ['z', 37, 6], ['w', 43, 14], ['s', 57, 4], ['w', 61, 39]], [[24], [48], [70, 'bad'], [88]]],
+    ['lane-a', 'cart screen', [['w', 28, 26], ['w', 55, 6]], [[50], [60]]],
+    ['lane-b', 'payment screen', [['w', 60, 18], ['w', 79, 21, 'sel']], [[74], [85, 'bad']]],
+    ['lane-c', 'order API', [['w', 82, 18]], [[96]]],
+    ['Reviews', 'verifier, screen judge', [['w', 58, 3], ['w', 95, 5]], []],
+  ];
+  return wrap(theme, '', `${bar({ theme })}
+  <div class="body">
+    ${headCheckout}
+    ${statusWorking(true)}
+    ${drawerBar({ on: 'timeline', fails: 1, top: true })}
+    <div class="card panel" style="flex:1;margin-bottom:20px;display:flex;flex-direction:column;overflow:visible">
+      <div class="ph"><span data-testid="tl-title">One lane per worktree</span>
+        <span class="r" style="display:flex;gap:8px;align-items:center"><span class="scope"><button data-testid="tl-1h">1h</button><button class="on" data-testid="tl-2h">2h</button><button data-testid="tl-6h">6h</button><button data-testid="tl-24h">24h</button></span></span></div>
+      <div class="lanes" style="margin-top:14px">
+        ${L.map(([n, sub, blocks, marks], k) => `<div class="lane" data-testid="tl-lane-${k + 1}" tabindex="0"><span class="ln">${n}${sub ? `<em>${sub}</em>` : ''}</span><div class="trk">${blocks.map(([c, a, w, sel]) => `<i class="${c} ${sel || ''}" style="left:${a}%;width:${w}%"></i>`).join('')}${marks.map(([p, b]) => `<u class="${b || ''}" style="left:${p}%"></u>`).join('')}${k === 0 ? '<span class="nowline"></span>' : ''}</div></div>`).join('')}
+        <div class="tip" data-testid="tl-tip" style="right:0;top:214px"><div class="h"><span>lane-b · Tests</span><span class="num">6m 12s</span></div><div class="r"><span>14:31 to now</span><span>running</span></div><div class="r"><span><code>npx playwright test checkout.spec.ts</code></span></div></div>
+      </div>
+      <div class="axis" data-testid="tl-axis"><span></span><div class="ticks"><span>12:55</span><span>13:20</span><span>13:46</span><span>14:11</span><span>now</span></div></div>
+      <div class="legend" data-testid="tl-legend" style="margin-top:auto;padding-top:18px">
+        <span><i class="sw w"></i>Claude working</span><span><i class="sw y"></i>Waiting on you</span><span><i class="sw s"></i>Stalls &amp; overhead</span><span><i class="sw z"></i>Mac asleep</span>
+        <span><i class="sw" style="background:var(--ink);width:3px;border-radius:1px"></i>Commit</span><span><i class="sw" style="background:var(--bad);width:3px;border-radius:1px"></i>Gate failed</span>
+        <span style="margin-left:auto">Hover a block for what ran and how long</span>
+      </div>
+    </div>
+  </div>`, 'Sample data');
+}
+
+/* ------------------------------------------------------------------ 9. drawer: where the time went */
+const TIME = {
+  sample: {
+    clock: 102, work: 72, workDone: '3h 54m', par: '2.3×', you: 23, stall: 7,
+    headline: '<b>2.3× in parallel</b>: 3h 54m of work in 1h 42m. Biggest drag: <b>23m waiting on you</b>, then end-to-end runs.',
+    bars: [['Thinking & writing', 26, [['Main thread', '9m'], ['Lane B', '7m'], ['Lane C', '6m'], ['Other agents', '4m']]], ['Tests & checks', 18, [['End-to-end tests', '14m · 6 runs'], ['Other tests', '3m'], ['Type checks & lint', '1m']]], ['Reading & editing', 12, []], ['proof gate', 7, []], ['Screens & browser', 5, []], ['Git & other commands', 3, []], ['Builds & dev servers', 1, []]],
+    finds: [['y', 23, 'Waiting on you', 'longest 9m 02s: Ask you to approve the plan', 'Answer sooner, or pre-approve with a clear spec'], ['w', 14, 'End-to-end runs', '6 runs · checkout.spec.ts ran 4 times', 'Run only the failing spec while fixing'], ['s', 3, 'Compacting context', '2 compactions', '']],
+    longest: [['9m 02s', 'Ask you to approve the plan', 'Waiting on you'], ['6m 12s', 'npx playwright test checkout.spec.ts', 'Tests'], ['4m 05s', 'pnpm install', 'Builds & installs'], ['2m 40s', 'Gate: full check before commit', 'proof gate']],
+  },
+};
+function timeView(theme) {
+  const D = TIME.sample, pct = m => Math.round(100 * m / D.clock), maxB = Math.max(...D.bars.map(b => b[1]));
+  return wrap(theme, '', `${bar({ theme })}
+  <div class="body">
+    ${headCheckout}
+    ${statusWorking(true)}
+    ${drawerBar({ on: 'time', fails: 1, top: true })}
+    <div class="tw">
+      <div class="card split">
+        <div class="lead">
+          <div class="stat" data-testid="time-clock"><div class="v num">${fm(D.clock)}</div><div class="l">on the clock</div></div>
+          <div class="stat" data-testid="time-done"><div class="v num">${D.workDone}<small>${D.par}</small></div><div class="l">of work done, in parallel</div></div>
+          <div class="headline" data-testid="time-headline">${D.headline}</div>
+          <span class="scope"><button class="on" data-testid="scope-session">This session</button><button data-testid="scope-6h">Last 6h</button></span>
+        </div>
+        <div class="sbar" data-testid="time-bar" role="img" aria-label="Claude working ${fm(D.work)}, waiting on you ${fm(D.you)}, stalls ${fm(D.stall)}"><i class="w" style="flex:${D.work}"></i><i class="y" style="flex:${D.you}"></i><i class="s" style="flex:${D.stall}"></i></div>
+        <div class="legend" data-testid="time-legend"><span><i class="sw w"></i>Claude working <b class="num">${fm(D.work)}</b> ${pct(D.work)}%</span><span><i class="sw y"></i>Waiting on you <b class="num">${fm(D.you)}</b> ${pct(D.you)}%</span><span><i class="sw s"></i>Stalls &amp; overhead <b class="num">${fm(D.stall)}</b> ${pct(D.stall)}%</span></div>
+      </div>
+      <div class="tw-grid">
+        <div class="card panel" style="overflow:visible;position:relative">
+          <div class="ph"><span data-testid="work-title">Where Claude's working time went</span><span class="r num" data-testid="work-total">${fm(D.work)}</span></div>
+          ${D.bars.map(([l, m, sub], k) => `<button class="brow ${k === 1 ? 'hov' : ''}" data-testid="time-row-${k + 1}"><span>${l}</span><span class="tr"><i style="width:${100 * m / maxB}%"></i></span><span class="du num">${fm(m)}</span><span class="pc num">${Math.round(100 * m / D.work)}%</span></button>`).join('')}
+          <div class="tip" data-testid="time-tip" style="left:240px;top:118px"><div class="h"><span>Tests &amp; checks</span><span class="num">18m</span></div><div class="r"><span>End-to-end tests</span><span class="num">14m · 6 runs</span></div><div class="r"><span>Other tests</span><span class="num">3m</span></div><div class="r"><span>Type checks &amp; lint</span><span class="num">1m</span></div></div>
+        </div>
+        <div class="card panel">
+          <div class="ph"><span data-testid="slow-title">What slowed it down</span><span class="r" data-testid="slow-sub">biggest first</span></div>
+          ${D.finds.map(([k, m, t, x, fix], i) => `<div class="find" data-testid="finding-${i + 1}"><div class="m num"><i class="sw ${k}"></i>${fm(m)}</div><div><div class="t">${t}</div><div class="x">${x}</div>${fix ? `<div class="fix">${fix}</div>` : ''}</div></div>`).join('')}
+          <div class="subh" data-testid="long-title">Longest single steps</div>
+          ${D.longest.map(([t, l, w], i) => `<div class="long" data-testid="long-${i + 1}"><b class="num">${t}</b><span class="lt">${l}</span><em>${w}</em></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`, 'Sample data');
+}
+
+/* ------------------------------------------------------------------ 10. drawer: log */
+function logView(theme) {
+  const rows = [
+    ['14:33', 'commit', 'Commit 9d2c41e <em>merge lane-a: cart screen</em>', 'Main thread', 'commit'],
+    ['14:31', 'run', '<code>npx playwright test checkout.spec.ts</code>', 'Lane B unit 13', 'running'],
+    ['14:27', 'fail', 'Gate failed: checkout.spec.ts › rejects expired card', 'Lane B unit 13', 'gate', true],
+    ['14:25', 'done', 'Gate passed: 6 checks in 2m 40s', 'proof', 'gate'],
+    ['14:25', 'commit', 'Commit a10f000 <em>wire payment route</em>', 'Main thread', 'commit'],
+    ['14:25', 'commit', 'Commit 4be91a0 <em>payment form</em>', 'Lane B unit 13', 'commit'],
+    ['14:22', 'mem', 'Memory: held back the verifier for 40s, the Mac was at 86%', 'Main thread', 'memory'],
+    ['14:19', 'commit', 'Commit a11f010 <em>checkout state machine</em>', 'Main thread', 'commit'],
+    ['14:13', 'commit', 'Commit a12f020 <em>merge lane-a: cart screen tests</em>', 'Main thread', 'commit'],
+    ['14:12', 'tool', 'Compacted context', 'Main thread', 'compact'],
+  ];
+  return wrap(theme, '', `${bar({ theme })}
+  <div class="body">
+    ${headCheckout}
+    ${statusWorking(true)}
+    ${drawerBar({ on: 'log', fails: 1, top: true })}
+    <div class="card panel" style="flex:1;margin-bottom:20px">
+      <div class="filters">
+        <button class="chip on" data-testid="log-all">Events</button>
+        <button class="chip" data-testid="log-gate">Gate</button>
+        <button class="chip" data-testid="log-commits">Commits</button>
+        <button class="chip" data-testid="log-problems">Problems</button>
+        <button class="chip" data-testid="log-tools">Every tool call</button>
+        <span style="margin-left:auto;color:var(--muted);align-self:center" data-testid="log-count">Showing 10 of 21</span>
+      </div>
+      ${rows.map(([t, s, tx, who, tag, f], i) => `<div class="ev ${f ? 'fail' : ''}" data-testid="log-${i + 1}" style="grid-template-columns:52px 20px 1fr 150px 70px"><span class="tm">${t}</span>${ic(s)}<span class="tx">${tx}</span><span class="tx" style="color:var(--muted)">${who}</span><span class="tag">${tag}</span></div>`).join('')}
+      <button class="linkbtn" data-testid="log-more">Show 11 earlier</button>
+    </div>
+  </div>`, 'Sample data');
+}
+
+/* ------------------------------------------------------------------ 11. switcher menu */
+function menu(theme, query = '') {
+  // Every session in the window, grouped by project. Needs-you sessions are pinned on top.
+  const all = [
+    ['you', 'Admin access on production', 'eap_multi_agent_backend', 'asked 49h ago'],
+    ['run', 'Checkout flow build', 'shop-app', '3 agents', true],
+    ['run', 'Dashboard UI redesign', 'proof', 'thinking'],
+    ['idle', 'Proof v0.4.0 release', 'proof', 'finished 41m ago'],
+    ['idle', 'Proof README and description improvement', 'proof', 'finished 1h ago'],
+    ['idle', 'Proof logo', 'proof', 'finished 1h ago'],
+    ['idle', 'TRB test case documents review', 'eap_multi_agent_backend', 'finished 13h ago'],
+    ['idle', 'Multi-agent API logs analysis', 'eap_multi_agent_backend', 'finished 14h ago'],
+  ];
+  const q = query.toLowerCase();
+  const match = r => !q || r[1].toLowerCase().includes(q) || r[2].toLowerCase().includes(q);
+  const pinned = all.filter(r => r[0] === 'you' && match(r));
+  const projects = [...new Set(all.map(r => r[2]))].map(p => [p, all.filter(r => r[2] === p && r[0] !== 'you' && match(r))]).filter(([p, rows]) => rows.length || (q && p.toLowerCase().includes(q)));
+  let n = 0;
+  const row = ([s, t, p, m, cur]) => { n++; return `<button class="mi ${n === (q ? 1 : 2) ? 'hov' : ''}" data-testid="menu-item-${n}" role="menuitem">${ic(s)}<span class="mt">${t}</span><span class="ms">${cur ? 'open now' : m}</span></button>`; };
+  return wrap(theme, '', `${bar({ theme, menu: true })}
+  <div class="menu" style="left:760px" role="menu">
+    <label class="msearch"><span class="ic" style="color:var(--muted)" aria-hidden="true" data-testid="menu-search-icon">${SVG.search}</span><input data-testid="menu-search" value="${query}" placeholder="Find a session or project" aria-label="Find a session or project"><span class="k" data-testid="menu-search-key">Ctrl K</span></label>
+    <div class="mscroll">
+      ${pinned.length ? `<div class="mh" data-testid="menu-group-needs-you">Needs you</div>${pinned.map(row).join('')}` : ''}
+      ${projects.map(([p, rows], k) => `<div class="mp" data-testid="menu-project-${k + 1}"><span class="ic" style="color:var(--muted)" aria-hidden="true">${SVG.folder}</span>${p}<em>${((c) => `${c} session${c === 1 ? "" : "s"}`)(all.filter(r => r[2] === p).length)}</em></div>${rows.map(row).join('')}`).join('')}
+    </div>
+    <div class="mfoot" data-testid="menu-foot"><span class="k">↑</span><span class="k">↓</span> move <span class="k">Enter</span> open <span class="k">Esc</span> close</div>
+  </div>
+  <div class="body">
+    ${headCheckout}
+    ${statusWorking(false)}
+  </div>`, 'Real sessions · 17 Oct');
+}
+
+/* ------------------------------------------------------------------ 12. loading */
+function loading(theme) {
+  const sk = (w, h, extra = '') => `<div class="sk" style="width:${w};height:${h}px;${extra}"></div>`;
+  return wrap(theme, 'calm', `<div class="bar">${LOGO(false)}${sk('180px', 30, 'border-radius:999px')}${sk('210px', 30, 'border-radius:999px;margin-left:6px')}${sk('170px', 30, 'border-radius:999px;margin-left:6px')}<div class="spacer"></div><span data-testid="loading-text" style="color:var(--muted)">Reading session logs…</span></div>
+  <div class="body">
+    ${sk('360px', 26)}
+    <div class="card status">${sk('100%', 56)}</div>
+    <div class="grid"><div class="card panel">${sk('40%', 16)}<div style="height:16px"></div>${sk('100%', 80)}<div style="height:10px"></div>${sk('100%', 80)}<div style="height:10px"></div>${sk('100%', 80)}</div><div class="card panel">${sk('30%', 16)}<div style="height:16px"></div>${Array(7).fill(sk('100%', 22, 'margin-bottom:12px')).join('')}</div></div>
+    <div class="drawer"></div>
+  </div>`);
+}
+
+/* ------------------------------------------------------------------ 13. offline */
+function offline(theme) {
+  return wrap(theme, 'calm', `${bar({ theme, live: false })}
+  <div class="banner off" data-testid="offline-banner">
+    <span class="ic lg" style="color:var(--muted)" data-testid="offline-icon">${SVG.plug}</span>
+    <div class="bt"><div data-testid="offline-title"><b>Not live.</b> proof's monitor stopped responding 3 minutes ago.</div><div class="bs" data-testid="offline-sub">What's below is the last update, from 14:34. Start it again with <code>/proof:watch</code> in any Claude Code session. The page reconnects by itself.</div></div>
+    <button class="btn" data-testid="offline-copy">Copy /proof:watch</button>
+  </div>
+  <div class="body dim" aria-hidden="true">
+    ${headCheckout}
+    ${statusWorking(false)}
+  </div>`, 'Sample data');
+}
+
+/* ------------------------------------------------------------------ 14. no sessions */
+function none(theme) {
+  return wrap(theme, 'calm', `${bar({ theme, tabs: [] })}
+  <div class="body">
+    <div class="empty">
+      <div class="glyph" data-testid="empty-glyph">${SVG.inbox}</div>
+      <div class="e1" data-testid="empty-title">No Claude Code sessions in the last 6 hours</div>
+      <div class="e2" data-testid="empty-sub">Start one in any project and it appears here within a couple of seconds. Sessions that ran earlier show up if you widen the window.</div>
+      <span class="scope" style="margin-top:8px"><button class="on" data-testid="empty-6h">6 hours</button><button data-testid="empty-24h">24 hours</button></span>
+    </div>
+  </div>`);
+}
+
+/* ------------------------------------------------------------------ 15. status card: every state */
+function statusSheet(theme) {
+  const card = (k, icon, title, sub, right, cls = '') => `<div class="card status ${cls}" style="padding:14px 20px">${ic(icon, `sv-${k}-icon`)}<div style="flex:1"><div class="big" style="font-size:var(--fs-md)" data-testid="sv-${k}-text">${title}</div><div class="sub" data-testid="sv-${k}-sub">${sub}</div></div>${right ? `<div class="timer num" style="font-size:var(--fs-md)" data-testid="sv-${k}-timer">${right}</div>` : ''}</div>`;
+  return wrap(theme, 'calm', `${bar({ theme })}
+  <div class="body" style="gap:10px;padding-bottom:16px">
+    <div class="head"><h1 data-testid="sv-title">The status card in every state</h1><span class="meta" data-testid="sv-meta">status.state from the feed, and what the card, tab icon and glow do</span></div>
+    ${card('working', 'run', 'Working: editing <code>src/api/orders.ts</code>', 'state <code>working</code> · green dot, pulsing · green glow', '0:42')}
+    ${card('gate', 'run', 'Running the proof gate: 3 of 6 checks done', 'state <code>working</code>, cat <code>gate</code> · checks listed from the gate live file · green', '1:18')}
+    ${card('thinking', 'run', 'Thinking', 'state <code>thinking</code> · green dot, pulsing (Claude is working, nothing to watch yet)', '0:09')}
+    ${card('agents', 'run', 'Working: 3 agents running', 'state <code>agents</code> · main thread waiting on its agents · green', '6:12')}
+    ${card('approval', 'you', 'Approve a command: <code>git push --force-with-lease</code>', 'state <code>approval</code> · coral card, glow and tab badge "needs you" · answer in the terminal', '2:05', 'you')}
+    ${card('needs', 'you', 'Claude asked you something', 'state <code>needsInput</code> · coral, same as approval', '49h 35m', 'you')}
+    ${card('waiting', 'idle', 'Finished, waiting for your next message', 'state <code>waiting</code> · grey ring, no glow · not "needs you": the turn is over, nothing is blocked', '41m')}
+    ${card('stalled', 'stall', 'No activity for 18 minutes', 'state <code>stalled</code> · grey clock, no glow', '18:04')}
+  </div>`, 'Spec sheet');
+}
+
+/* ------------------------------------------------------------------ render */
+const SCREENS = [
+  ['home--working', 'Session home: working, with agents', home],
+  ['home--needs-you', 'Session home: needs you', needsYou],
+  ['home--finished', 'Session home: finished, no agents or plan', finished],
+  ['home--stalled', 'Session home: stalled', stalled],
+  ['home--memory-warning', 'Session home: memory past the warning line', memoryWarn],
+  ['memory', 'Memory: what is using it', memoryView],
+  ['job', 'Agent drill-down', job],
+  ['drawer--timeline', 'Drawer: timeline (hovering a block)', timeline],
+  ['drawer--time', 'Drawer: where the time went (hovering a row)', timeView],
+  ['drawer--log', 'Drawer: log', logView],
+  ['switcher--menu', 'Switcher: every session, grouped by project', menu],
+  ['switcher--menu-search', 'Switcher: typing a project name filters to it', t => menu(t, 'eap')],
+  ['loading', 'First load', loading],
+  ['offline', 'Monitor not running', offline],
+  ['empty', 'No sessions in the window', none],
+  ['status--all', 'Status card: every state', statusSheet],
+  ['switcher--hidden-needs-you', 'Switcher: a second session that needs you is under "+4 more"', t => wrap(t, 'calm', bar({ theme: t, hidden: true }) + '<div class="body"></div>', 'Sample data')],
+];
+document.getElementById('nav').innerHTML = SCREENS.map(([id, label]) => `<a href="#${id}">${label}</a>`).join('');
+document.getElementById('root').innerHTML = SCREENS.map(([id, label, fn]) => `
+  <div class="flabel" id="${id}"><b>${label}</b> · light</div>
+  <div data-screen="${id}">${fn('light')}</div>
+  <div class="flabel"><b>${label}</b> · dark</div>
+  <div data-screen="${id}--dark">${fn('dark')}</div>`).join('');
+</script>
+</body>
+</html>

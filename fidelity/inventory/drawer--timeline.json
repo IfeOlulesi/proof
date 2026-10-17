@@ -1,0 +1,647 @@
+{
+  "screen": "drawer--timeline",
+  "source": "mockup/app.html",
+  "scope": "[data-screen=\"drawer--timeline\"]",
+  "route": "/plugins/proof/scripts/dashboard.html?data=/tests/fixtures/dashboard/home--working.json&theme=light&pin=tl-lane-3#d=timeline",
+  "device": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 2,
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "items": [
+    {
+      "id": "brand",
+      "text": "",
+      "box": {
+        "x": 18,
+        "y": 19,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-1",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 96,
+        "y": 13,
+        "w": 190,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "999px",
+        "shadow": "rgba(14, 17, 22, 0.04) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-2",
+      "text": "Admin access on production\nneeds you",
+      "box": {
+        "x": 290,
+        "y": 13,
+        "w": 322,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-3",
+      "text": "Dashboard UI redesign",
+      "box": {
+        "x": 616,
+        "y": 13,
+        "w": 205,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-4",
+      "text": "Proof v0.4.0 release",
+      "box": {
+        "x": 825,
+        "y": 13,
+        "w": 189,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-more",
+      "text": "+4 more",
+      "box": {
+        "x": 1018,
+        "y": 13,
+        "w": 99,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-chip",
+      "text": "Memory\n68%",
+      "box": {
+        "x": 1160,
+        "y": 13,
+        "w": 218,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "theme-toggle",
+      "text": "Switch to dark theme",
+      "box": {
+        "x": 1388,
+        "y": 13,
+        "w": 34,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "session-title",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 28,
+        "y": 82,
+        "w": 207,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 22px/31.9px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "session-meta",
+      "text": "shop-app · feat/checkout · started 1h 42m ago · Opus 5.5",
+      "box": {
+        "x": 249,
+        "y": 90,
+        "w": 375,
+        "h": 21
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-icon",
+      "text": "",
+      "box": {
+        "x": 49,
+        "y": 164,
+        "w": 16,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(22, 163, 74)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-text",
+      "text": "Working: 3 agents running",
+      "box": {
+        "x": 83,
+        "y": 161,
+        "w": 990,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 15px/21.75px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "progress",
+      "text": "Tasks\n4 of 9 done\nFeatures\n12 / 20 passing",
+      "box": {
+        "x": 1091,
+        "y": 143,
+        "w": 300,
+        "h": 57
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "dtab-timeline",
+      "text": "T\nTimeline",
+      "box": {
+        "x": 28,
+        "y": 238,
+        "w": 109,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgb(241, 241, 238)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "dtab-time",
+      "text": "W\nWhere the time went",
+      "box": {
+        "x": 141,
+        "y": 238,
+        "w": 189,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "dtab-log",
+      "text": "L\nLog\n1 gate failure",
+      "box": {
+        "x": 333,
+        "y": 238,
+        "w": 167,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "drawer-close",
+      "text": "Esc\nClose",
+      "box": {
+        "x": 1315,
+        "y": 240,
+        "w": 97,
+        "h": 30
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-title",
+      "text": "One lane per worktree",
+      "box": {
+        "x": 47,
+        "y": 322,
+        "w": 146,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-1h",
+      "text": "1h",
+      "box": {
+        "x": 1229,
+        "y": 318,
+        "w": 36,
+        "h": 28
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-2h",
+      "text": "2h",
+      "box": {
+        "x": 1265,
+        "y": 318,
+        "w": 39,
+        "h": 28
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgb(241, 241, 238)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-6h",
+      "text": "6h",
+      "box": {
+        "x": 1304,
+        "y": 318,
+        "w": 39,
+        "h": 28
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-24h",
+      "text": "24h",
+      "box": {
+        "x": 1343,
+        "y": 318,
+        "w": 46,
+        "h": 28
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-lane-1",
+      "text": "Main thread",
+      "box": {
+        "x": 47,
+        "y": 378,
+        "w": 1346,
+        "h": 26
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-lane-2",
+      "text": "lane-acart screen",
+      "box": {
+        "x": 47,
+        "y": 414,
+        "w": 1346,
+        "h": 26
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-lane-3",
+      "text": "lane-bpayment screen",
+      "box": {
+        "x": 47,
+        "y": 450,
+        "w": 1346,
+        "h": 26
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-lane-4",
+      "text": "lane-corder API",
+      "box": {
+        "x": 47,
+        "y": 486,
+        "w": 1346,
+        "h": 26
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-lane-5",
+      "text": "Reviewsverifier, screen judge",
+      "box": {
+        "x": 47,
+        "y": 522,
+        "w": 1346,
+        "h": 26
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-tip",
+      "text": "lane-b · Tests\n6m 12s\n14:31 to now\nrunning\nnpx playwright test checkout.spec.ts",
+      "box": {
+        "x": 1123,
+        "y": 592,
+        "w": 270,
+        "h": 113
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13px/18.85px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(14, 17, 22)",
+        "radius": "12px",
+        "shadow": "rgba(14, 17, 22, 0.14) 0px 10px 30px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-axis",
+      "text": "12:55\n13:20\n13:46\n14:11\nnow",
+      "box": {
+        "x": 47,
+        "y": 556,
+        "w": 1346,
+        "h": 18
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tl-legend",
+      "text": "Claude working\nWaiting on you\nStalls & overhead\nMac asleep\nCommit\nGate failed\nHover a block for what ran and how long",
+      "box": {
+        "x": 47,
+        "y": 825,
+        "w": 1346,
+        "h": 38
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    }
+  ]
+}

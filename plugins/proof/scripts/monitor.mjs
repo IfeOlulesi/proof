@@ -205,7 +205,7 @@ function serve() {
     const out = [];
     for (const f of safeList(dir)) {
       if (!f.endsWith('.json')) continue;
-      try { const t = JSON.parse(readFileSync(join(dir, f), 'utf8')); if (t && t.subject && t.status !== 'deleted') out.push({ id: String(t.id), subject: t.subject, status: t.status, active: t.activeForm }); } catch {}
+      try { const t = JSON.parse(readFileSync(join(dir, f), 'utf8')); if (t && t.subject && t.status !== 'deleted') out.push({ id: String(t.id), subject: t.subject, status: t.status, active: t.activeForm, owner: t.owner || '' }); } catch {}
     }
     return out;
   };

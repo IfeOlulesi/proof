@@ -1,0 +1,185 @@
+{
+  "screen": "switcher--hidden-needs-you--dark",
+  "source": "mockup/app.html",
+  "scope": "[data-screen=\"switcher--hidden-needs-you--dark\"]",
+  "route": "/plugins/proof/scripts/dashboard.html?data=/tests/fixtures/dashboard/switcher--hidden-needs-you.json&theme=dark",
+  "device": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 2,
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "items": [
+    {
+      "id": "brand",
+      "text": "",
+      "box": {
+        "x": 18,
+        "y": 19,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-1",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 96,
+        "y": 13,
+        "w": 180,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "999px",
+        "shadow": "rgba(255, 255, 255, 0.035) 0px 1px 0px 0px inset"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-2",
+      "text": "Admin access on production\nneeds you",
+      "box": {
+        "x": 280,
+        "y": 13,
+        "w": 305,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-3",
+      "text": "Dashboard UI redesign",
+      "box": {
+        "x": 589,
+        "y": 13,
+        "w": 195,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-4",
+      "text": "Proof v0.4.0 release",
+      "box": {
+        "x": 787,
+        "y": 13,
+        "w": 180,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-more",
+      "text": "+4 more\n1 needs you",
+      "box": {
+        "x": 971,
+        "y": 13,
+        "w": 180,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-chip",
+      "text": "Memory\n68%",
+      "box": {
+        "x": 1160,
+        "y": 13,
+        "w": 218,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "theme-toggle",
+      "text": "Switch to light theme",
+      "box": {
+        "x": 1388,
+        "y": 13,
+        "w": 34,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    }
+  ]
+}

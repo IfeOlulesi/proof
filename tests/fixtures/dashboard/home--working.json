@@ -1,0 +1,1602 @@
+{
+ "version": "0.5.0",
+ "now": 1792244232000,
+ "windowMs": 7200000,
+ "live": false,
+ "replay": null,
+ "categories": {},
+ "machine": {
+  "system": {
+   "platform": "darwin",
+   "totalMB": 24576,
+   "usedMB": 16711.68,
+   "pct": 68,
+   "warnPct": 75,
+   "ceilingPct": 93,
+   "headroomMB": 6144,
+   "pressure": "normal",
+   "swapMB": 14915
+  },
+  "samples": [],
+  "apps": [],
+  "runs": [],
+  "advice": {
+   "text": "",
+   "userApps": [
+    {
+     "name": "Brave Browser",
+     "mb": 3914
+    },
+    {
+     "name": "OrbStack",
+     "mb": 2691
+    }
+   ]
+  },
+  "keepAwake": {
+   "on": true,
+   "enabled": true
+  },
+  "asleep": []
+ },
+ "sessions": [
+  {
+   "id": "checkout",
+   "title": "Checkout flow build",
+   "cwd": "/Users/you/code/shop-app",
+   "project": "shop-app",
+   "branch": "feat/checkout",
+   "model": "claude-opus-5-5",
+   "start": 1792238112000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792238112000,
+   "status": {
+    "state": "agents",
+    "since": 1792243860000,
+    "cat": "subagent",
+    "label": "3 background agents working",
+    "agents": 3
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "agents",
+     "since": 1792243860000,
+     "cat": "subagent",
+     "label": "3 background agents working",
+     "agents": 3
+    },
+    {
+     "who": "Lane B unit 13: payment screen",
+     "type": "general-purpose",
+     "where": "lane-b",
+     "state": "working",
+     "since": 1792243860000,
+     "cat": "test",
+     "label": "Running e2e tests · checkout.spec.ts › pays with saved card"
+    },
+    {
+     "who": "Lane C unit 14: order API",
+     "type": "general-purpose",
+     "where": "lane-c",
+     "state": "working",
+     "since": 1792244072000,
+     "cat": "edit",
+     "label": "Editing src/api/orders.ts"
+    },
+    {
+     "who": "Verifier: cart screen",
+     "type": "proof:verifier",
+     "where": "main",
+     "state": "working",
+     "since": 1792244184000,
+     "cat": "read",
+     "label": "Reading cart.tsx and its acceptance criteria"
+    }
+   ],
+   "rows": [
+    {
+     "key": "main",
+     "label": "Main thread",
+     "sub": "orchestrates, talks to you",
+     "lane": [
+      [
+       1792238112000,
+       1792239091200,
+       "model"
+      ],
+      [
+       1792239091200,
+       1792239642000,
+       "waitUser"
+      ],
+      [
+       1792239642000,
+       1792240376400,
+       "edit"
+      ],
+      [
+       1792240376400,
+       1792240743600,
+       "asleep"
+      ],
+      [
+       1792240743600,
+       1792241600400,
+       "model"
+      ],
+      [
+       1792241600400,
+       1792241845200,
+       "idle"
+      ],
+      [
+       1792241845200,
+       1792244232000,
+       "model"
+      ]
+     ]
+    },
+    {
+     "key": "/w/lane-a",
+     "label": "lane-a",
+     "sub": "1 agent",
+     "who": [
+      "Lane A unit 12: cart screen"
+     ],
+     "lane": [
+      [
+       1792239825600,
+       1792241416800,
+       "edit"
+      ],
+      [
+       1792241478000,
+       1792241845200,
+       "test"
+      ]
+     ]
+    },
+    {
+     "key": "/w/lane-b",
+     "label": "lane-b",
+     "sub": "1 agent",
+     "who": [
+      "Lane B unit 13: payment screen"
+     ],
+     "lane": [
+      [
+       1792243032000,
+       1792243860000,
+       "edit"
+      ],
+      [
+       1792243860000,
+       1792244232000,
+       "test"
+      ]
+     ]
+    },
+    {
+     "key": "/w/lane-c",
+     "label": "lane-c",
+     "sub": "1 agent",
+     "who": [
+      "Lane C unit 14: order API"
+     ],
+     "lane": [
+      [
+       1792243130400,
+       1792244232000,
+       "edit"
+      ]
+     ]
+    },
+    {
+     "key": "Reviews",
+     "label": "Reviews",
+     "sub": "verifier, screen judge",
+     "who": [
+      "Verifier: cart screen"
+     ],
+     "lane": [
+      [
+       1792241661600,
+       1792241845200,
+       "read"
+      ],
+      [
+       1792243926000,
+       1792244232000,
+       "read"
+      ]
+     ]
+    }
+   ],
+   "asleep": [],
+   "share": {
+    "model": 1560000,
+    "test": 1020000,
+    "typecheck": 60000,
+    "read": 240000,
+    "edit": 480000,
+    "gate": 420000,
+    "fidelity": 300000,
+    "git": 120000,
+    "shell": 60000,
+    "build": 60000,
+    "waitUser": 1380000,
+    "idle": 240000,
+    "compact": 180000
+   },
+   "busyMs": 6000000,
+   "parallel": 2.34,
+   "windowShare": {
+    "model": 1560000,
+    "test": 1020000,
+    "typecheck": 60000,
+    "read": 240000,
+    "edit": 480000,
+    "gate": 420000,
+    "fidelity": 300000,
+    "git": 120000,
+    "shell": 60000,
+    "build": 60000,
+    "waitUser": 1380000,
+    "idle": 240000,
+    "compact": 180000
+   },
+   "tasks": [
+    {
+     "id": "1",
+     "subject": "Set up proof gate",
+     "status": "completed"
+    },
+    {
+     "id": "2",
+     "subject": "Product list screen",
+     "status": "completed"
+    },
+    {
+     "id": "3",
+     "subject": "Product detail screen",
+     "status": "completed"
+    },
+    {
+     "id": "4",
+     "subject": "Cart screen",
+     "status": "completed"
+    },
+    {
+     "id": "5",
+     "subject": "Payment screen",
+     "status": "in_progress",
+     "owner": "Lane B"
+    },
+    {
+     "id": "6",
+     "subject": "Order API",
+     "status": "in_progress",
+     "owner": "Lane C"
+    },
+    {
+     "id": "7",
+     "subject": "Verify cart screen",
+     "status": "in_progress",
+     "owner": "Verifier"
+    },
+    {
+     "id": "8",
+     "subject": "Order confirmation screen",
+     "status": "pending"
+    },
+    {
+     "id": "9",
+     "subject": "Full e2e pass",
+     "status": "pending"
+    }
+   ],
+   "units": [
+    {
+     "desc": "Lane B unit 13: payment screen",
+     "type": "general-purpose",
+     "prompt": "Build the payment screen to mockup/app.html#payment. Acceptance criteria F13.1 to F13.4. Commit when the gate passes.",
+     "where": "lane-b",
+     "start": 1792243032000,
+     "end": null,
+     "running": true,
+     "commits": 2,
+     "errors": 1
+    },
+    {
+     "desc": "Lane C unit 14: order API",
+     "type": "general-purpose",
+     "where": "lane-c",
+     "start": 1792243392000,
+     "end": null,
+     "running": true,
+     "commits": 1,
+     "errors": 0
+    },
+    {
+     "desc": "Lane A unit 12: cart screen",
+     "type": "general-purpose",
+     "result": "Cart screen is built and passes its checks; three commits on lane-a.",
+     "where": "lane-a",
+     "start": 1792241112000,
+     "end": 1792242192000,
+     "running": false,
+     "commits": 3,
+     "errors": 0
+    },
+    {
+     "desc": "Explore: existing payment code",
+     "type": "Explore",
+     "where": "shop-app",
+     "start": 1792238412000,
+     "end": 1792238652000,
+     "running": false,
+     "commits": 0,
+     "errors": 0
+    }
+   ],
+   "unitsDone": 2,
+   "features": {
+    "passing": 12,
+    "total": 20
+   },
+   "commits": [
+    {
+     "t": 1792243992000,
+     "sha": "9d2c41e",
+     "msg": "merge lane-a: cart screen",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792243512000,
+     "sha": "a10f000",
+     "msg": "wire payment route",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792243500000,
+     "sha": "4be91a0",
+     "msg": "payment form",
+     "who": "Lane B unit 13: payment screen"
+    },
+    {
+     "t": 1792243152000,
+     "sha": "a11f010",
+     "msg": "checkout state machine",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242792000,
+     "sha": "a12f020",
+     "msg": "merge lane-a: cart screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242432000,
+     "sha": "a13f030",
+     "msg": "product detail screen",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242072000,
+     "sha": "a14f040",
+     "msg": "detail screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241712000,
+     "sha": "a15f050",
+     "msg": "product list screen",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241352000,
+     "sha": "a16f060",
+     "msg": "list screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240992000,
+     "sha": "a17f070",
+     "msg": "api client",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240632000,
+     "sha": "a18f080",
+     "msg": "mock server for e2e",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240272000,
+     "sha": "a19f090",
+     "msg": "proof gate setup",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792239912000,
+     "sha": "a1af0a0",
+     "msg": "design tokens",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792239552000,
+     "sha": "a1bf0b0",
+     "msg": "shared components",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792239192000,
+     "sha": "a1cf0c0",
+     "msg": "plan for the checkout flow",
+     "who": "Main thread"
+    }
+   ],
+   "events": [
+    {
+     "t": 1792243992000,
+     "kind": "commit",
+     "text": "9d2c41e merge lane-a: cart screen",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792243620000,
+     "kind": "gateFail",
+     "text": "checkout.spec.ts › rejects expired card",
+     "who": "Lane B unit 13: payment screen"
+    },
+    {
+     "t": 1792243512000,
+     "kind": "gatePass",
+     "text": "6 checks in 2m 40s",
+     "who": "proof gate"
+    },
+    {
+     "t": 1792243512000,
+     "kind": "commit",
+     "text": "a10f000 wire payment route",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792243500000,
+     "kind": "commit",
+     "text": "4be91a0 payment form",
+     "who": "Lane B unit 13: payment screen"
+    },
+    {
+     "t": 1792243320000,
+     "kind": "memory",
+     "text": "proof memory: held back the verifier for 40s, the Mac was at 86%",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792243152000,
+     "kind": "commit",
+     "text": "a11f010 checkout state machine",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242792000,
+     "kind": "commit",
+     "text": "a12f020 merge lane-a: cart screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242720000,
+     "kind": "compact",
+     "text": "Compacted context",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242432000,
+     "kind": "commit",
+     "text": "a13f030 product detail screen",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242192000,
+     "kind": "agentDone",
+     "text": "Agent finished: Lane A unit 12: cart screen",
+     "who": "Lane A unit 12: cart screen"
+    },
+    {
+     "t": 1792242072000,
+     "kind": "commit",
+     "text": "a14f040 detail screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241712000,
+     "kind": "commit",
+     "text": "a15f050 product list screen",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241352000,
+     "kind": "commit",
+     "text": "a16f060 list screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240992000,
+     "kind": "commit",
+     "text": "a17f070 api client",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240632000,
+     "kind": "commit",
+     "text": "a18f080 mock server for e2e",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240272000,
+     "kind": "commit",
+     "text": "a19f090 proof gate setup",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792239912000,
+     "kind": "commit",
+     "text": "a1af0a0 design tokens",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792239552000,
+     "kind": "commit",
+     "text": "a1bf0b0 shared components",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792239192000,
+     "kind": "commit",
+     "text": "a1cf0c0 plan for the checkout flow",
+     "who": "Main thread"
+    }
+   ],
+   "feed": [
+    {
+     "t": 1792243860000,
+     "end": null,
+     "cat": "test",
+     "desc": "npx playwright test checkout.spec.ts",
+     "ok": null,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243800000,
+     "end": 1792243802000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243740000,
+     "end": 1792243741000,
+     "cat": "read",
+     "desc": "Read src/lib/card.ts",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243620000,
+     "end": 1792243678000,
+     "cat": "gate",
+     "desc": "Gate: test failed, rejects expired card",
+     "ok": false,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243500000,
+     "end": 1792243501000,
+     "cat": "git",
+     "desc": "Commit the payment form",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243440000,
+     "end": 1792243481000,
+     "cat": "test",
+     "desc": "Run the unit tests",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243419000,
+     "end": 1792243420000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243408000,
+     "end": 1792243409000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243397000,
+     "end": 1792243398000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243386000,
+     "end": 1792243387000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243375000,
+     "end": 1792243376000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243364000,
+     "end": 1792243365000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243353000,
+     "end": 1792243354000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243342000,
+     "end": 1792243343000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243331000,
+     "end": 1792243332000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243320000,
+     "end": 1792243321000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243309000,
+     "end": 1792243310000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243298000,
+     "end": 1792243299000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243287000,
+     "end": 1792243288000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243276000,
+     "end": 1792243277000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243265000,
+     "end": 1792243266000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243254000,
+     "end": 1792243255000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243243000,
+     "end": 1792243244000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243232000,
+     "end": 1792243233000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243221000,
+     "end": 1792243222000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243210000,
+     "end": 1792243211000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243199000,
+     "end": 1792243200000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243188000,
+     "end": 1792243189000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243177000,
+     "end": 1792243178000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243166000,
+     "end": 1792243167000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243155000,
+     "end": 1792243156000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243144000,
+     "end": 1792243145000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243133000,
+     "end": 1792243134000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243122000,
+     "end": 1792243123000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243111000,
+     "end": 1792243112000,
+     "cat": "edit",
+     "desc": "Edit src/screens/PaymentForm.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243100000,
+     "end": 1792243101000,
+     "cat": "edit",
+     "desc": "Edit src/screens/Payment.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243092000,
+     "end": 1792243094000,
+     "cat": "read",
+     "desc": "Read src/screens/Cart.tsx",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243072000,
+     "end": 1792243074000,
+     "cat": "read",
+     "desc": "Search for the card form",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243052000,
+     "end": 1792243054000,
+     "cat": "read",
+     "desc": "Read SPEC.md",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
+     "t": 1792243032000,
+     "end": 1792243034000,
+     "cat": "read",
+     "desc": "Read mockup/app.html",
+     "ok": true,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    }
+   ],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 4,
+    "active": 3,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 2,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 1380000,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 6,
+    "e2eMs": 840000,
+    "topSpec": {
+     "name": "checkout.spec.ts",
+     "n": 4
+    },
+    "longest": [
+     {
+      "ms": 542000,
+      "desc": "Ask you to approve the plan",
+      "cat": "waitUser"
+     },
+     {
+      "ms": 372000,
+      "desc": "npx playwright test checkout.spec.ts",
+      "cat": "test"
+     },
+     {
+      "ms": 245000,
+      "desc": "pnpm install",
+      "cat": "build"
+     },
+     {
+      "ms": 160000,
+      "desc": "Gate: full check before commit",
+      "cat": "gate"
+     }
+    ]
+   }
+  },
+  {
+   "id": "admin",
+   "title": "Admin access on production",
+   "cwd": "/Users/you/code/eap_multi_agent_backend",
+   "project": "eap_multi_agent_backend",
+   "branch": "feat/langfuse-tracing",
+   "model": null,
+   "start": 1792062132000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792062132000,
+   "status": {
+    "state": "needsInput",
+    "since": 1792065732000,
+    "label": "Claude asked you something"
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "needsInput",
+     "since": 1792065732000,
+     "label": "Claude asked you something"
+    }
+   ],
+   "rows": [],
+   "asleep": [],
+   "share": {},
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {},
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [],
+   "events": [
+    {
+     "t": 1792065732000,
+     "kind": "needsInput",
+     "text": "Claude stopped to ask you something",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792065731000,
+     "kind": "gateFail",
+     "text": "proof: test still failing — Claude stopped to ask you something.",
+     "who": "proof gate"
+    },
+    {
+     "t": 1792065672000,
+     "kind": "memory",
+     "text": "proof memory: didn't start this test run. The Mac is at 85% and the run needs about 1.5 GB",
+     "who": "Main thread"
+    }
+   ],
+   "feed": [],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  },
+  {
+   "id": "dash",
+   "title": "Dashboard UI redesign",
+   "cwd": "/Users/you/code/proof",
+   "project": "proof",
+   "branch": "main",
+   "model": null,
+   "start": 1792242423000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792242423000,
+   "status": {
+    "state": "thinking",
+    "since": 1792244223000,
+    "label": ""
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "thinking",
+     "since": 1792244223000,
+     "label": ""
+    }
+   ],
+   "rows": [],
+   "asleep": [],
+   "share": {},
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {},
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [],
+   "events": [],
+   "feed": [],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  },
+  {
+   "id": "release",
+   "title": "Proof v0.4.0 release",
+   "cwd": "/Users/you/code/proof",
+   "project": "proof",
+   "branch": "main",
+   "model": "claude-opus-5-5",
+   "start": 1792240332000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792240332000,
+   "status": {
+    "state": "waiting",
+    "since": 1792241772000,
+    "label": "Finished — waiting for your next message"
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "waiting",
+     "since": 1792241772000,
+     "label": "Finished — waiting for your next message"
+    }
+   ],
+   "rows": [],
+   "asleep": [],
+   "share": {
+    "model": 120000,
+    "shell": 240000,
+    "waitUser": 3480000,
+    "idle": 20000
+   },
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {
+    "model": 120000,
+    "shell": 240000,
+    "waitUser": 3480000,
+    "idle": 20000
+   },
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [
+    {
+     "t": 1792241770000,
+     "sha": "1a27553e",
+     "msg": "proof 0.4.0: first public release",
+     "who": "Main thread"
+    }
+   ],
+   "events": [
+    {
+     "t": 1792241770000,
+     "kind": "commit",
+     "text": "1a27553 proof 0.4.0: first public release",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241765000,
+     "kind": "commitBlocked",
+     "text": "proof: commit refused — the command edits files before committing",
+     "who": "proof gate"
+    }
+   ],
+   "feed": [
+    {
+     "t": 1792241480000,
+     "end": 1792241616364,
+     "cat": "shell",
+     "desc": "Wait for both CI runs to finish",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240802000,
+     "end": 1792240885584,
+     "cat": "shell",
+     "desc": "Wait for the tag's CI run to finish",
+     "ok": true,
+     "who": "Main thread"
+    }
+   ],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 18,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 1,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 1,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": [
+     {
+      "ms": 136364,
+      "desc": "Wait for both CI runs to finish",
+      "cat": "shell"
+     },
+     {
+      "ms": 83584,
+      "desc": "Wait for the tag's CI run to finish",
+      "cat": "shell"
+     },
+     {
+      "ms": 11132,
+      "desc": "Verify identical tree, re-point tag, force-push main and tag",
+      "cat": "git"
+     }
+    ]
+   }
+  },
+  {
+   "id": "readme",
+   "title": "Proof README and description improvement",
+   "cwd": "/Users/you/code/proof",
+   "project": "proof",
+   "branch": "main",
+   "model": null,
+   "start": 1792238232000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792238232000,
+   "status": {
+    "state": "waiting",
+    "since": 1792240032000,
+    "label": ""
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "waiting",
+     "since": 1792240032000,
+     "label": ""
+    }
+   ],
+   "rows": [],
+   "asleep": [],
+   "share": {},
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {},
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [],
+   "events": [],
+   "feed": [],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  },
+  {
+   "id": "logo",
+   "title": "Proof logo",
+   "cwd": "/Users/you/code/proof",
+   "project": "proof",
+   "branch": "main",
+   "model": null,
+   "start": 1792237932000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792237932000,
+   "status": {
+    "state": "waiting",
+    "since": 1792239732000,
+    "label": ""
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "waiting",
+     "since": 1792239732000,
+     "label": ""
+    }
+   ],
+   "rows": [],
+   "asleep": [],
+   "share": {},
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {},
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [],
+   "events": [],
+   "feed": [],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  },
+  {
+   "id": "trb",
+   "title": "TRB test case documents review",
+   "cwd": "/Users/you/code/eap_multi_agent_backend",
+   "project": "eap_multi_agent_backend",
+   "branch": "main",
+   "model": null,
+   "start": 1792195632000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792195632000,
+   "status": {
+    "state": "waiting",
+    "since": 1792197432000,
+    "label": ""
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "waiting",
+     "since": 1792197432000,
+     "label": ""
+    }
+   ],
+   "rows": [],
+   "asleep": [],
+   "share": {},
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {},
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [],
+   "events": [
+    {
+     "t": 1792197180000,
+     "kind": "memory",
+     "text": "proof memory: not able to start another agent (\"Audit Tenant Onboarding readiness\") now. The Mac is at 86% and this needs about 1.2 GB, past proof's 85% ceiling.",
+     "who": "Main thread"
+    }
+   ],
+   "feed": [],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  },
+  {
+   "id": "logs",
+   "title": "Multi-agent API logs analysis",
+   "cwd": "/Users/you/code/eap_multi_agent_backend",
+   "project": "eap_multi_agent_backend",
+   "branch": "main",
+   "model": null,
+   "start": 1792192032000,
+   "last": 1792244232000,
+   "to": 1792244232000,
+   "from": 1792192032000,
+   "status": {
+    "state": "waiting",
+    "since": 1792193832000,
+    "label": ""
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "waiting",
+     "since": 1792193832000,
+     "label": ""
+    }
+   ],
+   "rows": [],
+   "asleep": [],
+   "share": {},
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {},
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [],
+   "events": [],
+   "feed": [],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  }
+ ]
+}

@@ -1,7 +1,8 @@
 {
   "checks": [
     { "name": "memory-reading", "run": "bash tests/run.sh memory-reading", "when": ["plugins/", "tests/"], "cache": false },
-    { "name": "all", "run": "bash tests/run.sh", "when": ["plugins/", "tests/"], "timeout": 600, "cache": false }
+    { "name": "all", "run": "bash tests/run.sh", "when": ["plugins/", "tests/"], "timeout": 600, "cache": false },
+    { "name": "fidelity", "run": "test ! -f fidelity/.current-screen || APP_URL=\"$(cat fidelity/.app-url 2>/dev/null || echo \"${APP_URL:-http://127.0.0.1:47400}\")\" fidelity/verify-screen.sh \"$(cat fidelity/.current-screen)\"", "timeout": 300, "cache": false }
   ],
   "maxRounds": 5
 }

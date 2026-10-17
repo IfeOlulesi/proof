@@ -1,0 +1,773 @@
+{
+  "screen": "memory--dark",
+  "source": "mockup/app.html",
+  "scope": "[data-screen=\"memory--dark\"]",
+  "route": "/plugins/proof/scripts/dashboard.html?data=/tests/fixtures/dashboard/home--memory-warning.json&theme=dark#v=memory",
+  "device": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 2,
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "items": [
+    {
+      "id": "brand",
+      "text": "",
+      "box": {
+        "x": 18,
+        "y": 19,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-1",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 96,
+        "y": 13,
+        "w": 190,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "999px",
+        "shadow": "rgba(255, 255, 255, 0.035) 0px 1px 0px 0px inset"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-2",
+      "text": "Admin access on production\nneeds you",
+      "box": {
+        "x": 290,
+        "y": 13,
+        "w": 322,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-3",
+      "text": "Dashboard UI redesign",
+      "box": {
+        "x": 616,
+        "y": 13,
+        "w": 205,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-4",
+      "text": "Proof v0.4.0 release",
+      "box": {
+        "x": 825,
+        "y": 13,
+        "w": 189,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-more",
+      "text": "+4 more",
+      "box": {
+        "x": 1018,
+        "y": 13,
+        "w": 99,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-chip",
+      "text": "Memory\n85%",
+      "box": {
+        "x": 1160,
+        "y": 13,
+        "w": 218,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "theme-toggle",
+      "text": "Switch to light theme",
+      "box": {
+        "x": 1388,
+        "y": 13,
+        "w": 34,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "back",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 28,
+        "y": 82,
+        "w": 164,
+        "h": 30
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "crumb-here",
+      "text": "Memory, this Mac",
+      "box": {
+        "x": 202,
+        "y": 87,
+        "w": 114,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-icon",
+      "text": "",
+      "box": {
+        "x": 53,
+        "y": 176,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(251, 191, 36)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-title",
+      "text": "85% used: 20.3 of 24 GB",
+      "box": {
+        "x": 91,
+        "y": 161,
+        "w": 1030,
+        "h": 33
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 23px/33.35px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-sub",
+      "text": "Past the 75% warning line. proof holds the Mac under 93%, so new runs and agents wait their turn.",
+      "box": {
+        "x": 91,
+        "y": 194,
+        "w": 1030,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-facts",
+      "text": "Headroom to ceiling\n2.0 GB\nSwap in use\n14.6 GB\nMemory pressure\nWarning",
+      "box": {
+        "x": 1137,
+        "y": 149,
+        "w": 250,
+        "h": 77
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-gauge",
+      "text": "Warning 75%\nCeiling 93%",
+      "box": {
+        "x": 53,
+        "y": 244,
+        "w": 1334,
+        "h": 12
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(38, 40, 45)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "hist-title",
+      "text": "Last 6 hours",
+      "box": {
+        "x": 47,
+        "y": 340,
+        "w": 77,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "hist-scale",
+      "text": "% of memory used",
+      "box": {
+        "x": 818,
+        "y": 340,
+        "w": 119,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "hist-chart",
+      "text": "Ceiling 93%\nWarning 75%",
+      "box": {
+        "x": 47,
+        "y": 381,
+        "w": 890,
+        "h": 210
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "hist-axis",
+      "text": "09:00\n10:30\n12:00\n13:30\nnow",
+      "box": {
+        "x": 47,
+        "y": 597,
+        "w": 890,
+        "h": 18
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "runs-title",
+      "text": "CLAUDE'S RUNS, THE ONES PROOF MAY STOP",
+      "box": {
+        "x": 47,
+        "y": 630,
+        "w": 890,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "runs-head",
+      "text": "COMMAND\nSESSION\nRUNNING\nMEMORY",
+      "box": {
+        "x": 47,
+        "y": 650,
+        "w": 890,
+        "h": 25
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "run-1",
+      "text": "npx playwright test checkout.spec.ts\nlane-b\n6m 12s\n1.4 GB",
+      "box": {
+        "x": 47,
+        "y": 674,
+        "w": 890,
+        "h": 37
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "run-2",
+      "text": "pnpm dev\nmain\n1h 12m\n610 MB",
+      "box": {
+        "x": 47,
+        "y": 712,
+        "w": 890,
+        "h": 37
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "run-3",
+      "text": "vitest run src/api\nlane-c\n40s\n380 MB",
+      "box": {
+        "x": 47,
+        "y": 749,
+        "w": 890,
+        "h": 36
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "apps-title",
+      "text": "Using the most memory",
+      "box": {
+        "x": 991,
+        "y": 340,
+        "w": 155,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "apps-sub",
+      "text": "by app",
+      "box": {
+        "x": 1349,
+        "y": 340,
+        "w": 44,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "app-1",
+      "text": "Brave Browser\n3.8 GB",
+      "box": {
+        "x": 991,
+        "y": 373,
+        "w": 402,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "app-2",
+      "text": "OrbStack\n2.6 GB",
+      "box": {
+        "x": 991,
+        "y": 406,
+        "w": 402,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "app-3",
+      "text": "Claude Code\nClaude\n2.1 GB",
+      "box": {
+        "x": 991,
+        "y": 438,
+        "w": 402,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "app-4",
+      "text": "Orca\n0.8 GB",
+      "box": {
+        "x": 991,
+        "y": 470,
+        "w": 402,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "app-5",
+      "text": "Visual Studio Code\n0.5 GB",
+      "box": {
+        "x": 991,
+        "y": 503,
+        "w": 402,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "app-6",
+      "text": "Claude\n0.5 GB",
+      "box": {
+        "x": 991,
+        "y": 535,
+        "w": 402,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "apps-advice",
+      "text": "Close Brave Browser and OrbStack to free about 6.5 GB. Checks and agents then run side by side instead of waiting their turn, and macOS stops swapping.",
+      "box": {
+        "x": 991,
+        "y": 579,
+        "w": 402,
+        "h": 87
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(37, 29, 11)",
+        "radius": "12px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "stops-title",
+      "text": "STOPPED OR HELD BACK BY PROOF",
+      "box": {
+        "x": 991,
+        "y": 680,
+        "w": 402,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "stop-1",
+      "text": "01:33\nHeld back an agent TRB test case documents review\n1.2 GB",
+      "box": {
+        "x": 991,
+        "y": 700,
+        "w": 402,
+        "h": 39
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "stop-2",
+      "text": "13:01\nDidn't start a test run Admin access on production\n1.5 GB",
+      "box": {
+        "x": 991,
+        "y": 739,
+        "w": 402,
+        "h": 38
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    }
+  ]
+}

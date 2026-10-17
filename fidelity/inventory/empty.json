@@ -1,0 +1,185 @@
+{
+  "screen": "empty",
+  "source": "mockup/app.html",
+  "scope": "[data-screen=\"empty\"]",
+  "route": "/plugins/proof/scripts/dashboard.html?data=/tests/fixtures/dashboard/empty.json&theme=light",
+  "device": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 2,
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "items": [
+    {
+      "id": "brand",
+      "text": "",
+      "box": {
+        "x": 18,
+        "y": 19,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-chip",
+      "text": "Memory\n68%",
+      "box": {
+        "x": 1160,
+        "y": 13,
+        "w": 218,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "theme-toggle",
+      "text": "Switch to dark theme",
+      "box": {
+        "x": 1388,
+        "y": 13,
+        "w": 34,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "empty-glyph",
+      "text": "",
+      "box": {
+        "x": 692,
+        "y": 350,
+        "w": 56,
+        "h": 56
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "16px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "empty-title",
+      "text": "No Claude Code sessions in the last 6 hours",
+      "box": {
+        "x": 544,
+        "y": 422,
+        "w": 352,
+        "h": 25
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 17px/24.65px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "empty-sub",
+      "text": "Start one in any project and it appears here within a couple of seconds. Sessions that ran earlier show up if you widen the window.",
+      "box": {
+        "x": 490,
+        "y": 457,
+        "w": 460,
+        "h": 41
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "empty-6h",
+      "text": "6 hours",
+      "box": {
+        "x": 649,
+        "y": 520,
+        "w": 67,
+        "h": 28
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
+        "color": "rgb(14, 17, 22)",
+        "bg": "rgb(241, 241, 238)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "empty-24h",
+      "text": "24 hours",
+      "box": {
+        "x": 716,
+        "y": 520,
+        "w": 74,
+        "h": 28
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(84, 90, 100)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    }
+  ]
+}

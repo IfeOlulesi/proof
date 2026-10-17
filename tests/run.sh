@@ -19,7 +19,7 @@ if command -v claude >/dev/null 2>&1; then
 fi
 
 suites=("$@")
-[ ${#suites[@]} -gt 0 ] || suites=(memory-reading gate gate-guard memory-quick-dashboard)
+[ ${#suites[@]} -gt 0 ] || suites=(memory-reading gate gate-guard memory-quick-dashboard dashboard)
 for s in "${suites[@]}"; do
   echo; echo "#### $s"
   bash "tests/$s.sh" || fail=1

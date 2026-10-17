@@ -63,7 +63,7 @@ export function sessionView(s, now, windowMs) {
     const lane = simplify(sweep(ivs, from, to).lane, minSeg).filter(x => x[2] !== 'idle');
     const alive = list.filter(a => a.end >= from && a.start <= to);
     if (!alive.length && !lane.length) continue;
-    rows.push({ key, label: key === 'Reviews' ? 'Reviews' : nameOf(key) || 'agents', sub: key === 'Reviews' ? 'verifier, screen judge' : `${list.length} agent${list.length === 1 ? '' : 's'}`, lane, agents: alive.length });
+    rows.push({ key, label: key === 'Reviews' ? 'Reviews' : nameOf(key) || 'agents', sub: key === 'Reviews' ? 'verifier, screen judge' : `${list.length} agent${list.length === 1 ? '' : 's'}`, lane, agents: alive.length, who: list.map(a => a.agent?.description || a.agent?.agentType || a.id) });
   }
   for (const r of rows) for (const [a, b] of asleep) r.lane.push([a, b, 'asleep']);
 
@@ -111,7 +111,7 @@ export function sessionView(s, now, windowMs) {
   // list still shows its units this way.
   const activeIds = new Set(s.activeAgents(now).map(a => a.id));
   const units = agents.filter(a => !REVIEW.test(a.agent?.agentType || '') && a.start <= now)
-    .map(a => ({ desc: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', where: nameOf(workspaceOf(a, s.cwd)), start: a.start, end: activeIds.has(a.id) ? null : a.end, running: activeIds.has(a.id), commits: a.commits.length, errors: a.counts.toolErrors }))
+    .map(a => ({ desc: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', prompt: s.byId.get(a.agent?.toolUseId)?.agentPrompt || '', result: activeIds.has(a.id) ? '' : String(a.lastText || '').trim().slice(0, 400), where: nameOf(workspaceOf(a, s.cwd)), start: a.start, end: activeIds.has(a.id) ? null : a.end, running: activeIds.has(a.id), commits: a.commits.length, errors: a.counts.toolErrors }))
     .sort((x, y) => (y.running - x.running) || y.start - x.start);
 
   return {
@@ -157,7 +157,7 @@ function rank(v, now) {
 export function renderPage(data) {
   const html = readFileSync(process.env.PROOF_DASHBOARD_HTML || join(here, 'dashboard.html'), 'utf8');
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
-  return html.replace('/*__PROOF_DATA__*/', `window.__PROOF_DATA__ = ${json};`);
+  return html.replace('/*__PROOF_DATA__*/', () => `window.__PROOF_DATA__ = ${json};`);
 }
 
 // ---- example data for the memory panel when replaying old logs (logs carry no memory readings) ------------------------

@@ -1,0 +1,43 @@
+{
+ "version": "0.5.0",
+ "now": 1792244232000,
+ "windowMs": 7200000,
+ "live": false,
+ "replay": null,
+ "categories": {},
+ "machine": {
+  "system": {
+   "platform": "darwin",
+   "totalMB": 24576,
+   "usedMB": 16711.68,
+   "pct": 68,
+   "warnPct": 75,
+   "ceilingPct": 93,
+   "headroomMB": 6144,
+   "pressure": "normal",
+   "swapMB": 14915
+  },
+  "samples": [],
+  "apps": [],
+  "runs": [],
+  "advice": {
+   "text": "",
+   "userApps": [
+    {
+     "name": "Brave Browser",
+     "mb": 3914
+    },
+    {
+     "name": "OrbStack",
+     "mb": 2691
+    }
+   ]
+  },
+  "keepAwake": {
+   "on": true,
+   "enabled": true
+  },
+  "asleep": []
+ },
+ "sessions": []
+}

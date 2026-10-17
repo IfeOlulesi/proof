@@ -1,0 +1,836 @@
+{
+  "screen": "home--memory-warning--dark",
+  "source": "mockup/app.html",
+  "scope": "[data-screen=\"home--memory-warning--dark\"]",
+  "route": "/plugins/proof/scripts/dashboard.html?data=/tests/fixtures/dashboard/home--memory-warning.json&theme=dark&pin=job-1",
+  "device": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "deviceScaleFactor": 2,
+    "isMobile": true,
+    "hasTouch": true
+  },
+  "items": [
+    {
+      "id": "brand",
+      "text": "",
+      "box": {
+        "x": 18,
+        "y": 19,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-1",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 96,
+        "y": 13,
+        "w": 190,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "999px",
+        "shadow": "rgba(255, 255, 255, 0.035) 0px 1px 0px 0px inset"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-2",
+      "text": "Admin access on production\nneeds you",
+      "box": {
+        "x": 290,
+        "y": 13,
+        "w": 322,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-3",
+      "text": "Dashboard UI redesign",
+      "box": {
+        "x": 616,
+        "y": 13,
+        "w": 205,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-4",
+      "text": "Proof v0.4.0 release",
+      "box": {
+        "x": 825,
+        "y": 13,
+        "w": 189,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "tab-more",
+      "text": "+4 more",
+      "box": {
+        "x": 1018,
+        "y": 13,
+        "w": 99,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-chip",
+      "text": "Memory\n85%",
+      "box": {
+        "x": 1160,
+        "y": 13,
+        "w": 218,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "theme-toggle",
+      "text": "Switch to light theme",
+      "box": {
+        "x": 1388,
+        "y": 13,
+        "w": 34,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-banner",
+      "text": null,
+      "box": {
+        "x": 0,
+        "y": 60,
+        "w": 1440,
+        "h": 66
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(37, 29, 11)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-banner-icon",
+      "text": "",
+      "box": {
+        "x": 28,
+        "y": 81,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(251, 191, 36)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-banner-title",
+      "text": "Memory is at 85%: 20.3 of 24 GB. Runs and agents now wait their turn.",
+      "box": {
+        "x": 64,
+        "y": 72,
+        "w": 1203,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-banner-advice",
+      "text": "Closing Brave Browser (3.8 GB) and OrbStack (2.6 GB) would free about 6.5 GB, so checks and agents run side by side again.",
+      "box": {
+        "x": 64,
+        "y": 92,
+        "w": 1203,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "mem-banner-open",
+      "text": "What's using it",
+      "box": {
+        "x": 1281,
+        "y": 75,
+        "w": 131,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "999px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "session-title",
+      "text": "Checkout flow build",
+      "box": {
+        "x": 28,
+        "y": 148,
+        "w": 207,
+        "h": 32
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 22px/31.9px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "session-meta",
+      "text": "shop-app · feat/checkout · started 1h 42m ago · Opus 5.5",
+      "box": {
+        "x": 249,
+        "y": 156,
+        "w": 375,
+        "h": 21
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-icon",
+      "text": "",
+      "box": {
+        "x": 53,
+        "y": 236,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(34, 197, 94)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-text",
+      "text": "Working: 3 agents running",
+      "box": {
+        "x": 93,
+        "y": 219,
+        "w": 909,
+        "h": 33
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 23px/33.35px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-sub",
+      "text": "Main thread is waiting on them · last commit 4m ago · gate passed 12m ago",
+      "box": {
+        "x": 93,
+        "y": 255,
+        "w": 909,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "status-timer",
+      "text": "6:12",
+      "box": {
+        "x": 1020,
+        "y": 230,
+        "w": 49,
+        "h": 33
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 500 23px/33.35px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "progress",
+      "text": "Tasks\n4 of 9 done\nFeatures\n12 / 20 passing",
+      "box": {
+        "x": 1087,
+        "y": 218,
+        "w": 300,
+        "h": 57
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "run-title",
+      "text": "Run",
+      "box": {
+        "x": 47,
+        "y": 332,
+        "w": 25,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "run-count",
+      "text": "3 running · 2 done",
+      "box": {
+        "x": 886,
+        "y": 332,
+        "w": 111,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "job-main",
+      "text": "Main thread\nWaiting on 3 agents\n1h 42m\n14 commits",
+      "box": {
+        "x": 47,
+        "y": 365,
+        "w": 230,
+        "h": 94
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(24, 25, 29)",
+        "radius": "12px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "border-color 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "run-group-running",
+      "text": "RUNNING",
+      "box": {
+        "x": 313,
+        "y": 369,
+        "w": 684,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "job-1",
+      "text": "Lane B unit 13: payment screen\nOpen ›\nRunning e2e tests · checkout.spec.ts › pays with saved card\n6:12 of 10:00 limit\nlane-b\n2 commits",
+      "box": {
+        "x": 313,
+        "y": 391,
+        "w": 684,
+        "h": 106
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "12px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "border-color 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "job-2",
+      "text": "Lane C unit 14: order API\nEditing src/api/orders.ts\n2:40\nlane-c\n1 commit",
+      "box": {
+        "x": 313,
+        "y": 506,
+        "w": 684,
+        "h": 94
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "12px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "border-color 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "job-3",
+      "text": "Verifier: cart screen\nReading cart.tsx and its acceptance criteria\n0:48\nmain",
+      "box": {
+        "x": 313,
+        "y": 608,
+        "w": 684,
+        "h": 94
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(21, 22, 25)",
+        "radius": "12px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "border-color 0.12s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "run-group-done",
+      "text": "DONE · 2 MORE, FOLDED TO FIT",
+      "box": {
+        "x": 313,
+        "y": 714,
+        "w": 684,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "plan-title",
+      "text": "Plan",
+      "box": {
+        "x": 1051,
+        "y": 332,
+        "w": 28,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "plan-count",
+      "text": "4 / 9",
+      "box": {
+        "x": 1366,
+        "y": 332,
+        "w": 27,
+        "h": 20
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "step-4",
+      "text": "Cart screen\nand 3 earlier",
+      "box": {
+        "x": 1051,
+        "y": 365,
+        "w": 342,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "step-5",
+      "text": "Payment screen\nLane B",
+      "box": {
+        "x": 1051,
+        "y": 402,
+        "w": 342,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(31, 33, 37)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "step-6",
+      "text": "Order API\nLane C",
+      "box": {
+        "x": 1051,
+        "y": 438,
+        "w": 342,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(31, 33, 37)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "step-7",
+      "text": "Verify cart screen\nVerifier",
+      "box": {
+        "x": 1051,
+        "y": 474,
+        "w": 342,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgb(31, 33, 37)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "step-8",
+      "text": "2 more to do",
+      "box": {
+        "x": 1051,
+        "y": 510,
+        "w": 342,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(245, 245, 244)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "dtab-timeline",
+      "text": "T\nTimeline",
+      "box": {
+        "x": 28,
+        "y": 858,
+        "w": 107,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "dtab-time",
+      "text": "W\nWhere the time went",
+      "box": {
+        "x": 139,
+        "y": 858,
+        "w": 189,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "dtab-log",
+      "text": "L\nLog\n1 gate failure",
+      "box": {
+        "x": 332,
+        "y": 858,
+        "w": 167,
+        "h": 34
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    },
+    {
+      "id": "updated",
+      "text": "Updated 2s ago",
+      "box": {
+        "x": 1317,
+        "y": 865,
+        "w": 95,
+        "h": 18
+      },
+      "style": {
+        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
+        "color": "rgb(168, 171, 177)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none"
+      }
+    }
+  ]
+}

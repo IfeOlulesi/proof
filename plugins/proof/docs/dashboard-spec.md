@@ -1,6 +1,6 @@
 # proof dashboard: feature spec
 
-What the dashboard is for, the information it gets, and what's planned. The page shipped in 0.4 (`scripts/dashboard.html`) is a working first version; a redesign only has to read the data feed described here.
+What the dashboard is for, the information it gets, and what's planned. The page (`scripts/dashboard.html`) follows the design in `mockup/app.html` (tag `design-v1`); any page only has to read the data feed described here.
 
 ## Job
 
@@ -61,13 +61,13 @@ It runs at `http://127.0.0.1:47331/`; the port comes from `~/.config/proof/machi
 | `start, last, from, to` | session start, last activity (agents included), window shown |
 | `status` | `{ state, since, cat, label, parallel, agents }`. `state` is one of: `working`, `thinking`, `agents` (main thread waiting for background agents), `approval`, `waiting` (on you), `needsInput`, `stalled`. While the gate runs it shows `working` with `cat: 'gate'`. |
 | `now` | `[{ who, type, where, state, since, cat, label }]`: the main thread first, then every agent mid-work; `where` is its worktree |
-| `rows` | `[{ key, label, sub, agents, lane: [[from, to, cat], …] }]`: timeline rows (main thread, one per worktree, reviews), each drawn by category |
+| `rows` | `[{ key, label, sub, agents, who, lane: [[from, to, cat], …] }]`: timeline rows (main thread, one per worktree, reviews), each drawn by category; `who` names the agents in the row, so commits and gate failures land on their lane |
 | `asleep` | sleep windows inside this session |
 | `share` | `{ <cat>: ms }`: whole session; parallel work splits a moment's time, and waiting on you counts only when nothing else runs |
 | `windowShare` | the same, for the window only |
 | `busyMs`, `parallel` | time anything was running; average number of things running at once |
-| `tasks` | `[{ id, subject, status, active }]`: Claude's task list |
-| `units` | `[{ desc, type, where, start, end, running, commits, errors }]`: agents as work items (used when there's no task list) |
+| `tasks` | `[{ id, subject, status, active, owner }]`: Claude's task list; `owner` is who took the task, when the task file says |
+| `units` | `[{ desc, type, prompt, result, where, start, end, running, commits, errors }]`: agents as work items; `prompt` is what the agent was launched with (the drill-down's brief), `result` its last message once it has finished |
 | `unitsDone` | how many agents have finished |
 | `features` | `{ passing, total }` from features.json, or null |
 | `commits` | `[{ t, sha, msg, who }]`: up to 40, main thread and agents |
@@ -98,19 +98,31 @@ Categories (`cat`) and their meaning:
 | `asleep` | the Mac asleep with work in flight |
 | `idle` | unexplained gaps |
 
-## Panels in 0.4
+## The page
 
-| Panel | Uses |
+One self-contained file: the fonts, Preact and htm are embedded, so it works offline and needs no build step.
+`/*__PROOF_DATA__*/` is replaced by `dashboard.mjs --out` to make a replay page.
+
+| Screen | Uses |
 |---|---|
-| Top bar | `now`, session count, `machine.keepAwake`, memory bar (`system.pct`, warn/ceiling ticks), window switch |
-| Session hero | `title`, `project`, `branch`, `start`, `status`, KPIs (`tasks` done, `commits`, `agents.total`, `counts.gateRounds`, `stuck`), progress bar |
-| Right now | `now`. Timers tick between refreshes, turn amber at 5 min and red at 10, with a bar against the 10-minute limit |
-| Timeline | `rows`, `asleep` (hatched), `from`/`to`, hover for category and duration |
-| Recent activity | `feed` (15, then "show more") |
-| Plan / Work items | `tasks`, else `units` |
-| Where the time went | `share` grouped into 10 colours, `parallel`, `findings` |
-| Memory | `machine.system`, `samples` (with warn and ceiling lines), `apps`, `advice` |
-| Events | `events` (gate passes omitted) |
+| Switcher | up to 4 tabs in feed order; the selected session and the first that needs you always have one; `+N more` opens every session grouped by project, with search (Ctrl/Cmd+K) |
+| Status card | `status` (one line per state, see the status sheet in the mockup), `since`, `tasks`, `features` |
+| Run graph | `now` (agents mid-work, with the 10-minute limit past 5 min), `units` (done agents), `commits` |
+| Plan | `tasks` |
+| Needs you | `events` ("What led here"), `cwd` (where to answer) |
+| Finished, stalled | `events`, `feed`, `counts`, `share`, `findings.longest` |
+| Timeline drawer | `rows`, `commits`, `events`, `feed` (hover) |
+| Where the time went | `share` / `windowShare` split into Claude working, waiting on you and stalls; `busyMs × parallel`; `findings` |
+| Log drawer | `events`, running `feed` items; every tool call one click away |
+| Agent drill-down | `now`, `units` (prompt, commits, errors), `feed` for that agent |
+| Memory banner and view | `machine` (past `warnPct` the banner shows), memory events from every session |
+
+Page parameters, for fixtures, replays and the fidelity check: `?data=<same-origin path>` reads a fixed feed and stops the
+clock at its `now`; `?theme=light|dark`; `?simulate=offline|loading`; `?pin=<test id>` holds a hover state. The view is
+in the hash: `#s=<session>&v=job|memory&j=<agent>&d=timeline|time|log&m=1&q=<search>`.
+
+Fixtures that reproduce the mockup: `node tests/fixtures/dashboard/make.mjs`. The page is checked against each mockup
+frame with `fidelity/verify-screen.mjs <screen>` (see PROGRESS.md on the branch that built it).
 
 ## Planned
 
@@ -119,11 +131,10 @@ Categories (`cat`) and their meaning:
    - In the feed, `now[].steps` holds `{ test, step, since, status }`. The "Right now" row shows it as e.g. "S1 › click 'Save' › expect URL".
    - Link the trace for each test. Keep traces with `trace: 'on'` while proof watches; the monitor serves the files so the trace viewer can open them.
    - Optional screenshot or video thumbnail per failed step.
-2. **Agent drill-down.** Open an agent to see its full activity, the prompt it was given (its description), its result, errors and commits.
-3. **Gate history.** Each Stop and commit gate run, with per-check duration, whether the run was fast, full or cached, and failures over time. This needs `gate.mjs` to append a record per run.
-4. **Units from the project.** Items from `features.json` and `PROGRESS.md`, with the evidence command for each passing item.
-5. **Notifications.** A macOS notification when a session needs your input, the guard stops a run, memory reaches the warning line, or a build finishes.
-6. **Estimate to finish.** Units done per hour, labelled as an estimate.
-7. **Tokens and cost per session** from the usage recorded in the logs.
-8. **All sessions on one screen.** A compact strip per session above the detail view.
-9. **Controls.** Stop a run, open a trace, open the worktree in the editor. Each action needs the monitor's token, so a web page can't trigger it.
+2. **Gate history.** Each Stop and commit gate run, with per-check duration, whether the run was fast, full or cached, and failures over time. This needs `gate.mjs` to append a record per run.
+3. **Units from the project.** Items from `features.json` and `PROGRESS.md`, with the evidence command for each passing item.
+4. **Notifications.** A macOS notification when a session needs your input, the guard stops a run, memory reaches the warning line, or a build finishes.
+5. **Estimate to finish.** Units done per hour, labelled as an estimate.
+6. **Tokens and cost per session** from the usage recorded in the logs.
+7. **All sessions on one screen.** A compact strip per session above the detail view.
+8. **Controls.** Stop a run, open a trace, open the worktree in the editor. Each action needs the monitor's token, so a web page can't trigger it.
