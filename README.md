@@ -1,23 +1,51 @@
-# <picture><source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg"><img src="assets/logo.svg" alt="proof" height="56"></picture>
+<div align="center">
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg"><img src="assets/logo.svg" alt="proof" height="56"></picture>
 
 ### Quit babysitting Claude. Make it check its own work.
 
-[![tests](https://github.com/IfeOlulesi/proof/actions/workflows/test.yml/badge.svg)](https://github.com/IfeOlulesi/proof/actions/workflows/test.yml)
-[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![tests](https://github.com/IfeOlulesi/proof/actions/workflows/test.yml/badge.svg)](https://github.com/IfeOlulesi/proof/actions/workflows/test.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[Install](#install) · [Turn it on](#turn-it-on-in-a-project) · [Phases](#working-in-phases) · [Config](#configuration)
+
+</div>
+
+<br>
 
 proof is a Claude Code plugin. It runs your project's checks (types, lint, tests) every time Claude finishes a reply and before every `git commit`. If a check fails, Claude gets the error and keeps working. You stop being the person who catches the mistakes.
 
 It also adds checks for the parts tests usually miss: whether a spec is complete, whether a mockup covers every state, and whether a screen matches its mockup.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/dashboard-dark.png">
+  <img src="assets/dashboard.png" alt="The proof dashboard: one session with three agents running, their progress, and the plan">
+</picture>
+
+<p align="center"><sub>The live dashboard (<code>/proof:watch</code>), showing a session with three agents at work. Sample data.</sub></p>
 
 ## Install
 
 Open Claude Code and paste this:
 
 ```
-Install the proof plugin (github.com/IfeOlulesi/proof). It needs git and Node.js 20 or later on my PATH: check both first, and if either is missing or too old, tell me and offer to install it. Then run `claude plugin marketplace add IfeOlulesi/proof` and `claude plugin install proof@proof`, and check `claude plugin list` shows proof@proof as enabled. If we're in a git repo, also turn proof on here: write .claude/proof.json (format: github.com/IfeOlulesi/proof#turn-it-on-in-a-project) with checks for the type check, lint and tests this project already uses, run each one once and show me which pass and which fail. Finally, tell me to run /reload-plugins.
+Install the proof plugin (github.com/IfeOlulesi/proof).
+
+1. It needs git and Node.js 20 or later on my PATH. Check both first. If either is
+   missing or too old, tell me and offer to install it.
+2. Run `claude plugin marketplace add IfeOlulesi/proof`, then
+   `claude plugin install proof@proof`. Check `claude plugin list` shows
+   proof@proof as enabled.
+3. If we're in a git repo, turn proof on here: write .claude/proof.json
+   (format: github.com/IfeOlulesi/proof#turn-it-on-in-a-project) with checks for
+   the type check, lint and tests this project already uses. Run each one once
+   and show me which pass and which fail.
+4. Finally, tell me to run /reload-plugins.
 ```
 
-Claude checks what's missing, asks before installing anything, installs proof, and sets it up in the project you're in. Then run `/reload-plugins` (or restart Claude Code).
+Claude checks for git and Node.js, asks before installing anything, installs proof, and sets it up in the project you're in.
+
+> [!TIP]
+> When it's done, run `/reload-plugins` (or restart Claude Code) to load proof.
 
 <details>
 <summary>Install by hand instead</summary>
@@ -32,14 +60,17 @@ Restart Claude Code. `claude plugin list` should show `proof@proof` as enabled.
 
 </details>
 
-Tested on macOS and Linux.
+> [!NOTE]
+> Tested on macOS and Linux.
 
 ## Turn it on in a project
 
 The gate only runs in a repo that has a `.claude/proof.json` listing its checks. The install prompt writes it for the project you installed from. For any other project, open Claude Code there and paste:
 
 ```
-Set up proof in this repo: write .claude/proof.json with checks for the type check, lint and tests this project already uses. Then run every check once and show me which pass and which fail.
+Set up proof in this repo: write .claude/proof.json with checks for the type
+check, lint and tests this project already uses. Then run every check once and
+show me which pass and which fail.
 ```
 
 Or write the file yourself:
@@ -53,33 +84,51 @@ Or write the file yourself:
 }
 ```
 
-That's it. From now on:
+From then on, this is what happens:
 
-- **After each reply that changed files**, the checks run. A failure goes back to Claude, not to you.
-- **Before each `git commit`**, every relevant check runs its full command. A failure blocks the commit.
-- **If Claude edits the checks** (`.claude/proof.json`, `.claude/settings.json`, the fidelity kit), it has to stop and ask you first. It can't loosen a check to get past it.
+```mermaid
+flowchart LR
+  R[Claude changes files] --> C{Checks pass?}
+  C -- no --> F[Claude fixes it] --> R
+  C -- yes --> D[Done]
+  G[git commit] --> A{Full checks pass?}
+  A -- no --> B[Commit blocked]
+  A -- yes --> K[Committed]
+```
 
-Run them yourself any time with `node <plugin>/scripts/gate.mjs --run` (`<plugin>` is the plugin's folder; Claude knows its path).
+Claude can't loosen a check to get past it: if it edits `.claude/proof.json`, `.claude/settings.json` or the fidelity kit, it has to stop and ask you first.
+
+Run the checks yourself any time with `node <plugin>/scripts/gate.mjs --run` (`<plugin>` is the plugin's folder; Claude knows its path).
 
 ## Working in phases
 
-proof splits work into phases. Claude loads the right one on its own, or you can call it:
+Claude picks the right phase on its own, or you can call one:
 
-| Command | Use it for | What it makes checkable |
+| Command | For | Checks that |
 |---|---|---|
-| `/proof:discover` | An idea → a spec | Every acceptance criterion says how it will be verified. No placeholder text. The work is split into units in `features.json`, and a unit can't be marked done without evidence. |
-| `/proof:design` | A spec → an HTML mockup | Every screen and state exists. Every element has a `data-testid`. Real copy, WCAG AA contrast, 44px touch targets, and a spec for every interaction. |
-| `/proof:build` | Any code change | Each unit starts with a failing test. Claude runs the app and uses the feature before calling it done. Screens are compared with the mockup: copy, position, size, font, colour. |
-| `/proof:quick` | A small fix (up to 3 files) | Skips the process but still runs the narrowest check and the commit gate. |
-| `/proof:watch` | Long or parallel work | Opens a live dashboard of every session on the machine. |
+| [`/proof:discover`](plugins/proof/skills/discover/SKILL.md) | Idea → spec | Every requirement says how it's verified |
+| [`/proof:design`](plugins/proof/skills/design/SKILL.md) | Spec → HTML mockup | Every screen, state and test ID exists |
+| [`/proof:build`](plugins/proof/skills/build/SKILL.md) | Any code change | Tests come first, the app is run, screens match the mockup |
+| [`/proof:quick`](plugins/proof/skills/quick/SKILL.md) | Fixes up to 3 files | The narrowest check passes, then the commit gate |
+| [`/proof:watch`](plugins/proof/skills/watch/SKILL.md) | Long or parallel work | Opens the live dashboard |
 
-Before each unit is committed, a separate `proof:verifier` agent reviews it against what was asked, in a fresh context.
+Before each unit of work is committed, a separate `proof:verifier` agent reviews it against what was asked, in a fresh context.
 
 ## Running several sessions at once
 
-Parallel sessions with test runners, dev servers and simulators can run a laptop out of memory. proof keeps the machine under a ceiling (85% by default): heavy runs and new agents wait until there's room, and if the machine goes over anyway, the newest run Claude started is stopped. It never closes your apps. It tells you which ones are using the most.
+Parallel sessions with test runners, dev servers and simulators can run a laptop out of memory. proof keeps the machine under a ceiling (85% by default):
+
+- **Heavy runs and new agents wait** until there's room.
+- **If the machine goes over anyway**, the newest run Claude started is stopped.
+- **Your apps are never closed.** proof tells you which ones are using the most.
 
 On macOS it also keeps the machine from idle-sleeping while Claude is working.
+
+<br>
+
+---
+
+# Reference
 
 ## Configuration
 
