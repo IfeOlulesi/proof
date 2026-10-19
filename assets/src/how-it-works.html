@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How proof works</title>
+<!-- Source for assets/how-it-works.png and how-it-works-dark.png. Render: node assets/src/render.mjs -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f7f5; --surface: #ffffff; --line: #e7e6e2; --line-strong: #d9d8d3; --wire: #b9b8b2;
+  --ink: #0E1116; --ink-2: #2b3038; --muted: #545a64; --faint: #686d76;
+  --brand: #16A34A; --ok-soft: #e8f6ed; --ok-line: #a7dcb9; --bad: #dc3d43;
+  --font: "Plus Jakarta Sans", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+.dark {
+  --bg: #0e0f11; --surface: #151619; --line: #24262a; --line-strong: #303237; --wire: #5a5d63;
+  --ink: #F5F5F4; --ink-2: #d6d6d3; --muted: #a8abb1; --faint: #8d9199;
+  --brand: #22C55E; --ok-soft: #14261b; --ok-line: #23512f; --bad: #f87171;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; }
+#frame { width: 880px; padding: 28px; }
+.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.top h1 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+.legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid var(--line-strong); background: var(--surface); }
+.sw.p { border-color: var(--brand); background: var(--ok-soft); }
+.lane { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-top: 12px; }
+.lane .label { position: absolute; left: 20px; top: 14px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.box { position: absolute; width: 214px; height: 54px; border-radius: 10px; border: 1.5px solid var(--line-strong); background: var(--surface);
+  display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 12px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); line-height: 1.3; }
+.box.p { border-color: var(--brand); background: var(--ok-soft); color: var(--ink); }
+.box.p::before { content: "proof"; position: absolute; top: -9px; left: 10px; font: 700 10px/1 var(--font); letter-spacing: .04em; color: #fff; background: var(--brand); padding: 3px 6px; border-radius: 99px; }
+.dark .box.p::before { color: #0b1a10; }
+code { font-family: var(--mono); font-size: 12.5px; font-weight: 500; }
+svg { position: absolute; inset: 0; overflow: visible; }
+svg path, svg line { stroke: var(--wire); stroke-width: 1.5; fill: none; }
+svg .head { fill: var(--wire); stroke: none; }
+.tag { position: absolute; font-size: 11.5px; font-weight: 700; padding: 2px 7px; border-radius: 99px; background: var(--surface); }
+.tag.ok { color: var(--brand); } .tag.no { color: var(--bad); } .tag.mu { color: var(--faint); font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="frame">
+  <div class="top">
+    <h1>How proof works</h1>
+    <div class="legend"><span><i class="sw"></i>Claude Code, as usual</span><span><i class="sw p"></i>Added by proof</span></div>
+  </div>
+  <div id="lanes"></div>
+</div>
+<script>
+if (new URLSearchParams(location.search).get('theme') === 'dark') document.body.classList.add('dark');
+// x columns and rows inside an 824px-wide lane
+const X = [24, 305, 586], W = 214, H = 54;
+const box = (x, y, text, p) => `<div class="box${p ? ' p' : ''}" style="left:${x}px;top:${y}px"><span>${text}</span></div>`;
+const arrow = (d, end) => `<path d="${d}"/><polygon class="head" points="${end}"/>`;
+const right = (x1, x2, y) => arrow(`M${x1} ${y}H${x2 - 7}`, `${x2},${y} ${x2 - 8},${y - 4.5} ${x2 - 8},${y + 4.5}`);
+const tag = (x, y, cls, t) => `<span class="tag ${cls}" style="left:${x}px;top:${y}px">${t}</span>`;
+
+function loop(label, a, b, pass, fail, back) {
+  const y1 = 44, y2 = 140, cy = y1 + H / 2, mid = X[1] + W / 2;
+  return `<div class="lane" style="height:${y2 + H + 24}px"><span class="label">${label}</span>
+    <svg>${right(X[0] + W, X[1], cy)}${right(X[1] + W, X[2], cy)}
+      ${arrow(`M${mid} ${y1 + H}V${y2 - 7}`, `${mid},${y2} ${mid - 4.5},${y2 - 8} ${mid + 4.5},${y2 - 8}`)}
+      ${back ? arrow(`M${X[1]} ${y2 + H / 2}H${X[0] + W / 2}V${y1 + H + 7}`, `${X[0] + W / 2},${y1 + H} ${X[0] + W / 2 - 4.5},${y1 + H + 8} ${X[0] + W / 2 + 4.5},${y1 + H + 8}`) : ''}</svg>
+    ${box(X[0], y1, a)}${box(X[1], y1, b, 1)}${box(X[2], y1, pass)}${box(X[1], y2, fail, 1)}
+    ${tag(X[1] + W + 18, cy - 24, 'ok', '✓ pass')}${tag(mid + 10, y1 + H + 12, 'no', '✗ fail')}
+    ${back ? tag(X[0] + W / 2 + 14, y2 + H / 2 - 24, 'mu', '↺ Claude fixes it') : ''}</div>`;
+}
+document.getElementById('lanes').innerHTML =
+  loop('After every reply that changes files', 'Claude edits files', 'Runs your checks', 'The reply reaches you', 'Sends the error back to Claude', true) +
+  loop('Before every commit', 'Claude runs <code>git commit</code>', 'Runs the full checks', 'The commit goes through', 'Blocks the commit', false) +
+  `<div class="lane" style="height:122px"><span class="label">If Claude edits the checks</span>
+    <svg>${right(X[0] + W, X[1], 71)}${right(X[1] + W, X[2], 71)}</svg>
+    ${box(X[0], 44, 'Claude edits <code>proof.json</code>')}${box(X[1], 44, 'Stops Claude to ask you', 1)}${box(X[2], 44, 'You approve or say no')}</div>`;
+document.body.dataset.ready = 1;
+</script>
+</body>
+</html>

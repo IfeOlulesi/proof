@@ -98,15 +98,10 @@ Or write the file yourself:
 
 From then on, this is what happens:
 
-```mermaid
-flowchart LR
-  R[Claude changes files] --> C{Checks pass?}
-  C -- no --> F[Claude fixes it] --> R
-  C -- yes --> D[Done]
-  G[git commit] --> A{Full checks pass?}
-  A -- no --> B[Commit blocked]
-  A -- yes --> K[Committed]
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/how-it-works-dark.png">
+  <img src="assets/how-it-works.png" alt="How proof works. After every reply that changes files, proof runs your checks: on a pass the reply reaches you, on a fail proof sends the error back to Claude, which fixes it. Before every commit, proof runs the full checks: on a pass the commit goes through, on a fail proof blocks it. If Claude edits proof.json, proof stops Claude to ask you, and you approve or say no.">
+</picture>
 
 Claude can't loosen a check to get past it: if it edits `.claude/proof.json`, `.claude/settings.json` or the fidelity kit, it has to stop and ask you first.
 
