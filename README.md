@@ -23,6 +23,18 @@ It also adds checks for the parts tests usually miss: whether a spec is complete
 
 <p align="center"><sub>The live dashboard (<code>/proof:watch</code>), showing a session with three agents at work. Sample data.</sub></p>
 
+## What it catches
+
+| ❌ Without proof | ✅ With proof |
+|---|---|
+| **Claude says "done"**<br><sub>…and the tests fail when you run them.</sub> | Checks run after every reply that changes files. Claude sees the failure and fixes it before handing back. |
+| **A failing check gets switched off**<br><sub>…so the work "passes".</sub> | Editing `proof.json`, `settings.json` or the fidelity kit makes Claude stop and ask you first. |
+| **The screen is *almost* the design**<br><sub>Wrong copy, a few pixels off, the wrong grey.</sub> | Every tagged element is checked against the mockup: exact copy, position and size within 2px, font, colour. |
+| **The empty state never got built**<br><sub>The spec didn't mention it.</sub> | Every state needs its own mockup frame, and every requirement says how it'll be verified. |
+| **A test run hangs**<br><sub>Claude waits forever.</sub> | Test runs and builds have time limits. A breach is reported as a hang. |
+| **Your laptop freezes**<br><sub>Three agents and a simulator at once.</sub> | Heavy runs wait for memory. If the machine goes over the ceiling, the newest run is stopped. |
+| **You come back after an hour**<br><sub>No idea what happened.</sub> | The dashboard shows every session: what's running, for how long, the plan and the check results. |
+
 ## Install
 
 Open Claude Code and paste this:
