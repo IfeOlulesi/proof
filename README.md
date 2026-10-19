@@ -11,18 +11,38 @@ It also adds checks for the parts tests usually miss: whether a spec is complete
 
 ## Install
 
+Open Claude Code and paste this:
+
 ```
-/plugin marketplace add IfeOlulesi/proof
-/plugin install proof@proof
+Install the proof plugin (github.com/IfeOlulesi/proof). It needs git and Node.js 20 or later on my PATH: check both first, and if either is missing or too old, tell me and offer to install it. Then run `claude plugin marketplace add IfeOlulesi/proof` and `claude plugin install proof@proof`, and check `claude plugin list` shows proof@proof as enabled. If we're in a git repo, also turn proof on here: write .claude/proof.json (format: github.com/IfeOlulesi/proof#turn-it-on-in-a-project) with checks for the type check, lint and tests this project already uses, run each one once and show me which pass and which fail. Finally, tell me to run /reload-plugins.
 ```
 
-Then start a new session, or run `/reload-plugins`.
+Claude checks what's missing, asks before installing anything, installs proof, and sets it up in the project you're in. Then run `/reload-plugins` (or restart Claude Code).
 
-You need git and Node.js 20+ on your `PATH`. Tested on macOS and Linux.
+<details>
+<summary>Install by hand instead</summary>
+
+You need git and Node.js 20+ on your `PATH`. Then, in a terminal:
+
+```bash
+claude plugin marketplace add IfeOlulesi/proof && claude plugin install proof@proof
+```
+
+Restart Claude Code. `claude plugin list` should show `proof@proof` as enabled.
+
+</details>
+
+Tested on macOS and Linux.
 
 ## Turn it on in a project
 
-The gate stays off until a repo has a `.claude/proof.json` listing its checks. Ask Claude to set it up (the build skill writes it from the project's own scripts), or write it yourself:
+The gate only runs in a repo that has a `.claude/proof.json` listing its checks. The install prompt writes it for the project you installed from. For any other project, open Claude Code there and paste:
+
+```
+Set up proof in this repo: write .claude/proof.json with checks for the type check, lint and tests this project already uses. Then run every check once and show me which pass and which fail.
+```
+
+Or write the file yourself:
 
 ```json
 {
