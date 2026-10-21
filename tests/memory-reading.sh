@@ -6,6 +6,14 @@ unset PROOF_FAKE_MEM
 snap=$(node "$S/mem.mjs" --json)
 jget() { node -e 'const v = process.argv[2].split(".").reduce((o, k) => (o == null ? o : o[k]), JSON.parse(process.argv[1])); console.log(v)' "$snap" "$1"; }
 
+echo "== machine settings"
+expect "the default memory ceiling is 90% and the warning 75% (no machine.json, no env)" "mkdir -p '$T/home' && env -u PROOF_MEMORY_CEILING_PERCENT -u PROOF_MEMORY_WARN_PERCENT HOME='$T/home' node --input-type=module -e \"
+import { machineConfig } from '$S/mem.mjs';
+const c = machineConfig(); process.exit(c.ceilingPct === 90 && c.warnPct === 75 ? 0 : 1);\""
+expect "machine.json still overrides the ceiling" "mkdir -p '$T/home2/.config/proof' && echo '{\"memoryCeilingPercent\": 93}' > '$T/home2/.config/proof/machine.json' && env -u PROOF_MEMORY_CEILING_PERCENT HOME='$T/home2' node --input-type=module -e \"
+import { machineConfig } from '$S/mem.mjs';
+process.exit(machineConfig().ceilingPct === 93 ? 0 : 1);\""
+
 echo "== parsing the platform tools' output (every OS)"
 expect "top's MEM column: K, M and G units, and the +/- trend marks" "node --input-type=module -e \"
 import { parseTopMem } from '$S/mem.mjs';

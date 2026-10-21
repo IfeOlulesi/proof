@@ -182,7 +182,7 @@ export function exampleMachine(at) {
   ];
   return {
     example: true,
-    system: { totalMB: total, usedMB: used, pct, warnPct: 75, ceilingPct: 85, pressure: pct > 80 ? 'warn' : 'normal', swapMB: 1300, headroomMB: 0.85 * total - used, platform: 'darwin' },
+    system: { totalMB: total, usedMB: used, pct, warnPct: 75, ceilingPct: 90, pressure: pct > 80 ? 'warn' : 'normal', swapMB: 1300, headroomMB: 0.9 * total - used, platform: 'darwin' },
     samples, apps, keepAwake: { on: true },
     runs: [
       { pid: 48211, mb: 1120, command: 'node node_modules/.bin/expo start --web --port 8084', cwd: '/x/app' },

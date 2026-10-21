@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // proof memory: how much of the machine's memory is in use, what is using it (Claude's own processes versus your
 // other apps), and whether there is room for a heavy job. The hooks use it to keep the machine under its ceiling
-// (85% by default); on its own it prints a summary:
+// (90% by default); on its own it prints a summary:
 //   node mem.mjs [--json] [--need MB]
 // Machine-wide settings live in ~/.config/proof/machine.json (all optional):
-//   { "memoryWarnPercent": 75, "memoryCeilingPercent": 85, "keepAwake": true,
+//   { "memoryWarnPercent": 75, "memoryCeilingPercent": 90, "keepAwake": true,
 //     "dashboardPort": 47331, "autoOpenDashboard": true, "autoOpenAfterMinutes": 45 }
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readdirSync, readFileSync, readlinkSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
@@ -25,7 +25,7 @@ export function machineConfig() {
   const env = process.env;
   return {
     warnPct: num(env.PROOF_MEMORY_WARN_PERCENT ?? file.memoryWarnPercent, 75),
-    ceilingPct: num(env.PROOF_MEMORY_CEILING_PERCENT ?? file.memoryCeilingPercent, 85),
+    ceilingPct: num(env.PROOF_MEMORY_CEILING_PERCENT ?? file.memoryCeilingPercent, 90),
     keepAwake: (env.PROOF_KEEP_AWAKE ?? file.keepAwake ?? true) !== false && env.PROOF_KEEP_AWAKE !== '0',
     port: num(env.PROOF_DASHBOARD_PORT ?? file.dashboardPort, 47331),
     autoOpen: (file.autoOpenDashboard ?? true) !== false && env.PROOF_AUTO_OPEN !== '0',

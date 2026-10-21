@@ -18,7 +18,7 @@ In every phase:
 9. If the same problem needs a third correction, stop and recommend /clear with a sharper prompt.
 10. Review with the proof:verifier agent once per unit, before committing it (fresh context, correctness and requirement gaps only), not by re-reading your own work.
 11. If you must stop for the user's input while checks are failing, end your message with a line starting NEEDS-INPUT: and the question.
-12. Memory has a ceiling (85% by default). Heavy runs and new agents wait their turn or are refused when there's no room. When proof reports memory, first stop your own processes you no longer need (dev servers, simulators, browsers). Never close the user's apps; tell them what closing them would free and how much faster the work goes.
+12. Memory has a ceiling (90% by default). Heavy runs and new agents wait their turn or are refused when there's no room. When proof reports memory, first stop your own processes you no longer need (dev servers, simulators, browsers). Never close the user's apps; tell them what closing them would free and how much faster the work goes.
 13. Wait for a background run with TaskOutput (it returns when the run exits), never by polling its log with until/grep or with pgrep. proof stops wait loops after 5 minutes.
 14. Red runs stop at the first failure (--max-failures=1, --bail, -x).
 15. Small, clear fixes (copy, styling, a contained bug, up to 3 files): use proof:quick. Work longer than an hour: open the dashboard (proof:watch) and keep your task list current, one item per unit.

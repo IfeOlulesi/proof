@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 (2026-10-21)
+
+- **Higher memory ceiling.** The default ceiling is now 90% (was 85%), so heavy runs and new agents are held back less often. The warning stays at 75%. To set your own, put `{ "memoryCeilingPercent": 85 }` in `~/.config/proof/machine.json`.
+
 ## 0.4.0 (2026-10-15)
 
 First public release.

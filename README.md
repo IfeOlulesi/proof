@@ -123,7 +123,7 @@ Before each unit of work is committed, a separate `proof:verifier` agent reviews
 
 ## Running several sessions at once
 
-Parallel sessions with test runners, dev servers and simulators can run a laptop out of memory. proof keeps the machine under a ceiling (85% by default):
+Parallel sessions with test runners, dev servers and simulators can run a laptop out of memory. proof keeps the machine under a ceiling (90% by default):
 
 - **Heavy runs and new agents wait** until there's room.
 - **If the machine goes over anyway**, the newest run Claude started is stopped.

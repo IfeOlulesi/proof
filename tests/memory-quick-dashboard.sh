@@ -62,7 +62,7 @@ node "$S/guard.mjs" --timeout 2 --kind wait -- 'sleep 30 # waitprobe' 2>"$T/g1";
 expect "a wait loop stops at its limit with advice to check the run itself" "[ $r -eq 124 ] && grep -q 'its condition never came true' $T/g1 && ! grep -q 'Find the cause' $T/g1"
 node "$S/guard.mjs" --timeout 60 --kind test -- 'sleep 40 # runA' 2>"$T/gA" & GA=$!; sleep 1.2
 node "$S/guard.mjs" --timeout 60 --kind test -- 'sleep 40 # runB' 2>"$T/gB" & GB=$!; sleep 1.5
-fake_mem 22000
+fake_mem 23000
 wait $GB; tB=$(now_ms)
 expect "machine over the ceiling: the newest run (B) is stopped first, as a memory stop" "grep -q 'machine memory: the [A-Za-z]* reached' $T/gB && grep -q 'stopped first' $T/gB"
 expect "the older run (A) is still going when B stops" "[ \$(alive 'sleep 40 # runA') -ge 1 ]"

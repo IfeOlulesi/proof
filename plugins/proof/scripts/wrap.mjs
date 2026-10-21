@@ -2,7 +2,7 @@
 // proof — PreToolUse hook for Bash.
 //  1. Test runs (unit and end-to-end), heavy builds and wait loops run under the proof guard: a time limit and memory
 //     ceilings that also cover background runs. The command is rewritten; anything else passes through untouched.
-//  2. Heavy runs take turns for memory. If starting one would take the machine past its ceiling (85% by default), the
+//  2. Heavy runs take turns for memory. If starting one would take the machine past its ceiling (90% by default), the
 //     hook waits for Claude's other guarded runs to finish (up to 3 minutes); if there's still no room, it refuses and
 //     says what is using memory, including the user's apps that would free the most.
 //  3. Memory stops proof made since this session's last command are passed on to Claude.
