@@ -131,6 +131,18 @@ Parallel sessions with test runners, dev servers and simulators can run a laptop
 
 On macOS it also keeps the machine from idle-sleeping while Claude is working.
 
+## Roadmap
+
+- **Other agent harnesses.** Codex CLI first, then Gemini CLI, Antigravity and OpenCode. The checks and limits are plain Node; what needs adapting is the hook wiring and the dashboard's log reader.
+- **Checks in CI.** A GitHub Action that runs the same `.claude/proof.json`, for cloud sessions and pull requests that didn't come from Claude.
+- **Setup that writes `proof.json` for you.** Suggests checks from `package.json`, `pyproject.toml` or `Cargo.toml`.
+- **Flaky tests named, not hidden.** A failure that passes on a re-run is reported as flaky.
+- **Notifications when Claude needs you.** A desktop or phone alert when a session stops on a question or runs out of rounds.
+- **Accessibility checks** in the design gate: contrast and basic rules on every screen.
+- **Closer comparison for Flutter and native apps**, beyond screenshots.
+- **Linux and Windows parity** for keep-awake and memory pressure.
+- **History on the dashboard.** Check results over time and how long each unit took.
+
 <br>
 
 ---
