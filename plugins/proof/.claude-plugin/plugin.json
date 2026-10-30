@@ -1,7 +1,7 @@
 {
   "name": "proof",
   "displayName": "Proof",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Gives Claude a check to run at every step of building software, from spec to commit: specs where every requirement says how it's verified, mockups that double as tests, screen-by-screen fidelity checks, and a gate that runs your checks before Claude stops or commits. Also keeps parallel sessions inside your machine's memory and shows them on a live dashboard.",
   "author": {
     "name": "Ray",
