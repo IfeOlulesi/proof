@@ -5,7 +5,7 @@ import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFile
 import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 
-// Files that define the checks. A session that changes one must show the change to the user.
+// Files that define the checks. A session that loosens one (see checkTamper in gate.mjs) must ask the user.
 export const PROTECTED = [
   '.claude/proof.json',
   '.claude/settings.json',

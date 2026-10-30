@@ -99,5 +99,5 @@ if (upgrade) {
 }
 
 if (!upgrade) {
-  console.log('\nNext: make sure Playwright is installed (npm i -D playwright && npx playwright install chromium), put the approved mockup in mockup/, then extract each screen (fidelity.md, step 0.3).');
+  console.log('\nNext: make sure Playwright is installed (npm i -D playwright && npx playwright install --only-shell chromium), put the approved mockup in mockup/, then extract each screen (fidelity.md, step 0.3).');
 }

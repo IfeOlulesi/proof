@@ -8,7 +8,7 @@ Use this whenever the job is "make the app match this mockup". Never implement e
 2. **Install the kit** from the repo root with the command in the build skill. It runs `fidelity-kit/install.mjs` from the build skill's folder, and you pass the app's dev URL (Expo web 8081, Vite 5173, Next 3000), e.g. `--app-url http://localhost:8081`.
    - It copies the scripts to `fidelity/`, adds a `fidelity` check to `.claude/proof.json` and updates `.gitignore`.
    - The check is marked `cache: false`, because its result depends on the running app, not just the code.
-   - It needs Playwright: `npm i -D playwright && npx playwright install chromium`.
+   - It needs Playwright: `npm i -D playwright && npx playwright install --only-shell chromium`.
    - A repo set up with an earlier version upgrades with `install.mjs --upgrade` (see the build skill).
 3. **Extract each screen and state frame:**
    `node fidelity/extract-inventory.mjs mockup/app.html <screen-id> '[data-screen="<screen-id>"]'`
@@ -19,7 +19,7 @@ Use this whenever the job is "make the app match this mockup". Never implement e
    - set `appScope`, a CSS selector, if the app renders the screen inside a container
    Show the user the inventories to review.
 5. **Freeze:** `git add -A && git commit -m "fidelity contract" && git tag -f contract`.
-   From now on the check fails if the mockup, inventories, references or kit scripts change. Re-tag only when the user approves a change. (`.claude/proof.json` isn't frozen; the gate flags any change a session makes to it.)
+   From now on the check fails if the mockup, inventories, references or kit scripts change. Re-tag only when the user approves a change. (`.claude/proof.json` isn't frozen; the gate flags a session that removes or rewrites a check in it.)
 
 ## 1. Foundation (one session)
 

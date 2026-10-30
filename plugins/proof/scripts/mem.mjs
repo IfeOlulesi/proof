@@ -307,31 +307,76 @@ export function advice(snap, needMB = 0) {
 
 // ---- learned peaks ----------------------------------------------------------------------------------------------------
 
-export const DEFAULT_NEED = { test: 1500, e2e: 1800, build: 2500, devserver: 1200, simulator: 3000, docker: 2500, browser: 700, fidelity: 900, subagent: 1200, check: 1500, wait: 0 };
+// Starting estimates in MB, used until a command has been measured. A subagent runs inside Claude Code's own process
+// (its heavy commands are admitted on their own), so it costs little by itself; a browser is Playwright's headless
+// shell with one page, measured at about 420 MB.
+export const DEFAULT_NEED = { test: 1500, e2e: 1800, build: 2500, devserver: 1200, simulator: 3000, docker: 2500, browser: 700, fidelity: 900, subagent: 400, check: 1500, wait: 0 };
 const peaksFile = () => join(dataDir(), 'peaks.json');
-export const peakKey = (root, cmd) => `${root || ''}|${String(cmd).replace(/\s+/g, ' ').replace(/'[^']*'|"[^"]*"/g, '…').replace(/(^|\s)\/\S+/g, '$1…').split(' ').slice(0, 4).join(' ')}`;
+
+// The heavy part of a command line, so a compound command (`cd app && npx jest`, `kill 123; npm test`) is known by
+// the run in it, not by whatever comes first.
+const HEAVY = /\b(?:jest|vitest|pytest|py\.test|mocha|ava|rspec|phpunit|tox|nox|playwright|maestro|detox|cypress|gradlew|xcodebuild|unittest)\b|\b(?:go|cargo|flutter|dart|deno|bun|swift|mix|dotnet)\s+(?:test|build)\b|\b(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?(?:tests?|e2e|build)\b|\bnpm\s+t\b|\b(?:next|vite)\s+build\b|--test\b|manage\.py\s+test|eas\s+build|docker\s+(?:compose\s+)?build/;
+const WORKER_FLAG = /\s(?:--maxWorkers|--minWorkers|--workers|--test-concurrency|--max-workers|-p|-w|-j|-n)(?:=\S+|\s+(?:\d+|auto))/g;
+const TARGET_FLAG = /^(?:-t|-k|-g|-run|--grep|--testNamePattern|--test-name-pattern|--findRelatedTests|--filter|related|--shard)$/;
+// Flags whose value is a file that configures the run, not a test to run: `jest --config jest.config.js` is the suite.
+const VALUE_FLAG = /^(?:-c|--config|--project|--reporters?|--outputFile|--output-file|--rootDir|--rootdir|--setupFiles|--env|--environment|--dir|--root|--cache-dir|--junitxml|--test-reporter|--test-reporter-destination|--import|--require|-r|--loader|-o|--cov|--cov-report|--tsconfig)$/;
+
+// Which past runs a command's memory need is learned from. Runs of the same tests share a key; a run of a few files
+// or one test name is keyed apart from the whole suite (it needs a fraction of it); worker caps don't change the key
+// (the need is scaled by workers instead); a `cd` into a subfolder does.
+export function peakKey(root, cmd) {
+  const parts = String(cmd).split(/&&|\|\||[;\n]/).map(p => p.trim()).filter(Boolean);
+  const i = parts.findIndex(p => HEAVY.test(p));
+  const heavy = parts[i < 0 ? parts.length - 1 : i] || '';
+  const cd = parts.slice(0, i < 0 ? parts.length - 1 : i).map(p => p.match(/^cd\s+(\S+)/)?.[1]).filter(Boolean).pop();
+  const dir = cd ? `${cd.replace(/^\.\/|\/$/g, '').split('/').slice(-2).join('/')}: ` : '';
+  const words = ` ${heavy}`.replace(WORKER_FLAG, '').replace(/'[^']*'|"[^"]*"/g, '…').trim()
+    .replace(/^(?:[A-Za-z_]\w*=\S*\s+)*(?:(?:time|nice|caffeinate)\s+)?/, '')
+    .replace(/^(?:(?:npx|bunx)\s+(?:--?[\w-]+(?:=\S+)?\s+)*|(?:pnpm|yarn)\s+(?:exec|dlx)\s+|(?:uv|poetry|pipenv|hatch|pdm|rye)\s+run\s+|\S*python[\d.]*\s+-m\s+)/, '')
+    .split(/\s+/);
+  const kept = [];
+  let targeted = false, skipNext = false;
+  for (const w of words) {
+    if (skipNext) { skipNext = false; continue; }
+    if (w === '--' || w === '…') continue;                          // a quoted argument: often a glob or pattern
+    if (TARGET_FLAG.test(w.split('=')[0])) { targeted = true; skipNext = !w.includes('=') && w !== 'related'; continue; }
+    if (VALUE_FLAG.test(w)) { skipNext = true; continue; }
+    if (VALUE_FLAG.test(w.split('=')[0])) continue;
+    if (!kept.length && !/^-/.test(w)) { kept.push(w.split(/[/\\]/).pop()); continue; }   // the program: ./bin/jest is jest
+    if (/^\.\/\.\.\.$|^\.\/?$/.test(w)) continue;                     // go's ./... and "." mean everything
+    if (/[/\\]/.test(w) && !/^-/.test(w) && (/[*?]|\/$/.test(w) || !/\.[A-Za-z]{1,5}$|::/.test(w))) continue;   // a folder or glob: still many tests
+    if (/[/\\]|::|\{files\}|\.[A-Za-z]{1,5}$/.test(w) && !/^-/.test(w)) {
+      // The script an interpreter runs is the program, not a target: `bash tests/run.sh`, `node scripts/check.mjs`.
+      if (kept.length === 1 && /^(?:ba|z)?sh$|^node$|^bun$|^deno$|^python[\d.]*$|^ruby$/.test(kept[0])) { kept.push(w.split(/[/\\]/).pop()); continue; }
+      targeted = true; continue;
+    }
+    kept.push(w);
+  }
+  return `${root || ''}|${dir}${kept.slice(0, 4).join(' ')}${targeted ? ' (targeted)' : ''}`;
+}
 
 export function readPeaks() { try { return JSON.parse(readFileSync(peaksFile(), 'utf8')); } catch { return {}; } }
 
-export function learnPeak(key, kind, mb, root) {
+// A command's recent runs (key version 2; runs measured under the old keys are ignored).
+export function learnedFor(key) {
+  const e = readPeaks()[key];
+  return e?.v === 2 && Array.isArray(e.runs) && e.runs.length ? e : null;
+}
+
+// Record a run's peak and the workers it had. Only the last 6 runs count, so one unusual run fades once the command
+// has run normally a few times, instead of setting its estimate for good.
+export function learnPeak(key, kind, mb, root, workers = 0) {
   if (!(mb > 0)) return;
   try {
     const all = readPeaks();
-    const e = all[key] || { mb: 0, n: 0, kind, root };
-    e.mb = Math.max(mb, e.n >= 5 ? e.mb * 0.9 : e.mb);       // slowly forget an old record
+    const e = all[key]?.v === 2 ? all[key] : { v: 2, runs: [], n: 0 };
+    e.runs = [...e.runs, { mb: Math.round(mb), w: workers || 0 }].slice(-6);
+    e.mb = Math.max(...e.runs.map(r => r.mb));
     e.n++; e.at = Date.now(); e.kind = kind; e.root = root;
     all[key] = e;
     mkdirSync(dataDir(), { recursive: true });
     writeFileSync(peaksFile(), JSON.stringify(all));
   } catch {}
-}
-
-export function expectedNeed(kind, key, root) {
-  const all = readPeaks();
-  if (all[key]) return Math.round(all[key].mb * 1.15);
-  const same = Object.values(all).filter(e => e.kind === kind && e.root === root).map(e => e.mb);
-  if (same.length) return Math.round(Math.max(...same) * 1.15);
-  return DEFAULT_NEED[kind] ?? 1000;
 }
 
 // ---- runs Claude started under the guard (so the newest can be stopped first) ---------------------------------------
@@ -352,6 +397,28 @@ export function liveRuns() {
     } catch {}
   }
   return out.sort((a, b) => b.start - a.start);
+}
+
+// A run admitted but not started yet (the hook has said yes; its guard hasn't registered it): its need is held for
+// up to HOLD_MS so a second run admitted meanwhile doesn't count the same room. The guard releases it on start.
+const holdsDir = () => join(dataDir(), 'holds');
+export function hold(needMB) {
+  const id = `${Date.now()}-${process.pid}-${Math.random().toString(36).slice(2, 8)}`;
+  try { mkdirSync(holdsDir(), { recursive: true }); writeFileSync(join(holdsDir(), `${id}.json`), JSON.stringify({ t: Date.now(), need: Math.round(needMB) })); } catch {}
+  return id;
+}
+export function release(id) { if (id) try { unlinkSync(join(holdsDir(), `${String(id).replace(/[^\w-]/g, '')}.json`)); } catch {} }
+function holds() {
+  const out = [];
+  let files = [];
+  try { files = readdirSync(holdsDir()); } catch { return out; }
+  for (const f of files) {
+    try {
+      const h = JSON.parse(readFileSync(join(holdsDir(), f), 'utf8'));
+      if (Date.now() - h.t < HOLD_MS) out.push(h); else unlinkSync(join(holdsDir(), f));
+    } catch {}
+  }
+  return out;
 }
 
 // ---- events Claude should hear about (the next hook passes them on) --------------------------------------------------
@@ -380,13 +447,19 @@ export function readSystemFast() {
 }
 
 // Can a job that needs `needMB` start now without taking the machine past the ceiling? Critical memory pressure
-// also says no, whatever the percentage: the machine is already swapping hard.
-export function admit(needMB) {
+// also says no, whatever the percentage: the machine is already swapping hard. A run that started in the last 15s
+// hasn't reached its size yet, so what it is expected to need is held back (`heldMB`, plus `extraMB` the caller is
+// holding itself); `roomMB` is the room left after that.
+export const HOLD_MS = 15000;
+export function admit(needMB, extraMB = 0) {
   const s = readSystemFast();
-  const after = s.usedMB + needMB;
+  const young = r => r.need > 0 && Date.now() - (r.start ?? r.t) < HOLD_MS;
+  const heldMB = extraMB + [...liveRuns(), ...holds()].filter(young).reduce((n, r) => n + r.need, 0);
+  const roomMB = s.headroomMB - heldMB;
+  const after = s.usedMB + heldMB + needMB;
   const limit = (s.ceilingPct / 100) * s.totalMB;
   const critical = s.pressure === 'critical';
-  return { ok: after <= limit && !critical, critical: critical && after <= limit, warn: s.pct >= s.warnPct || after > (s.warnPct / 100) * s.totalMB || !!s.pressure && s.pressure !== 'normal', system: s, needMB };
+  return { ok: after <= limit && !critical, critical: critical && after <= limit, roomMB, heldMB, warn: s.pct >= s.warnPct || after > (s.warnPct / 100) * s.totalMB || !!s.pressure && s.pressure !== 'normal', system: s, needMB };
 }
 
 // ---- CLI --------------------------------------------------------------------------------------------------------------

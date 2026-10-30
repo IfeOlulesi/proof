@@ -10,7 +10,9 @@ description: Engineering work of any kind — implementing features, fixing bugs
 1. **Read the state.** Read SPEC.md, features.json and PROGRESS.md (whichever exist), and `git log --oneline -15`.
 2. **Make sure the gate exists.** `.claude/proof.json` lists the commands that prove this project works.
    - If it's missing, create it from the project's real scripts (package.json, Makefile, pubspec.yaml, Gradle, Cargo) and run each command once.
-   - Changing this file is flagged to the user, so end your message with `NEEDS-INPUT:` asking them to confirm it.
+   - If the project has no tests at all, set up the lightest runner for its stack from `${CLAUDE_SKILL_DIR}/references/test-tools.md`, and tell the user in one line. Don't swap out a runner the project already uses.
+   - Setting it up and adding checks is your job: don't ask the user to review the file. Tell them in one line what is now checked.
+   - Removing a check, changing its command or narrowing its `when` is flagged, and needs the user's OK.
 3. **Check the baseline.** Run every check before changing anything: `node "${CLAUDE_PLUGIN_ROOT}/scripts/gate.mjs" --run`.
    - Checks that already passed on this exact code are reused, so this is cheap on a commit that's been checked before.
    - If something already fails, tell the user and fix or record it first. Don't build on a red baseline.
@@ -66,9 +68,9 @@ The fields:
    - The verifier relies on this record, so it doesn't re-prove the test.
 6. **Make it pass (green), then use it.**
    - While iterating, run only the failing test or file. The gate runs the rest.
-   - If the proof guard stops a run for memory or time, it's a loop, a leak or a hang, not a flaky test. Find the cause (the output shows where it was) before running it again. If it says the *machine* ran short of memory, the run may be fine: free memory, then run it again.
+   - If the proof guard stops a run for memory or time, it's a loop, a leak or a hang, not a flaky test. Find the cause (the output shows where it was) before running it again. If it says the *machine* ran short of memory, the run may be fine: free memory, then run it again. If it keeps happening with a heavy runner (Jest, a JVM runner, a simulator), suggest the lighter option from `${CLAUDE_SKILL_DIR}/references/test-tools.md` to the user once.
    - For a run that takes minutes, start it in the background and wait on it with TaskOutput, which returns when the run exits. Never poll its log with `until grep …` or wait with `pgrep`: a line that never comes, or another session's run that matches, holds you until the limit. proof stops wait loops after 5 minutes.
-   - Then run the app and use the feature: in the browser through Playwright or Chrome, or on a simulator through the platform tools. "Tests pass" is not the end.
+   - Then run the app and use the feature: in the browser through Playwright or Chrome, or on a simulator through the platform tools (the agent tools in `${CLAUDE_SKILL_DIR}/references/test-tools.md` say which to suggest when none is set up). "Tests pass" is not the end.
 7. **Review.** For anything non-trivial, ask the proof:verifier agent to review the change against the unit's acceptance criteria. Do this once per unit, before committing. Fix the real gaps; ignore taste.
 8. **Commit and record.**
    - Commit one unit per commit. The commit runs the full checks; if they fail, fix the cause and commit again.
@@ -86,7 +88,7 @@ The fields:
   - Supabase local: give each worktree its own `project_id` and its own ports in `supabase/config.toml`. Leave out services the tests don't use with `supabase start -x <services>` (`supabase start --help` lists them), and check `docker stats` for what each stack really takes.
   - Point each lane's app and e2e config at its own stack.
 - **Memory decides how many lanes fit.**
-  - proof keeps the machine under its ceiling: heavy runs and new agents wait their turn, and the newest run is stopped if the machine gets there.
+  - proof keeps the machine under its ceiling. Test runs it can cap (Jest, Vitest, Playwright, node --test, go test, Gradle) get as many workers as fit, so a tight machine runs them slower rather than not at all. Other heavy runs and new agents wait their turn, and the newest run is stopped if the machine gets there.
   - Stop dev servers, simulators and browsers when a lane is done with them.
   - If the user's apps hold the memory, tell them what closing them would free; don't close them yourself.
 - **The orchestrator never blocks.** Hand a lane's re-verification to a background proof:verifier and keep dispatching. Don't re-run a lane's end-to-end suite in the main thread; the verifier and the commit gate cover it.
@@ -104,7 +106,7 @@ Install the kit it uses from the repo root: `node "${CLAUDE_SKILL_DIR}/fidelity-
 ## Upgrading a repo set up with proof 0.1
 
 - **Fidelity kit:** if the repo has a `fidelity/` folder, run `node "${CLAUDE_SKILL_DIR}/fidelity-kit/install.mjs" --upgrade`. It updates the kit and keeps the app URL. When the mockup and inventories are unchanged, it also commits the kit and moves the `contract` tag.
-- **Fast variants:** add `fast` forms for slow checks (test runners, linters) as shown above, using the project's real tools. Then end your message with `NEEDS-INPUT:` so the user confirms the change.
+- **Fast variants:** add `fast` forms for slow checks (test runners, linters) as shown above, using the project's real tools. Tell the user in one line.
 
 ## Before you finish
 

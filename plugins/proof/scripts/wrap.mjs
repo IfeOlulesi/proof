@@ -2,8 +2,9 @@
 // proof — PreToolUse hook for Bash.
 //  1. Test runs (unit and end-to-end), heavy builds and wait loops run under the proof guard: a time limit and memory
 //     ceilings that also cover background runs. The command is rewritten; anything else passes through untouched.
-//  2. Heavy runs take turns for memory. If starting one would take the machine past its ceiling (90% by default), the
-//     hook waits for Claude's other guarded runs to finish (up to 3 minutes); if there's still no room, it refuses and
+//  2. Heavy runs fit the memory there is. If starting one would take the machine past its ceiling (90% by default) and
+//     its test runner can be capped (fit.mjs), it runs with as many workers as fit. Otherwise the hook waits for
+//     Claude's other guarded runs to finish (up to 3 minutes); if not even one worker fits by then, it refuses and
 //     says what is using memory, including the user's apps that would free the most.
 //  3. Memory stops proof made since this session's last command are passed on to Claude.
 // Limits come from .claude/proof.json when it has them: testRunTimeout (default 900s), buildTimeout (1800s),
@@ -13,7 +14,8 @@ import os from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gitRoot, loadConfig, readStdin } from './lib.mjs';
-import { MACHINE, admit, advice, dataDir, expectedNeed, gb, liveRuns, machineConfig, peakKey, recentEvents, snapshot } from './mem.mjs';
+import { planRun } from './fit.mjs';
+import { MACHINE, admit, advice, dataDir, gb, hold, liveRuns, machineConfig, recentEvents, snapshot } from './mem.mjs';
 
 const GUARD = join(dirname(fileURLToPath(import.meta.url)), 'guard.mjs');
 
@@ -75,31 +77,46 @@ async function main() {
   const memLimit = Number(config?.maxMemoryMB) || Math.round(ramMB / 2);
   const procLimit = Number(config?.maxProcessMemoryMB) || Math.round(ramMB / 4);
 
-  // Heavy runs take turns: wait while Claude's other guarded runs finish, then refuse if there's still no room.
+  // Heavy runs fit the room there is: as written if it fits, else with fewer workers (the same tests, run in smaller
+  // batches), else they wait while Claude's other guarded runs finish, and are refused only if not even one worker
+  // fits by then.
+  let run = cmd, need = 0;
   if (kind !== 'wait') {
-    const need = expectedNeed(kind, peakKey(root, cmd), root);
+    const plan = planRun(cmd, root, kind, cwd);
+    let capped = null;
+    need = plan.need;
     const t0 = Date.now();
-    let a = admit(need);
     const waitS = machineConfig().admitWaitS;
-    while (!a.ok && liveRuns().length && Date.now() - t0 < waitS * 1000) {
+    let a = admit(need);
+    for (;;) {
+      if (a.ok) break;
+      const f = a.system.pressure === 'critical' ? null : plan.fit(a.roomMB);
+      if (f) { capped = f; need = f.need; a = admit(need); break; }
+      if (!liveRuns().length || Date.now() - t0 >= waitS * 1000) break;
       await new Promise(r => setTimeout(r, 3000));
       a = admit(need);
     }
+    let cappedNote = null;
+    if (capped && a.ok) {
+      run = capped.cmd;
+      cappedNote = (`proof memory: only ${gb(Math.max(0, a.roomMB))} is free under the ${a.system.ceilingPct}% ceiling, and this run needs about ${gb(plan.need)} with ${plan.workers} workers, so proof capped it at ${capped.workers} worker${capped.workers > 1 ? 's' : ''} (about ${gb(capped.need)}). The same tests run, in smaller batches: slower, not skipped.`);
+    }
     const waited = Math.round((Date.now() - t0) / 1000);
     if (!a.ok) {
+      const least = plan.least();
       const adv = advice(snapshot({ env: true }), need);
       process.stderr.write([
-        `proof memory: not starting this ${kind === 'e2e' ? 'end-to-end' : kind} run. The ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}) and this run needs about ${gb(need)}, ${a.critical ? `under proof's ${a.system.ceilingPct}% ceiling, but macOS reports critical memory pressure.` : `which would take it past proof's ${a.system.ceilingPct}% ceiling.`}${waited > 2 ? ` Waited ${waited}s for other runs to free room.` : ''}`,
+        `proof memory: not starting this ${kind === 'e2e' ? 'end-to-end' : kind} run. The ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}) and this run needs about ${gb(need)}${least ? ` (${gb(least.need)} even capped at one worker)` : ''}, ${a.critical ? `under proof's ${a.system.ceilingPct}% ceiling, but macOS reports critical memory pressure.` : `which would take it past proof's ${a.system.ceilingPct}% ceiling.`}${waited > 2 ? ` Waited ${waited}s for other runs to free room.` : ''}`,
         adv.text,
         'Free room first: stop your own processes you no longer need, or run a narrower command (one test file or spec). If the user\'s apps hold the memory, tell them what closing them would free and end your message with a line starting NEEDS-INPUT:.',
       ].join('\n'));
       process.exit(2);
     }
-    if (waited > 2) notes.push(`proof memory: this run waited ${waited}s for memory to free up (the ${MACHINE} is at ${a.system.pct.toFixed(0)}%).`);
-    else if (a.warn && warnDue(input.session_id)) notes.push(`proof memory: the ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}); proof keeps it under ${a.system.ceilingPct}%.${a.system.strain ? ` ${a.system.strain}` : ''} Run heavy jobs one at a time and stop dev servers, simulators and browsers you no longer need. \`node "${join(dirname(GUARD), 'mem.mjs')}"\` shows what is using it.`);
+    if (waited > 2) notes.push(...[cappedNote].filter(Boolean), `proof memory: this run waited ${waited}s for memory to free up (the ${MACHINE} is at ${a.system.pct.toFixed(0)}%).`);
+    else if ((cappedNote || a.warn) && warnDue(input.session_id)) notes.push(...[cappedNote].filter(Boolean), ...(a.warn ? [`proof memory: the ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}); proof keeps it under ${a.system.ceilingPct}%.${a.system.strain ? ` ${a.system.strain}` : ''} Run heavy jobs one at a time and stop dev servers, simulators and browsers you no longer need. \`node "${join(dirname(GUARD), 'mem.mjs')}"\` shows what is using it.`] : []));
   }
 
-  const command = `${shq(process.execPath)} ${shq(GUARD)} --timeout ${timeout} --mem ${memLimit} --proc-mem ${procLimit} --kind ${kind} --data ${shq(dataDir())} -- ${shq(cmd)}`;
+  const command = `${shq(process.execPath)} ${shq(GUARD)} --timeout ${timeout} --mem ${memLimit} --proc-mem ${procLimit} --kind ${kind}${kind !== 'wait' ? ` --need ${Math.round(need)} --hold ${hold(need)}` : ''} --data ${shq(dataDir())} -- ${shq(run)}`;
   emit({ updatedInput: { ...ti, command }, additionalContext: notes.join('\n') || undefined });
 }
 

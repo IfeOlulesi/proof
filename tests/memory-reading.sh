@@ -80,20 +80,28 @@ fi
 if [ "$(uname -s)" = Darwin ]; then
   # Activity Monitor's Memory column is phys_footprint (memory in RAM plus what's compressed or swapped out), not
   # resident size. macOS's own footprint tool reports it; compare a handful of this user's processes against it.
+  # A busy app's memory can move by hundreds of MB while footprint runs, so proof reads every process again afterwards
+  # and only the ones that held steady across both readings are judged. A resident-size reading is steady too, so a
+  # regression to it still fails.
   cat > "$T/footprint.mjs" <<'EOF'
 import { execFileSync } from 'node:child_process';
 import { readProcesses } from 'MEM';
 const mine = new Set(execFileSync('ps', ['-U', String(process.getuid()), '-o', 'pid='], { encoding: 'utf8' }).split('\n').map(Number).filter(Boolean));
 const procs = readProcesses().filter(p => mine.has(p.pid) && p.pid !== process.pid).sort((a, b) => b.mb - a.mb);
-const bad = []; let n = 0;
+const near = (a, b) => Math.abs(a - b) <= Math.max(16, b * 0.15);
+const measured = [];
 for (const p of procs) {
-  if (n >= 12) break;
-  let fp;
-  try { fp = Number(execFileSync('footprint', ['-p', String(p.pid)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).match(/phys_footprint:\s+([\d.]+) (KB|MB|GB|B)/).slice(1).reduce((v, u) => v * { B: 1 / 2 ** 20, KB: 1 / 1024, MB: 1, GB: 1024 }[u])); } catch { continue; }
-  n++;
-  if (Math.abs(p.mb - fp) > Math.max(16, fp * 0.15)) bad.push(`pid ${p.pid}: proof ${Math.round(p.mb)} MB, footprint ${Math.round(fp)} MB`);
+  if (measured.length >= 12) break;
+  try { measured.push({ ...p, fp: Number(execFileSync('footprint', ['-p', String(p.pid)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).match(/phys_footprint:\s+([\d.]+) (KB|MB|GB|B)/).slice(1).reduce((v, u) => v * { B: 1 / 2 ** 20, KB: 1 / 1024, MB: 1, GB: 1024 }[u])) }); } catch { continue; }
 }
-if (!n) { console.error('no process could be compared'); process.exit(1); }
+const after = new Map(readProcesses().map(p => [p.pid, p.mb]));
+const bad = []; let n = 0;
+for (const p of measured) {
+  if (!after.has(p.pid) || !near(after.get(p.pid), p.mb)) continue;
+  n++;
+  if (!near(p.mb, p.fp)) bad.push(`pid ${p.pid}: proof ${Math.round(p.mb)} MB, footprint ${Math.round(p.fp)} MB`);
+}
+if (!n) { console.error(`no process held steady long enough to compare (${measured.length} measured)`); process.exit(1); }
 if (bad.length) { console.error(bad.join('\n')); process.exit(1); }
 EOF
   sed -i.bak "s#'MEM'#'$S/mem.mjs'#" "$T/footprint.mjs"

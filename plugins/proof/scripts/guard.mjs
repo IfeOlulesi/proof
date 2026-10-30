@@ -10,6 +10,8 @@
 //     --mem       ceiling for all of the run's processes together (default: half of RAM)
 //     --proc-mem  ceiling for any single process (default: a quarter of RAM)
 //     --kind      what the run is; it decides the wording when the run is stopped
+//     --need      MB the run is expected to need, held back from other runs' admission until it has started up
+//     --hold      the hold its admission made (mem.hold), released once the run is registered
 //     --data      proof's state folder (the hooks pass it on; commands run by Claude don't inherit it)
 //   Exits with the command's own code, or 124 when the guard stopped it.
 import { execFileSync, spawn } from 'node:child_process';
@@ -25,11 +27,13 @@ const opt = (k, d) => { const i = opts.indexOf(k); return i > -1 && opts[i + 1] 
 const num = (k, d) => { const v = Number(opt(k, NaN)); return Number.isFinite(v) && v > 0 ? v : d; };
 if (opt('--data')) process.env.PROOF_DATA_DIR = opt('--data');
 const mem = await import('./mem.mjs');
+const fit = await import('./fit.mjs');
 const RAM_MB = os.totalmem() / 2 ** 20;
 const timeoutS = num('--timeout', 900);
 const memMB = num('--mem', Math.round(RAM_MB / 2));
 const procMB = num('--proc-mem', Math.round(RAM_MB / 4));
 const kind = opt('--kind', 'other');
+const needMB = num('--need', 0);
 const ADVICE = 'Find the cause before running it again; running it again won\'t change the result.';
 
 if (opts.includes('--watch')) watch();
@@ -45,11 +49,13 @@ function run() {
   const cmd = argv.slice(sep + 1).join(' ');
   const dir = mkdtempSync(join(os.tmpdir(), 'proof-guard-'));
   const root = gitRoot(process.cwd()) || process.cwd();
-  writeFileSync(join(dir, 'info.json'), JSON.stringify({ key: mem.peakKey(root, cmd), kind, root }));
+  const found = fit.findRunner(cmd, root);
+  writeFileSync(join(dir, 'info.json'), JSON.stringify({ key: mem.peakKey(root, cmd), kind, root, workers: found ? fit.workersOf(found, cmd) : 0 }));
   // pytest prints every thread's stack once a single test runs past 60s, so a hang names its own line.
   const env = { ...process.env, PYTEST_ADDOPTS: `${process.env.PYTEST_ADDOPTS ?? ''} -o faulthandler_timeout=60`.trim() };
   const child = spawn(cmd, { shell: true, detached: true, stdio: 'inherit', env });   // its own process group
-  mem.registerRun(child.pid, { start: Date.now(), cmd: cmd.slice(0, 300), cwd: process.cwd(), kind, guard: process.pid });
+  mem.registerRun(child.pid, { start: Date.now(), cmd: cmd.slice(0, 300), cwd: process.cwd(), kind, guard: process.pid, need: needMB });
+  mem.release(opt('--hold'));                                   // the run now holds its own need
   const watcher = spawn(process.execPath, [fileURLToPath(import.meta.url), '--watch', String(child.pid), '--dir', dir,
     '--timeout', String(timeoutS), '--mem', String(memMB), '--proc-mem', String(procMB), '--kind', kind, '--data', mem.dataDir(), '--start', String(Date.now())],
   { detached: true, stdio: 'ignore' });
@@ -88,7 +94,7 @@ function watch() {
   const dir = opt('--dir');
   const start = Number(opt('--start', Date.now()));
   const launcher = process.ppid;       // the foreground guard; if it changes, the guard is gone
-  let killing = false, peak = 0, over = 0, n = 0;
+  let killing = false, peak = 0, over = 0, n = 0, shared = 1, busy = 0;
   let info = {};
   try { info = JSON.parse(readFileSync(join(dir, 'info.json'), 'utf8')); } catch {}
 
@@ -101,7 +107,7 @@ function watch() {
   };
   const finish = () => {
     clearInterval(timer);
-    if (peak > 0 && info.key && !killing) mem.learnPeak(info.key, info.kind || kind, peak, info.root);
+    if (peak > 0 && info.key && !killing) mem.learnPeak(info.key, info.kind || kind, peak * shared, info.root, info.workers ? Math.max(1, Math.min(info.workers, busy - 1)) : 0);
     mem.unregisterRun(pgid);
     // Leave the folder until the guard has read it (or is gone), then clean up.
     const until = Date.now() + 5000;
@@ -118,7 +124,11 @@ function watch() {
     if ((Date.now() - start) / 1000 > timeoutS + 120) return finish();   // never outlive the run by long
     if (killing) return;
     const total = members.reduce((s, p) => s + p.mb, 0);
+    // Workers it actually started: a run of one file, or fewer files than workers, never starts them all, and its
+    // peak must not later be scaled as if it had. The main process (and npx in front of it) counts as one.
+    if (total > peak) busy = members.filter(p => p.mb >= 40).length;
     peak = Math.max(peak, total);
+    if (n % 5 === 2) shared = footprintShare(members, total) ?? shared;
     const top = members.reduce((a, b) => (b.mb > a.mb ? b : a));
     const secs = Math.round((Date.now() - start) / 1000);
     const who = `pid ${top.pid}: ${top.cmd.slice(0, 140)}`;
@@ -158,6 +168,19 @@ function systemNow() {
     if (Date.now() - j.t < 5000) return j;
   } catch {}
   try { return mem.readSystem(); } catch { return null; }
+}
+
+// Resident memory counts pages the run's processes share (the runtime, its libraries) once per process, so a run
+// with many workers looks bigger than it is: 8 Node workers measured 677 MB resident against 432 MB of footprint,
+// what macOS charges them. The limits above stay on resident memory (the cautious side); what the run is learned to
+// need is scaled by footprint/resident, sampled every 5s because reading footprints takes about half a second.
+function footprintShare(members, total) {
+  if (!mem.IS_MAC || !(total > 0)) return null;
+  try {
+    const fp = mem.parseTopMem(execFileSync('top', ['-l', '1', '-s', '0', '-stats', 'pid,mem'], { encoding: 'utf8', maxBuffer: 16 * 2 ** 20, timeout: 5000 }));
+    const sum = members.reduce((s, p) => s + (fp.get(p.pid) ?? p.mb), 0);
+    return Math.min(1, sum / total);
+  } catch { return null; }
 }
 
 // Live (non-zombie) processes in a process group, with resident memory in MB.

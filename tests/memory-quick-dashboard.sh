@@ -8,7 +8,10 @@ echo '{"checks":[{"name":"t","run":"true"}]}' > .claude/proof.json
 git add -A && git commit -qm init
 hook() { # tool session command
   node -e 'process.stdout.write(JSON.stringify({session_id:process.argv[2],cwd:process.argv[3],tool_name:process.argv[1],tool_input:{command:process.argv[4],description:"d"}}))' "$1" "$2" "$R" "$3"; }
-wrap() { hook Bash "$1" "$2" | node "$S/wrap.mjs" 2>"$T/err"; echo "exit=$?"; }
+# Each call is a hook alone, with no run after it to release the hold its admission makes (mem.hold): clear holds
+# first so one simulated call doesn't shrink the next one's room. "holds" below tests the hold itself.
+wrap() { rm -rf "$T/data/holds"; hook Bash "$1" "$2" | node "$S/wrap.mjs" 2>"$T/err"; echo "exit=$?"; }
+wrap_keep() { hook Bash "$1" "$2" | node "$S/wrap.mjs" 2>"$T/err"; echo "exit=$?"; }
 admit() { hook "$1" s "" | node "$S/admit.mjs" 2>"$T/err"; echo "exit=$?"; }
 
 echo "== which commands run under the guard"
@@ -32,6 +35,61 @@ perl -e 'setpgrp(0, 0); exec @ARGV' sleep 6 & SP=$!; sleep 0.3   # a guarded run
 mkdir -p "$T/data/runs"; printf '{"pgid":%s,"start":%s,"cmd":"sleep 6","kind":"test"}' $SP "$(date +%s)000" > "$T/data/runs/$SP.json"
 t0=$(now_ms); out=$(PROOF_ADMIT_WAIT=30 wrap s4 'npx playwright test'); ms=$(( $(now_ms) - t0 ))
 expect "over the ceiling with a guarded run in flight: waits for it (${ms}ms), then refuses" "[ $ms -ge 4500 ] && grep -q 'exit=2' <<<\"\$out\" && grep -q 'Waited' $T/err"
+fake_mem 9000
+
+echo "== heavy runs fit the room there is (fewer workers instead of waiting or refusing)"
+export PROOF_CPUS=14   # Jest's default is cores - 1 = 13 workers: 300 + 13 x 350 = 4850 MB by estimate
+fake_mem 18432; out=$(wrap f1 'npx jest --ci')   # 75%: 3686 MB left under the 90% ceiling
+expect "75%: jest capped at the workers that fit (9), and Claude is told why" "grep -q -- '--maxWorkers=9' <<<\"\$out\" && grep -q 'capped it at 9 workers' <<<\"\$out\" && grep -q 'slower, not skipped' <<<\"\$out\""
+out=$(wrap f2 'npx jest --ci --maxWorkers=2')
+expect "a runner named inside a quoted argument is never rewritten" "! grep -q 'maxWorkers' <<<\"\$(wrap f1b \"node -e 'run(\\\"./bin/jest --ci\\\")'\")\""
+expect "a capped command gets one cap, in place of its own" "grep -q -- 'jest --maxWorkers=9 --ci' <<<\"\$(wrap f1c 'npx jest --maxWorkers=13 --ci')\" && ! grep -q 'maxWorkers=13' <<<\"\$(wrap f1c 'npx jest --maxWorkers=13 --ci')\""
+expect "a run already capped below what fits is left as written" "grep -q -- '--kind test' <<<\"\$out\" && [ \$(grep -o 'maxWorkers' <<<\"\$out\" | wc -l) -eq 1 ]"
+echo '{"scripts":{"test":"jest --ci"}}' > package.json
+expect "npm test running jest: the cap is passed through to the script" "grep -q -- 'npm test -- --maxWorkers=9' <<<\"\$(wrap f3 'npm test')\""
+echo '{"scripts":{"test":"jest && eslint ."}}' > package.json
+expect "a script that runs several things isn't rewritten" "! grep -q -- 'maxWorkers' <<<\"\$(wrap f3b 'npm test')\""
+echo '{"scripts":{"test":"jest --ci"}}' > package.json
+expect "npm test with the user's own --: the cap goes right after it" "grep -q -- 'npm test -- --maxWorkers=9 src' <<<\"\$(wrap f3c 'npm test -- src')\""
+expect "pnpm test: the cap goes before the user's --, where pnpm passes it on" "grep -q -- 'pnpm test --maxWorkers=9 -- src' <<<\"\$(wrap f3d 'pnpm test -- src')\""
+expect "npm test in the background: the cap stays before the &" "grep -q -- 'npm test -- --maxWorkers=9 &' <<<\"\$(wrap f3e 'npm test &')\""
+expect "npm test in a subshell: the cap stays inside the parentheses" "grep -q -- '(npm test -- --maxWorkers=9)' <<<\"\$(wrap f3f '(npm test)')\""
+expect "bun test is Bun's own runner, not the test script: not rewritten" "! grep -q -- 'maxWorkers' <<<\"\$(wrap f3g 'bun test')\""
+mkdir -p sub && echo '{"scripts":{"test":"mocha"}}' > sub/package.json
+expect "cd sub && npm test reads sub/package.json (mocha there): not given a Jest flag" "! grep -q -- 'maxWorkers' <<<\"\$(wrap f3h 'cd sub && npm test')\""
+rm -r sub
+rm package.json
+mkdir -p node_modules/vitest && echo '{"version":"3.2.4"}' > node_modules/vitest/package.json
+fake_mem 19500   # 79%: 2618 MB left; vitest's 13 workers need 3500
+expect "vitest 3: capped with --minWorkers=1 so the pool can't conflict" "grep -q -- 'vitest run --minWorkers=1 --maxWorkers=' <<<\"\$(wrap f4 'npx vitest run')\""
+rm -r node_modules
+fake_mem 21500; out=$(wrap f5 'npx jest --ci')   # 87%: 618 MB left; one worker needs 650
+expect "not even one worker fits and nothing to wait for: refused, saying so" "grep -q 'exit=2' <<<\"\$out\" && grep -q 'even capped at one worker' $T/err"
+fake_mem 18432   # 75%: 3686 MB left
+node -e 'require("fs").writeFileSync(process.argv[1]+"/peaks.json",JSON.stringify({[process.argv[2]+"|jest --ci"]:{v:2,runs:[{mb:6500,w:13}],mb:6500,n:1,kind:"test"}}))' "$T/data" "$R"
+expect "a measured 6.5 GB run at 13 workers predicts 6 workers in 3.7 GB" "grep -q -- '--maxWorkers=6' <<<\"\$(wrap f6 'npx jest --ci')\""
+out=$(wrap f7 'npx jest --ci --config jest.config.js')
+expect "--config jest.config.js is still the whole suite, not one file" "grep -q -- '--maxWorkers=' <<<\"\$out\""
+out=$(wrap f7b 'npx jest src/a.test.ts')
+expect "one test file isn't costed as the whole suite: runs as written" "grep -q -- '--kind test' <<<\"\$out\" && ! grep -q 'maxWorkers' <<<\"\$out\""
+node -e 'require("fs").writeFileSync(process.argv[1]+"/peaks.json",JSON.stringify({[process.argv[2]+"|jest (targeted)"]:{v:2,runs:[{mb:4000,w:1}],mb:4000,n:1,kind:"test"}}))' "$T/data" "$R"
+out=$(wrap f7c 'npx jest src/a.test.ts')
+expect "a one-file run measured at 4 GB in one worker isn't scaled down to fit 3.7 GB" "grep -q 'exit=2' <<<\"\$out\" && ! grep -q 'maxWorkers' <<<\"\$out\""
+rm "$T/data/peaks.json"
+fake_mem 17000   # 69%: 5118 MB left; jest's 4850 MB would fit if nothing else were starting
+perl -e 'setpgrp(0, 0); exec @ARGV' sleep 20 & HP=$!; sleep 0.3
+mkdir -p "$T/data/runs"; printf '{"pgid":%s,"start":%s,"cmd":"x","kind":"test","need":3000}' $HP "$(date +%s)000" > "$T/data/runs/$HP.json"
+expect "a run started seconds ago holds its expected 3 GB: the next run fits the rest (5 workers)" "grep -q -- '--maxWorkers=5' <<<\"\$(wrap f8 'npx jest --ci')\""
+kill $HP 2>/dev/null; rm -f "$T/data/runs/$HP.json"
+wrap_keep h1 'npx jest --ci' >/dev/null; out=$(wrap_keep h2 'npx jest --ci')
+expect "holds: a run admitted a moment ago (its guard not started yet) holds its room: the next isn't let in at full width" "grep -q 'exit=2' <<<\"\$out\" && grep -q 'even capped at one worker' $T/err"
+rm -rf "$T/data/holds"
+mkdir -p bin && printf '#!/bin/sh\necho "jest $*" >> "%s/jestlog"\n' "$T" > bin/jest && chmod +x bin/jest
+echo '{"checks":[{"name":"unit","run":"./bin/jest --ci","cache":false}]}' > .claude/proof.json
+fake_mem 18432; gout=$(node "$S/gate.mjs" --run "$R" 2>&1)
+expect "the gate fits a check the same way (ran: $(cat "$T/jestlog" 2>/dev/null))" "grep -q -- '--maxWorkers=9 --ci' $T/jestlog"
+echo '{"checks":[{"name":"t","run":"true"}]}' > .claude/proof.json; rm -r bin
+unset PROOF_CPUS
 fake_mem 9000
 printf '{"t":%s,"kind":"memoryStop","pid":1,"command":"node expo start --web","mb":1200,"pct":91}\n' "$(date +%s)000" >> "$T/data/memory-events.jsonl"
 out=$(wrap s5 'ls'); expect "a memory stop is passed on to Claude at its next command" "grep -q 'proof memory: the [A-Za-z]* reached 91%' <<<\"\$out\""
@@ -73,6 +131,13 @@ fake_mem 9000
 node "$S/guard.mjs" --timeout 30 --kind test -- "node -e \"const b=Buffer.alloc(300*2**20,1);setTimeout(()=>console.log(b.length),2500)\"" >/dev/null 2>&1
 sleep 0.5
 expect "the guard learns how much memory a command needed" "node -e 'const p=require(\"$T/data/peaks.json\"); process.exit(Object.values(p).some(e=>e.kind===\"test\"&&e.mb>250)?0:1)'"
+mkdir -p bin && cat > bin/jest <<'EOF2'
+#!/bin/sh
+node -e "const {spawn}=require('child_process');for(let i=0;i<3;i++)spawn(process.execPath,['-e','const b=Buffer.alloc(100*2**20,1);setTimeout(()=>{},2500)'],{stdio:'inherit'});const b=Buffer.alloc(60*2**20,1);setTimeout(()=>{},2700)"
+EOF2
+chmod +x bin/jest
+PROOF_CPUS=14 node "$S/guard.mjs" --timeout 30 --kind test -- './bin/jest --maxWorkers=3 --ci' >/dev/null 2>&1; sleep 1.5; rm -r bin
+expect "and how many workers it had, so the need scales with them" "node -e 'const e=require(\"$T/data/peaks.json\")[process.argv[1]+\"|jest --ci\"]; process.exit(e&&e.v===2&&e.runs.at(-1).w===3&&e.runs.at(-1).mb>150?0:1)' \"$R\""
 
 echo "== quick mode"
 stop() { node -e 'process.stdout.write(JSON.stringify({session_id:process.argv[1],cwd:process.argv[2],prompt_id:process.argv[3],stop_hook_active:false,last_assistant_message:"Done."}))' "$1" "$R" "$2" | node "$S/gate.mjs"; }

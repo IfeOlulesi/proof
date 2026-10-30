@@ -7,10 +7,10 @@
 //   --quick <session-id>      Quick mode for this session (the proof:quick skill turns it on): small, clear fixes skip
 //                             the full process; if the change grows past the limits, the gate switches back.
 // A pass is cached against the exact content of the code, so identical code is never checked twice.
-// A session that changes the checks themselves (.claude/proof.json, the fidelity kit) has to show the user.
+// A session that loosens the checks themselves (removes or rewrites a check, edits the fidelity kit) has to ask the user.
 // Every check runs under the proof guard (guard.mjs): a time limit and memory ceilings that keep working even if
 // this process is killed. The whole gate also finishes inside its hook's timeout, so it is never cut off mid-check.
-// Checks take turns for memory: each waits until starting it won't take the machine past its ceiling.
+// Checks fit the memory there is: each runs with as many test workers as fit, or waits for room (see room()).
 import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
@@ -19,7 +19,8 @@ import { fileURLToPath } from 'node:url';
 import {
   cacheGet, cachePut, dataDir, git, gitRoot, loadConfig, loadState, protectedSnapshot, readStdin, saveState, sha, treeFingerprint,
 } from './lib.mjs';
-import { admit, expectedNeed, liveRuns, peakKey } from './mem.mjs';
+import { planRun } from './fit.mjs';
+import { admit, hold, liveRuns } from './mem.mjs';
 
 // Checks may reference $CLAUDE_PLUGIN_ROOT; make sure it is set even when run by hand.
 process.env.CLAUDE_PLUGIN_ROOT ||= resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -82,10 +83,19 @@ async function main() {
   }
   if (MODE !== 'manual' && !changed.length && !tamper) return;   // chats and brainstorms pass straight through
 
+  // A new prompt whose reply left the code exactly as the last check saw it (a question, a chat) has nothing new to
+  // check, even while the session has uncommitted work. Fix rounds within a prompt still re-run, and so does the commit.
+  const snap = MODE === 'stop' ? treeFingerprint(base) : null;
+  const newPrompt = input.prompt_id ? input.prompt_id !== st.promptId : input.stop_hook_active !== true;
+  if (snap && newPrompt && !tamper && snap === st.lastTree) {
+    if (st.lastFailing) emit({ systemMessage: `proof: no file changes since the last check (${st.lastFailing} still failing).` });
+    return;
+  }
+
   const tier = MODE === 'stop' ? 'fast' : 'full';
   const checks = error || !config ? [] : normalize(config.checks);
   const caching = !NO_CACHE && checks.some(c => c.cache !== false);
-  const tree = caching ? treeFingerprint(base) : null;
+  const tree = caching ? snap ?? treeFingerprint(base) : null;
 
   // Decide what runs, and skip anything that already passed on identical code.
   const jobs = [];
@@ -118,6 +128,8 @@ async function main() {
 
   if (MODE === 'manual') return report(results, failed);
   if (MODE === 'commit') return commitDecision(results, failed);
+  const stillFailing = failed.filter(r => r !== tamper?.result);   // changed checks are asked about once, not repeated
+  Object.assign(st, { lastTree: snap, lastFailing: stillFailing.length ? names(stillFailing) : null });
   return stopDecision(st, results, failed, tamper, Number(config?.maxRounds) || 5);
 }
 
@@ -255,21 +267,49 @@ function changedFiles(dir, st) {
   return [...set].filter(f => !f.startsWith('.proof/'));
 }
 
-// Check definitions this session changed, compared with how they were when it started, and not yet shown to the user.
+// Check definitions this session loosened, compared with how they were when it started, and not yet shown to the user.
+// Setting checks up or adding to them is the agent's job and isn't asked about: a file the session created, and a
+// proof.json that still runs every starting command on at least the same paths, pass. Removing a check, changing its
+// command or `fast`, narrowing its `when` or `files`, deleting the file, creating or editing settings.json, or editing
+// the fidelity kit still stops for the user.
 function checkTamper(st) {
   if (!st.protectedAtStart) return null;
   const now = protectedSnapshot(base);
-  const diffs = Object.keys(now).filter(p => now[p] !== st.protectedAtStart[p]);
+  const diffs = Object.keys(now)
+    .filter(p => now[p] !== st.protectedAtStart[p] && (st.protectedAtStart[p] !== null || p === '.claude/settings.json'))
+    .map(p => ({ p, why: !now[p] ? null : p === '.claude/proof.json' ? loosened(st.checksAtStart) : [] }))
+    .filter(d => d.p !== '.claude/proof.json' || !d.why || d.why.length);
   if (!diffs.length) return null;
-  const sig = sha(JSON.stringify(diffs.map(p => [p, now[p]])));
+  const sig = sha(JSON.stringify(diffs.map(({ p }) => [p, now[p]])));
   if (st.ackedProtected === sig) return null;
   return {
     sig,
     result: {
       name: 'check definitions', run: 'compare with session start', ok: false, code: 1, weight: 1,
-      out: `${diffs.map(p => `${now[p] ? 'changed' : 'deleted'}: ${p}`).join('\n')}\nThese files define the checks. Changing them needs the user's OK: say what changed and why, then end your message with a line starting NEEDS-INPUT:.`,
+      out: `${diffs.map(({ p, why }) => [`${why ? 'changed' : 'deleted'}: ${p}`, ...(why || []).map(w => `  ${w}`)].join('\n')).join('\n')}\nThis weakens what proves the work, so it needs the user's OK: say in plain words what would no longer be checked and why, then end your message with a line starting NEEDS-INPUT:.`,
     },
   };
+}
+
+// What the current proof.json no longer checks that the starting one did. Checks are matched by command, so renaming
+// or reordering them is fine. Without a starting copy (an older session's state), any change counts.
+function loosened(before) {
+  if (before === undefined) return ['changed since the session started'];
+  if (before === null) return [];
+  const { config } = loadConfig(base);
+  const after = normalize(config?.checks);
+  const out = [];
+  for (const s of normalize(before)) {
+    const c = after.find(a => a.run === s.run);
+    if (!c) { out.push(`check "${s.name}" removed or its command changed (was: ${short(s.run)})`); continue; }
+    if (s.fast && c.fast !== s.fast) out.push(`check "${s.name}" per-reply command changed (was: ${short(s.fast)})`);
+    const lostFiles = s.files && c.files ? s.files.filter(g => !c.files.includes(g)) : [];
+    if (lostFiles.length) out.push(`check "${s.name}" per-reply run no longer covers ${lostFiles.join(', ')}`);
+    if (!c.when) continue;
+    const lost = s.when ? s.when.filter(g => !c.when.includes(g)) : ['every change'];
+    if (lost.length) out.push(`check "${s.name}" no longer runs on ${lost.join(', ')}`);
+  }
+  return out;
 }
 
 // Index where a `git … commit` starts in a shell command, or -1.
@@ -299,16 +339,26 @@ async function runAll(jobs, limit, env, defaultTimeout) {
   return out;
 }
 
-// Checks take turns for memory: wait while other runs finish if starting this one would pass the ceiling. With
-// nothing left to wait for, run it anyway; the guard stops it if the machine actually reaches the ceiling.
-// `inflight` (declared at the top) counts this gate's admitted checks; it changes in the same tick as the decision,
-// so two workers can't both see an empty machine and start together.
+// Checks fit the memory there is. A check whose runner can be capped (Jest, Vitest, Playwright, node --test, go test,
+// Gradle) runs with as many workers as fit; one that can't, or doesn't fit even at one worker, waits while other runs
+// finish. With nothing left to wait for, it runs anyway, at one worker if it can be capped; the guard stops it if the
+// machine actually reaches the ceiling. `inflight` (declared at the top) counts this gate's admitted checks; it
+// changes in the same tick as the decision, so two workers can't both see an empty machine and start together.
 async function room(job) {
-  const need = expectedNeed('check', peakKey(base, job.run), base);
+  const plan = planRun(job.run, base, 'check');
+  // Held from the moment a check is admitted until its guard has registered it with its need.
+  const take = f => {
+    Object.assign(job, f ? { run: f.cmd, capped: f.workers, need: f.need } : { need: plan.need });
+    job.hold = hold(job.need);
+    inflight++;
+  };
   for (;;) {
     let a = null;
-    try { a = admit(need); } catch {}
-    if (!a || a.ok || DEADLINE - Date.now() < 90e3 || (!inflight && !liveRuns().length)) { inflight++; return; }
+    try { a = admit(plan.need); } catch {}
+    if (!a || a.ok) return take(null);
+    const f = a.system.pressure === 'critical' ? null : plan.fit(a.roomMB);
+    if (f) return take(f);
+    if (DEADLINE - Date.now() < 90e3 || (!inflight && !liveRuns().length)) return take(plan.least());
     await new Promise(r => setTimeout(r, 2000));
   }
 }
@@ -332,7 +382,7 @@ function runOne(job, env, defaultTimeout) {
     let out = '', timedOut = false, finished = false;
     // The guard enforces the limits; it runs detached, so killing this gate doesn't kill it.
     const child = spawn(process.execPath,
-      [GUARD, '--timeout', String(limitS), '--mem', String(job.mem), '--proc-mem', String(job.procMem), '--kind', 'check', '--data', dataDir(), '--', job.run],
+      [GUARD, '--timeout', String(limitS), '--mem', String(job.mem), '--proc-mem', String(job.procMem), '--kind', 'check', '--need', String(Math.round(job.need || 0)), '--hold', String(job.hold || ''), '--data', dataDir(), '--', job.run],
       { cwd: base, detached: true, stdio: ['ignore', 'pipe', 'pipe'], env });
     if (child.pid) running.add(child.pid);
     const add = d => { out += d; if (out.length > 400000) out = out.slice(-200000); };
@@ -455,7 +505,7 @@ function expandBraces(g) {
 }
 
 function summary(rs) {
-  return rs.map(r => `${r.name}${r.cached ? ' (cached)' : r.kind === 'fast' ? ' (fast)' : ''}`).join(', ');
+  return rs.map(r => `${r.name}${r.cached ? ' (cached)' : r.kind === 'fast' ? ' (fast)' : ''}${r.capped ? ` (${r.capped} worker${r.capped > 1 ? 's' : ''}, to fit memory)` : ''}`).join(', ');
 }
 function names(rs) { return rs.map(r => r.name).join(', '); }
 function short(cmd) { return cmd.length > 160 ? `${cmd.slice(0, 157)}…` : cmd; }

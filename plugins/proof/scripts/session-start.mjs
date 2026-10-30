@@ -23,6 +23,7 @@ if (input.session_id && !loadState(input.session_id, base)) {
     startHead: root ? git(['rev-parse', 'HEAD'], root) : null,
     startTime: Date.now(),
     protectedAtStart: protectedSnapshot(base),
+    checksAtStart: loadConfig(base).config?.checks ?? null,
   });
   pruneData();
 }
@@ -57,7 +58,7 @@ if (found.length) lines.push(`Project state: ${found.join(', ')}. Read what's re
 const mcfg = machineConfig();
 try {
   const m = readSystemFast();
-  lines.push(`Memory now: ${m.pct.toFixed(0)}% (${gb(m.usedMB)} of ${gb(m.totalMB)}).${m.strain ? ` ${m.strain}` : ''} proof keeps the machine under ${m.ceilingPct}%: heavy runs and new agents wait their turn when there isn't room, and the newest run is stopped if it gets there. To see what is using memory: node "${join(here, 'mem.mjs')}".`);
+  lines.push(`Memory now: ${m.pct.toFixed(0)}% (${gb(m.usedMB)} of ${gb(m.totalMB)}).${m.strain ? ` ${m.strain}` : ''} proof keeps the machine under ${m.ceilingPct}%: test runs use fewer workers when there isn't room for all of them, other heavy runs and new agents wait their turn, and the newest run is stopped if it gets there. To see what is using memory: node "${join(here, 'mem.mjs')}".`);
 } catch {}
 if (process.env.PROOF_MONITOR !== '0' && !(await monitorUp())) {
   try { spawn(process.execPath, [join(here, 'monitor.mjs'), '--daemon'], { detached: true, stdio: 'ignore', env: { ...process.env, PROOF_DATA_DIR: dataDir() } }).unref(); } catch {}

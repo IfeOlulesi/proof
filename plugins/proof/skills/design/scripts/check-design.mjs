@@ -77,7 +77,7 @@ console.log(fails.length
 process.exit(fails.length ? 1 : 0);
 
 function setup(why) {
-  console.log(`SETUP ${why} Run in the project: npm i -D playwright && npx playwright install chromium`);
+  console.log(`SETUP ${why} Run in the project: npm i -D playwright && npx playwright install --only-shell chromium`);
   process.exit(3);
 }
 

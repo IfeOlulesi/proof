@@ -40,6 +40,13 @@ echo "== same code again"
 newlog; stop s1 p1 true >/dev/null
 expect "everything cached except the uncached check (ran: $(tr '\n' ' ' < "$LOG"))" "[ \"\$(cat \$LOG)\" = nocache ]"
 
+echo "== a chat reply: new prompt, code unchanged since the last check"
+newlog; out=$(stop s1 p1b)
+expect "nothing runs, not even the uncached check, and nothing is said" "[ ! -s \$LOG ] && [ -z \"\$out\" ]"
+echo 'export const a = 3' > src/a.ts; newlog; stop s1 p1c >/dev/null
+expect "the next prompt that changes code runs the checks again" "grep -q lint-fast \$LOG"
+echo 'export const a = 2' > src/a.ts; stop s1 p1d >/dev/null
+
 echo "== commit: full tier"
 newlog; r=$(commit s1 'git add -A && git commit -m "feat"')
 expect "commit allowed" "grep -q 'exit=0' <<<\"\$r\" && grep -q 'commit allowed' <<<\"\$r\""
@@ -80,6 +87,8 @@ r=$(commit s1 'git commit -am wip')
 expect "commit blocked (exit 2) with reason on stderr" "grep -q 'exit=2' <<<\"\$r\" && grep -q 'commit blocked' $T/stderr"
 out=$(stop s1 p5 true); out2=$(stop s1 p5 true)
 expect "stall: after 2 rounds without progress, Claude may stop and you're told" "grep -q 'this is not done' <<<\"\$out2\""
+out=$(stop s1 p5b)
+expect "a chat reply while checks fail isn't blocked, but says what still fails" "! grep -q 'decision' <<<\"\$out\" && grep -q 'no file changes since the last check (unit still failing)' <<<\"\$out\""
 grep -v BUG src/a.ts > "$T/a.ts"; cat "$T/a.ts" > src/a.ts; out=$(stop s1 p6)
 expect "fixed: passes" "grep -q 'proof ✓' <<<\"\$out\""
 
@@ -96,6 +105,30 @@ expect "once asked, the same change isn't flagged again" "! grep -q 'check defin
 git checkout -q .claude/proof.json; rm .claude/proof.json; out=$(stop s1 p9)
 expect "deleting proof.json is caught (gate can't be switched off silently)" "grep -q 'deleted: .claude/proof.json' <<<\"\$out\""
 git checkout -q .claude/proof.json
+node -e 'const f=".claude/proof.json",j=require(process.cwd()+"/"+f);j.checks.push({name:"extra",run:"true",when:["src/"]});j.checks[0].when.push("lib/");j.checks.reverse();require("fs").writeFileSync(f,JSON.stringify(j,null,2))'
+out=$(stop s1 p9b)
+expect "adding a check, widening a when, reordering: not asked about" "! grep -q 'check definitions' <<<\"\$out\""
+git checkout -q .claude/proof.json
+node -e 'const f=".claude/proof.json",j=require(process.cwd()+"/"+f);j.checks.find(c=>c.name==="unit").run="true";require("fs").writeFileSync(f,JSON.stringify(j,null,2))'
+out=$(stop s1 p9c)
+expect "changing a check's command is caught, by name" "grep -q 'check .\\{1,2\\}unit.\\{1,2\\} removed or its command changed' <<<\"\$out\""
+git checkout -q .claude/proof.json
+node -e 'const f=".claude/proof.json",j=require(process.cwd()+"/"+f);j.checks.find(c=>c.name==="test").when=["src/"];require("fs").writeFileSync(f,JSON.stringify(j,null,2))'
+out=$(stop s1 p9d)
+expect "narrowing a check's when is caught" "grep -q 'check .\\{1,2\\}test.\\{1,2\\} no longer runs on jest.config.js' <<<\"\$out\""
+git checkout -q .claude/proof.json
+node -e 'const f=".claude/proof.json",j=require(process.cwd()+"/"+f);j.checks.find(c=>c.name==="unit").fast="true";require("fs").writeFileSync(f,JSON.stringify(j,null,2))'
+out=$(stop s1 p9e)
+expect "changing a check's per-reply command is caught" "grep -q 'per-reply command changed' <<<\"\$out\""
+git checkout -q .claude/proof.json
+echo '{"disableAllHooks":true}' > .claude/settings.json; out=$(stop s1 p9f)
+expect "creating .claude/settings.json is caught" "grep -q 'changed: .claude/settings.json' <<<\"\$out\""
+rm .claude/settings.json
+
+echo "== a session that sets the gate up isn't asked to have it reviewed"
+mv .claude/proof.json "$T/proof.json"; ss s3 >/dev/null; cp "$T/proof.json" .claude/proof.json
+out=$(stop s3 r1)
+expect "proof.json created in-session: no flag" "! grep -q 'check definitions' <<<\"\$out\""
 
 echo "== your own edits made before a session aren't flagged"
 node -e 'const f=".claude/proof.json",j=require(process.cwd()+"/"+f);j.maxRounds=5;require("fs").writeFileSync(f,JSON.stringify(j,null,2))'
