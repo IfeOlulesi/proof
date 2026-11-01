@@ -193,11 +193,14 @@ section.s { padding: 140px 0 0; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px; }
 .bar { position: relative; height: 44px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--line); margin: 34px 0 12px; }
 .bar i { position: absolute; top: 5px; bottom: 5px; border-radius: 7px; }
-.bar .a { left: 5px; width: 40%; background: var(--line-2); }
-.bar .b { left: calc(40% + 8px); width: 22%; background: var(--ink-2); }
-.bar .c { left: calc(62% + 11px); width: 7%; background: var(--green); box-shadow: 0 0 20px -2px var(--green); }
+.bar .a { left: 5px; width: 42%; background: var(--line-2); }
+.bar .b { left: calc(42% + 8px); width: 26%; background: var(--ink-2); }
+.bar .c { left: calc(68% + 11px); width: 7%; background: var(--green); box-shadow: 0 0 20px -2px var(--green); }
 .bar .ceil { position: absolute; top: -12px; bottom: -12px; left: 90%; width: 2px; background: var(--red); }
 .bar .ceil span { position: absolute; top: -22px; right: 0; font: 500 11.5px var(--mono); color: var(--red-ink); white-space: nowrap; }
+.memchart { height: 96px; margin: 8px 0 6px; padding-top: 22px; }
+.memchart.drawn { padding-top: 0; }
+.memchart .bar { margin: 12px 0 0; }
 .big { font-size: 56px; font-weight: 600; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
 .big small { font-size: 17px; color: var(--muted); font-weight: 500; letter-spacing: 0; margin-left: 8px; }
 .legend { display: flex; gap: 8px 18px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
@@ -381,8 +384,10 @@ footer .r a:hover { color: var(--ink); }
   <div class="memstrip">
     <div class="card">
       <div class="fig"><span>Memory, one machine</span><span>sample</span></div>
-      <div class="big" style="margin-top:18px">68%<small>15.9 of 24 GB</small></div>
-      <div class="bar"><i class="a"></i><i class="b"></i><i class="c"></i><span class="ceil"><span>ceiling 90%</span></span></div>
+      <div class="big" style="margin-top:18px"><span id="mempct">68%</span><small>16.3 of 24 GB</small></div>
+      <div class="memchart" id="memchart" role="img" aria-label="Sample memory on one machine with 24 GB: your apps use 10.1 GB and Claude's runs 6.2 GB, 68% in all. The next run needs 1.7 GB and fits under the 90% ceiling of 21.6 GB.">
+        <div class="bar"><i class="a"></i><i class="b"></i><i class="c"></i><span class="ceil"><span>ceiling 90%</span></span></div>
+      </div>
       <div class="legend"><span><i style="background:var(--line-2)"></i>Your apps</span><span><i style="background:var(--ink-2)"></i>Claude's runs</span><span><i style="background:var(--green)"></i>Next run</span></div>
     </div>
     <div class="card memlist">
@@ -566,6 +571,52 @@ seg.forEach((b, i) => b.onclick = () => {
   }, n * 70));
   $('.summary').innerHTML = on ? '<span class="p">7 passed</span> <span style="color:var(--faint)">· 0 failed</span>' : '<span style="color:var(--faint)">0 passed ·</span> <span class="f">7 failed</span>';
 });
+
+/* memory chart (ECharts, sample numbers). The library loads as the card nears the screen;
+   until then, or if it fails, the CSS bar above stands in. */
+(() => {
+  const MEM = { total: 24, ceiling: .9, apps: 10.1, runs: 6.2, next: 1.7 };
+  const el = $('#memchart'); let chart, lib;
+  if (!REDUCE) $('#mempct').textContent = '0%';   // counts up to the real value when the chart draws
+  const load = () => lib || (lib = new Promise((res, rej) => { const s = document.createElement('script');
+    s.src = 'vendor/echarts.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); }));
+  const option = () => {
+    const c = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    const seg = (name, value, color, extra = {}) => ({ name, type: 'bar', stack: 'mem', data: [value], barWidth: 34,
+      itemStyle: { color, borderColor: c('--surface'), borderWidth: 2, ...extra } });
+    return {
+      animation: !REDUCE, animationDuration: 1100, animationEasing: 'cubicOut', animationDelay: i => i * 80,
+      grid: { left: 0, right: 0, top: 30, bottom: 6 },
+      xAxis: { type: 'value', min: 0, max: MEM.total, show: false },
+      yAxis: { type: 'category', data: ['memory'], show: false },
+      tooltip: { trigger: 'item', backgroundColor: c('--surface-2'), borderColor: c('--line-2'), padding: [8, 12],
+        textStyle: { color: c('--ink'), fontFamily: 'Geist, system-ui, sans-serif', fontSize: 13 },
+        formatter: p => `${p.marker}${p.seriesName}<br><b>${p.value} GB</b> · ${Math.round(p.value / MEM.total * 100)}%` },
+      series: [
+        { ...seg('Your apps', MEM.apps, c('--line-2'), { borderRadius: [7, 0, 0, 7] }),
+          showBackground: true, backgroundStyle: { color: c('--bg-2'), borderRadius: 9 } },
+        seg("Claude's runs", MEM.runs, c('--ink-2')),
+        { ...seg('Next run, waiting for room', MEM.next, c('--green'), { borderRadius: [0, 7, 7, 0], shadowBlur: 16, shadowColor: c('--green') }),
+          markLine: { silent: true, symbol: 'none', animation: !REDUCE, animationDuration: 600,
+            lineStyle: { color: c('--red'), width: 2, type: 'solid' },
+            label: { formatter: `ceiling ${MEM.ceiling * 100}%`, position: 'end', distance: 6, align: 'right', padding: [0, 0, 0, 0], offset: [1, 0], color: c('--red-ink'), fontFamily: 'Geist Mono, ui-monospace, monospace', fontSize: 11.5 },
+            data: [{ xAxis: +(MEM.total * MEM.ceiling).toFixed(1) }] } },
+      ],
+    };
+  };
+  const draw = async () => {
+    try { await load(); } catch { $('#mempct').textContent = Math.round((MEM.apps + MEM.runs) / MEM.total * 100) + '%'; return; }
+    el.querySelector('.bar')?.remove(); el.classList.add('drawn');
+    chart = echarts.init(el, null, { renderer: 'canvas' });
+    chart.setOption(option());
+    const used = { v: 0 }, pct = Math.round((MEM.apps + MEM.runs) / MEM.total * 100);
+    if (!REDUCE) gsap.to(used, { v: pct, duration: 1.1, ease: 'power2.out', onUpdate: () => $('#mempct').textContent = Math.round(used.v) + '%' });
+    new ResizeObserver(() => chart.resize()).observe(el);
+    document.addEventListener('themechange', () => chart.setOption(option()));
+  };
+  new IntersectionObserver(([e], io) => { if (e.isIntersecting) { io.disconnect(); load().catch(() => {}); } }, { rootMargin: '800px' }).observe(el);
+  new IntersectionObserver(([e], io) => { if (e.isIntersecting) { io.disconnect(); draw(); } }, { threshold: .6 }).observe(el);
+})();
 
 /* the loop ring is drawn at 500px and scales to fit its column */
 const fitRing = () => {
