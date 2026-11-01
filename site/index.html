@@ -56,6 +56,7 @@ code { font-family: var(--mono); font-size: .9em; }
 
 /* nav */
 nav.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--green); box-shadow: 0 0 10px var(--green); transform: scaleX(0); transform-origin: left center; pointer-events: none; }
 nav.top .wrap { display: flex; align-items: center; height: 64px; gap: 40px; }
 .logo { display: block; height: 24px; width: 66px; background: var(--logo) no-repeat left center / contain; flex: 0 0 auto; }
 nav.top .links { display: flex; gap: 28px; font-size: 14px; color: var(--muted); }
@@ -170,7 +171,7 @@ section.s { padding: 140px 0 0; }
 
 /* phases */
 .phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 56px; position: relative; }
-.phases::before { content: ""; position: absolute; left: 40px; right: 40px; top: 40px; height: 2px; background: linear-gradient(90deg, var(--line-2), var(--green)); }
+.phases::before { content: ""; position: absolute; left: 40px; right: 40px; top: 40px; height: 2px; background: linear-gradient(90deg, var(--line-2), var(--green)); transform: scaleX(var(--rail, 1)); transform-origin: left center; }
 .phase { position: relative; padding: 0 4px; }
 .phase .node { width: 80px; height: 80px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line-2); display: grid; place-items: center; font: 600 22px var(--mono); position: relative; z-index: 1; }
 .phase:last-child .node { background: var(--green); color: var(--on-green); border-color: transparent; box-shadow: 0 10px 40px -10px var(--green); }
@@ -246,7 +247,7 @@ footer .r a:hover { color: var(--ink); }
   .dash-feats { gap: 20px; }
   .phases { grid-template-columns: 1fr; gap: 36px; }
   .phases::before { display: none; }
-  .phase:not(:last-child)::after { content: ""; position: absolute; left: 43px; top: 80px; bottom: -36px; width: 2px; background: var(--line-2); }
+  .phase:not(:last-child)::after { content: ""; position: absolute; left: 43px; top: 80px; bottom: -36px; width: 2px; background: var(--line-2); transform: scaleY(var(--rail, 1)); transform-origin: top center; }
   .phase:nth-child(2)::after { background: linear-gradient(180deg, var(--line-2), var(--green)); }
   .phase .cmd { justify-self: start; }
   .phase { display: grid; grid-template-columns: 80px 1fr; column-gap: 20px; }
@@ -268,7 +269,7 @@ footer .r a:hover { color: var(--ink); }
 </head>
 <body>
 
-<nav class="top"><div class="wrap">
+<nav class="top"><span class="progress" id="progress" aria-hidden="true"></span><div class="wrap">
   <a class="logo" href="#" aria-label="proof"></a>
   <div class="links"><a href="#problem">The problem</a><a href="#how">How it works</a><a href="#catches">What it catches</a><a href="#phases">Phases</a><a href="#dashboard">Dashboard</a></div>
   <div class="right">
@@ -369,7 +370,7 @@ footer .r a:hover { color: var(--ink); }
   <span class="eyebrow">The dashboard</span>
   <h2 class="h2">Come back after an hour.<br><span class="m">Know what happened in a glance.</span></h2>
   <p class="lead"><code>/proof:watch</code> opens a live view of every session: what's running, for how long, the plan and the check results.</p>
-  <div class="dash"><div class="in"><img id="dashimg" src="assets/dashboard-dark.png" alt="The proof dashboard: one session with three agents running, their progress, and the plan" loading="lazy"></div></div>
+  <div class="dash"><div class="in"><img id="dashimg" width="2880" height="1802" src="assets/dashboard-dark.png" alt="The proof dashboard: one session with three agents running, their progress, and the plan" loading="lazy"></div></div>
   <div class="dash-feats" style="text-align:left">
     <div><h3>Needs you, in coral</h3><p>A session that stopped on a question stands out from the ones still working.</p></div>
     <div><h3>Every agent in one run view</h3><p>Lanes, verifiers and explorers, with timers and commits.</p></div>
@@ -428,6 +429,7 @@ footer .r a:hover { color: var(--ink); }
 4. Finally, tell me to run /reload-plugins.</script>
 
 <script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
 <script>
 const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -563,14 +565,16 @@ else {
 
 /* what-it-catches switch */
 const seg = $$('.seg button');
-seg.forEach((b, i) => b.onclick = () => {
-  const on = i === 1; seg.forEach(x => x.classList.toggle('on', x === b));
+let touchedReport = false;
+const setReport = on => {
+  seg.forEach((x, i) => x.classList.toggle('on', (i === 1) === on));
   $$('.row').forEach((r, n) => setTimeout(() => {
     const st = r.querySelector('.st'); st.className = 'st ' + (on ? 'ok' : 'bad'); st.innerHTML = on ? OK : NO;
     r.querySelector('.fix').style.opacity = on ? 1 : .25;
   }, n * 70));
   $('.summary').innerHTML = on ? '<span class="p">7 passed</span> <span style="color:var(--faint)">· 0 failed</span>' : '<span style="color:var(--faint)">0 passed ·</span> <span class="f">7 failed</span>';
-});
+};
+seg.forEach((b, i) => b.onclick = () => { touchedReport = true; setReport(i === 1); });
 
 /* memory chart (ECharts, sample numbers). The library loads as the card nears the screen;
    until then, or if it fails, the CSS bar above stands in. */
@@ -639,6 +643,66 @@ if (!REDUCE) gsap.timeline({ repeat: -1, repeatDelay: .4 })
   .add(along('#pGo', 1.3, 'var(--green)'), '+=.25')
   .add(along('#pOk', 1.3, 'var(--green)'), '+=.25')
   .to(pkt, { attr: { r: 12 }, duration: .25, yoyo: true, repeat: 1 });
+
+/* scroll: a progress line under the nav, and reveals that play once as each part reaches the screen.
+   Elements are only hidden by script, so without it (or with reduced motion) the page is fully visible. */
+if (window.ScrollTrigger) {
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.to('#progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: REDUCE ? true : .3 } });
+}
+if (window.ScrollTrigger && !REDUCE) {
+  const EASE = 'power3.out';
+  const once = (trigger, start = 'top 85%') => ({ trigger, start, once: true });
+  // a group of items that rise in one after another; transforms are cleared after so hover effects still work
+  const group = (sel, from = {}, stagger = .1) => {
+    gsap.set(sel, { autoAlpha: 0, y: 36, ...from });
+    ScrollTrigger.batch(sel, { start: 'top 88%', once: true, onEnter: els =>
+      gsap.to(els, { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .8, ease: EASE, stagger, overwrite: true, clearProps: 'transform' }) });
+  };
+
+  // section headings: eyebrow, title, intro
+  $$('section.s').forEach(sec => {
+    const head = sec.querySelectorAll('.eyebrow, .h2, .lead');
+    if (head.length) gsap.from(head, { autoAlpha: 0, y: 28, duration: .8, ease: EASE, stagger: .09, scrollTrigger: once(head[0]) });
+  });
+
+  group('.pain', { y: 48, scale: .97 }, .12);
+  group('.rulec', { x: -28, y: 0 }, .1);
+
+  // the loop: the ring turns in, then its labels pop on in the order the packet visits them.
+  // The labels are centred with translate(-50%, -50%); hand that to GSAP so scaling keeps them centred.
+  gsap.set('#ring .n', { xPercent: -50, yPercent: -50, x: 0, y: 0 });
+  gsap.timeline({ scrollTrigger: once('#ringbox', 'top 78%') })
+    .from('#ring svg', { autoAlpha: 0, rotate: -40, scale: .9, transformOrigin: '50% 50%', duration: 1.1, ease: EASE })
+    .from('#ring .core', { autoAlpha: 0, duration: .6 }, '-=.6')
+    .from('#ring .n', { autoAlpha: 0, scale: .7, duration: .55, ease: 'back.out(2.2)', stagger: .14 }, '-=.5');
+
+  // what it catches: rows cascade in, then the report shows its story once: without proof, then with it
+  group('.report .row', { y: 18 }, .06);
+  ScrollTrigger.create({ trigger: '.report', start: 'top 55%', once: true, onEnter: () => {
+    if (touchedReport) return;
+    gsap.delayedCall(.9, () => !touchedReport && setReport(false));
+    gsap.delayedCall(2.6, () => !touchedReport && setReport(true));
+  } });
+
+  // phases: the rail draws across, each step pops on as the line reaches it
+  gsap.timeline({ scrollTrigger: once('.phases', 'top 80%') })
+    .fromTo('.phases', { '--rail': 0 }, { '--rail': 1, duration: 1.2, ease: 'power2.inOut' })
+    .from('.phase .node', { scale: .5, autoAlpha: 0, duration: .5, ease: 'back.out(2.4)', stagger: .4 }, 0)
+    .from('.phase > :not(.node)', { autoAlpha: 0, y: 16, duration: .6, ease: EASE, stagger: .06 }, .15);
+
+  // dashboard: the screenshot rises and settles to full size
+  gsap.from('.dash', { autoAlpha: 0, y: 70, scale: .94, duration: 1.1, ease: EASE, scrollTrigger: once('.dash', 'top 92%') });
+  group('.dash-feats > div', {}, .1);
+  group('.memstrip .card', {}, .12);
+
+  // close
+  gsap.from('.close h2, .close p, .close .ctas', { autoAlpha: 0, y: 34, duration: .9, ease: EASE, stagger: .12, scrollTrigger: once('.close h2') });
+
+  // web fonts can change heights after first layout; the dashboard image has its size reserved, and
+  // ScrollTrigger refreshes itself on resize (refreshing mid-scroll would cancel smooth anchor jumps)
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+}
 </script>
 </body>
 </html>
