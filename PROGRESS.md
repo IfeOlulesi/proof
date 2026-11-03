@@ -13,7 +13,7 @@ thinking → reading/editing → commands → checks.
 |---|---|---|---|
 | 0 | Contract: mockup, inventories, routes, tags | - | done |
 | 1 | Foundation: tokens, Geist fonts embedded, top bar, footer bar, card/badge/tabs/kbd | - | done |
-| 2 | Home, working: rings, agent graph, KPI cards, activity chart | home--working (+ dark) | |
+| 2 | Home, working: rings, agent graph, KPI cards, activity chart | home--working (+ dark) | done |
 | 3 | Needs you, finished, stalled | 3 × 2 | |
 | 4 | Memory banner and memory view | 2 × 2 | |
 | 5 | Agent drill-down | job (+ dark) | |
@@ -50,6 +50,34 @@ Playwright: `npm i --no-save --no-package-lock playwright@1.56.1` (matches the c
 - Verifier: two gaps, both fixed and re-checked in Playwright. A footer drawer button did nothing on the memory or
   agent view (it now clears the view, as T/W/L do), and the v1 views had lost `box-sizing: border-box` (menu 488 wide,
   now 470; loading bar 61, now 60).
+
+## v2 unit 2. Home, working
+
+- Fixtures: the mockup's seeded generator is ported verbatim into `make.mjs` (now 14:34; CK main and agent segments,
+  gate rounds, 14 commit times, MEM_OK/MEM_HI memory history). Timeline rows carry its segments as feed categories
+  (think→model, work→edit, cmd→shell, check→test, you→waitUser, idle→idle). Checked: running the mockup's own lines
+  in node gives the same main, lane-b and reviews segments, memory samples and `now` as the fixture.
+- Page: `HomeWorking` for a session that is working, thinking or has agents running (other states stay on the v1
+  home until unit 3). Status card with rings (Claude working = thinking, reading/editing, commands and checks; waiting
+  on you; tasks done, or agents done with no task list), the run graph (running agents from `now`, done ones from
+  `units`, oldest first; test ids from the agent's name, e.g. `node-lane-b`), KPI cards (tasks, features, gate rounds
+  with the failing worktree, memory with a spark and the ceiling line), activity chart (all lanes, 10-minute bars,
+  5 for the last hour or a session under an hour), hover tooltips from `data-tip`.
+- Judgment calls: "Room for N more runs" assumes about 2 GB per run (a guess, in `RUN_MB`). "Last hour" draws the
+  rings from the main thread's timeline lane over the last hour, since the feed's `windowShare` covers the data window
+  (6 h), not one hour.
+- Red: `verify-screen.mjs home--working` before: every body item missing (v1 home). Green: home--working and
+  home--working--dark ALL PASS.
+- Used in Playwright: range tabs (Last hour: 5-minute bars, rings 46m / 9m; Session back to 1h 12m), chart, node and
+  gate tooltips, node click opens the drill-down, memory-warning variant (rings 150); no page errors.
+- Verifier: 7 gaps, all fixed. Feed (`dashboard.mjs`): an agent's own gate rounds are now events named for the
+  agent (the "failing in lane-b" badge was fixture-only), and `now[]` agents carry `start` (a review agent, which has
+  no unit, was timed from its current step). Red then green: `bash tests/dashboard.sh`, 2 new tests failing, then
+  15 passed. Page: the graph shows as many nodes as fit (running first, newest done, then "+N more"; 43 agents
+  overlapped before); "Last hour" also scopes the gate KPI; rings draw in from 0 once (off under reduced motion);
+  the session chart starts at the data window (a 30 h session drew 180 bars, now 11) and its labels keep 48 px apart;
+  a stalled session with leftover agents isn't shown as working; "Room for N" never goes negative.
+- Screen judge: 0 fails, light and dark.
 
 # Dashboard v1 build: progress
 

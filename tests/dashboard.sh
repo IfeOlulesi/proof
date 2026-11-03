@@ -61,6 +61,13 @@ result "$A" 18 5 '"ok"'
 v=$(view "$L")
 expect "units[].prompt is the prompt it was launched with" "field 'v.units[0] && v.units[0].prompt' <<<\"\$v\" | grep -q 'Build the payment screen to the mockup.'"
 
+echo "== an agent's own gate rounds and start time"
+log "$A" 17 '{"type":"attachment","attachment":{"type":"hook_system_message","hookEvent":"Stop","content":"proof: test failed — checkout.spec.ts › rejects expired card"}}'
+call "$A" 2 Read 6 '{"file_path":"/tmp/app/src/card.ts"}'
+v=$(view "$L")
+expect "a gate round in an agent's log is an event, named for that agent" "field 'v.events.filter(e=>e.kind===\"gateFail\").map(e=>e.who)' <<<\"\$v\" | grep -q 'Lane B unit 13: payment screen'"
+expect "a running agent in now[] carries when it started, not just its current step" "[ \$(field 'Math.round((Date.now() - v.now.find(n=>n.type!==\"main\").start)/60e3)' <<<\"\$v\") -ge 17 ]"
+
 echo "== the page"
 H="$S/dashboard.html"
 expect "keeps its title and the replay placeholder" "grep -q '<title>proof · live</title>' '$H' && grep -q '/\*__PROOF_DATA__\*/' '$H'"

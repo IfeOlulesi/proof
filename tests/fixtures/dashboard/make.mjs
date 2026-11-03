@@ -9,12 +9,38 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const at = (h, m, s = 0) => { const d = new Date(2026, 9, 17, h, m, s); return d.getTime(); };
-const NOW = at(14, 37, 12);
+const NOW = at(14, 34);
 const min = m => m * 60e3, sec = s => s * 1e3;
+
+// ---- the mockup's seeded sample data, ported verbatim (mockup/app.html), so charts draw the same segments -----------
+// The calls must stay in the mockup's order: each one moves the seed.
+const H = 3600e3, M = 60e3;
+let seed = 7; const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = w => { let r = rnd() * Object.values(w).reduce((a, b) => a + b, 0); for (const [k, v] of Object.entries(w)) { if ((r -= v) <= 0) return k; } return Object.keys(w)[0]; };
+function fill(a, b, w, min = 15e3, max = 150e3) { const out = []; let t = a; while (t < b) { const d = Math.min(b - t, min + rnd() * (max - min)); out.push([t, t + d, pick(w)]); t += d + (rnd() < .25 ? 4e3 + rnd() * 20e3 : 0); } return out; }
+const W_BUILD = { think: 4, work: 3, check: 2, cmd: 1 }, W_TEST = { think: 2, work: 2, check: 5, cmd: 1 }, W_READ = { think: 3, work: 6, cmd: 1 };
+const CK = { start: at(12, 52) };
+CK.main = [...fill(at(12, 52), at(13, 5), W_READ), [at(13, 5), at(13, 14, 2), 'you'], ...fill(at(13, 14, 2), at(13, 30), W_BUILD), [at(13, 30), at(13, 37), 'you'], ...fill(at(13, 37), at(13, 58), W_BUILD), [at(13, 58), at(14, 4), 'you'], ...fill(at(14, 4), at(14, 14), W_BUILD), [at(14, 14), at(14, 17), 'idle'], ...fill(at(14, 17), at(14, 31), W_BUILD), [at(14, 31), NOW, 'cmd']];
+CK.agents = [
+  { id: 'explore', start: at(13, 16), end: at(13, 20), w: W_READ },
+  { id: 'lane-a', start: at(13, 20), end: at(13, 38), w: W_BUILD },
+  { id: 'lane-b', start: at(14, 14), end: null, w: W_BUILD, tail: 'check' },
+  { id: 'lane-c', start: at(14, 31, 20), end: null, w: W_BUILD },
+  { id: 'verifier', start: at(14, 33, 12), end: null, w: W_READ },
+];
+for (const a of CK.agents) { a.segs = fill(a.start, (a.end || NOW) - (a.tail ? 6 * M + 12e3 : 0), a.w, 10e3, 90e3); if (a.tail) a.segs.push([NOW - 6 * M - 12e3, NOW, a.tail]); }
+const segsOf = id => CK.agents.find(a => a.id === id).segs;
+CK.gates = [[at(13, 12), 1, 'types, lint, test'], [at(13, 31), 1, 'types, lint, test'], [at(13, 38), 1, '6 checks'], [at(13, 52), 1, '6 checks'], [at(14, 5), 1, '6 checks'], [at(14, 22), 1, '6 checks in 2m 40s'], [at(14, 25), 1, '6 checks in 2m 40s'], [at(14, 27), 0, 'checkout.spec.ts › rejects expired card']];
+CK.commits = [at(13, 24), at(13, 29), at(13, 36), at(13, 40), at(13, 47), at(13, 55), at(14, 2), at(14, 9), at(14, 13), at(14, 19), at(14, 25), at(14, 25, 30), at(14, 29), at(14, 33)];
+const memSeries = (base, end) => { const out = []; let v = base; for (let t = NOW - 6 * H; t <= NOW; t += 2 * M) { v += (rnd() - .5) * 2.2 + (end - v) * .012; out.push([t, Math.max(40, Math.min(95, v))]); } out[out.length - 1][1] = end; return out; };
+const MEM_OK = memSeries(58, 68), MEM_HI = memSeries(70, 85);
+// The mockup's six activity groups as feed categories (the page groups them back the same way).
+const FEED_CAT = { think: 'model', work: 'edit', cmd: 'shell', check: 'test', you: 'waitUser', idle: 'idle' };
+const asBlocks = segs => segs.map(([a, b, c]) => [a, b, FEED_CAT[c]]);
 
 const machine = (pct = 68) => ({
   system: { platform: 'darwin', totalMB: 24576, usedMB: 24576 * pct / 100, pct, warnPct: 75, ceilingPct: 93, headroomMB: 24576 * (93 - pct) / 100, pressure: pct >= 75 ? 'warn' : 'normal', swapMB: 14915 },
-  samples: [], apps: [], runs: [],
+  samples: pct >= 75 ? MEM_HI : MEM_OK, apps: [], runs: [],
   advice: { text: '', userApps: [{ name: 'Brave Browser', mb: 3914 }, { name: 'OrbStack', mb: 2691 }] },
   keepAwake: { on: true, enabled: true }, asleep: [],
 });
@@ -51,24 +77,22 @@ const laneB = () => {
   return out.sort((a, b) => b.t - a.t);
 };
 
-// The timeline: one lane per worktree, blocks as fractions of the session (from the mockup's drawing).
-const lanes = from => {
-  const span = NOW - from, f = x => from + x * span;
-  const lane = blocks => blocks.map(([a, w, c]) => [f(a / 100), f((a + w) / 100), c]);
-  return [
-    { key: 'main', label: 'Main thread', sub: 'orchestrates, talks to you', lane: lane([[0, 16, 'model'], [16, 9, 'waitUser'], [25, 12, 'edit'], [37, 6, 'asleep'], [43, 14, 'model'], [57, 4, 'idle'], [61, 39, 'model']]) },
-    { key: '/w/lane-a', label: 'lane-a', sub: '1 agent', who: ['Lane A unit 12: cart screen'], lane: lane([[28, 26, 'edit'], [55, 6, 'test']]) },
-    { key: '/w/lane-b', label: 'lane-b', sub: '1 agent', who: ['Lane B unit 13: payment screen'], lane: [[NOW - min(20), NOW - sec(372), 'edit'], [NOW - sec(372), NOW, 'test']] },
-    { key: '/w/lane-c', label: 'lane-c', sub: '1 agent', who: ['Lane C unit 14: order API'], lane: lane([[82, 18, 'edit']]) },
-    { key: 'Reviews', label: 'Reviews', sub: 'verifier, screen judge', who: ['Verifier: cart screen'], lane: lane([[58, 3, 'read'], [95, 5, 'read']]) },
-  ];
-};
+// The timeline: one lane per worktree, from the mockup's seeded segments.
+const lanes = () => [
+  { key: 'main', label: 'Main thread', sub: 'orchestrates, talks to you', lane: asBlocks(CK.main) },
+  { key: '/w/lane-a', label: 'lane-a', sub: '1 agent', who: ['Lane A unit 12: cart screen'], lane: asBlocks(segsOf('lane-a')) },
+  { key: '/w/lane-b', label: 'lane-b', sub: '1 agent', who: ['Lane B unit 13: payment screen'], lane: asBlocks(segsOf('lane-b')) },
+  { key: '/w/lane-c', label: 'lane-c', sub: '1 agent', who: ['Lane C unit 14: order API'], lane: asBlocks(segsOf('lane-c')) },
+  { key: 'Reviews', label: 'Reviews', sub: 'explore, verifier', who: ['Explore: existing payment code', 'Verifier: cart screen'], lane: asBlocks([...segsOf('explore'), ...segsOf('verifier')]) },
+];
 
 const checkout = () => {
-  const commits = [{ t: NOW - min(4), sha: '9d2c41e', msg: 'merge lane-a: cart screen', who: 'Main thread' }];
-  const msgs = ['wire payment route', 'checkout state machine', 'merge lane-a: cart screen tests', 'product detail screen', 'detail screen tests', 'product list screen', 'list screen tests', 'api client', 'mock server for e2e', 'proof gate setup', 'design tokens', 'shared components', 'plan for the checkout flow'];
-  msgs.forEach((msg, i) => commits.push({ t: NOW - min(6 + (i + 1) * 6), sha: (0xa10f00 + i * 4097).toString(16) + '0', msg, who: 'Main thread' }));
-  commits.push({ t: at(14, 25), sha: '4be91a0', msg: 'payment form', who: 'Lane B unit 13: payment screen' });
+  // The mockup's 14 commit times, oldest first, with who made each.
+  const LA = 'Lane A unit 12: cart screen', LB = 'Lane B unit 13: payment screen', LC = 'Lane C unit 14: order API', MT = 'Main thread';
+  const made = [[MT, 'plan for the checkout flow'], [LA, 'cart screen'], [LA, 'cart screen tests'], [LA, 'cart totals and empty state'], [MT, 'merge lane-a: cart screen'],
+    [MT, 'checkout state machine'], [MT, 'wire payment route'], [MT, 'mock server for e2e'], [MT, 'api client for orders'], [MT, 'design tokens for payment'],
+    [LB, 'payment form'], [LB, 'payment form validation'], [MT, 'order summary component'], [LC, 'order API types']];
+  const commits = CK.commits.map((t, i) => ({ t, sha: (0xa10f00 + i * 40961).toString(16).slice(0, 7) + '0', msg: made[i][1], who: made[i][0] }));
   commits.sort((a, b) => b.t - a.t);
   const done = ['Set up proof gate', 'Product list screen', 'Product detail screen', 'Cart screen'].map((subject, i) => ({ id: String(i + 1), subject, status: 'completed' }));
   return session({
@@ -82,9 +106,9 @@ const checkout = () => {
     feed: laneB(),
     units: [
       { desc: 'Lane B unit 13: payment screen', type: 'general-purpose', prompt: 'Build the payment screen to mockup/app.html#payment. Acceptance criteria F13.1 to F13.4. Commit when the gate passes.', where: 'lane-b', start: NOW - min(20), end: null, running: true, commits: 2, errors: 1 },
-      { desc: 'Lane C unit 14: order API', type: 'general-purpose', where: 'lane-c', start: NOW - min(14), end: null, running: true, commits: 1, errors: 0 },
-      { desc: 'Lane A unit 12: cart screen', type: 'general-purpose', result: 'Cart screen is built and passes its checks; three commits on lane-a.', where: 'lane-a', start: NOW - min(52), end: NOW - min(34), running: false, commits: 3, errors: 0 },
-      { desc: 'Explore: existing payment code', type: 'Explore', where: 'shop-app', start: NOW - min(97), end: NOW - min(93), running: false, commits: 0, errors: 0 },
+      { desc: 'Lane C unit 14: order API', type: 'general-purpose', where: 'lane-c', start: at(14, 31, 20), end: null, running: true, commits: 1, errors: 0 },
+      { desc: 'Lane A unit 12: cart screen', type: 'general-purpose', result: 'Cart screen is built and passes its checks; three commits on lane-a.', where: 'lane-a', start: at(13, 20), end: at(13, 38), running: false, commits: 3, errors: 0 },
+      { desc: 'Explore: existing payment code', type: 'Explore', where: 'shop-app', start: at(13, 16), end: at(13, 20), running: false, commits: 0, errors: 0 },
     ],
     tasks: [...done,
       { id: '5', subject: 'Payment screen', status: 'in_progress', owner: 'Lane B' },
@@ -93,7 +117,7 @@ const checkout = () => {
       { id: '8', subject: 'Order confirmation screen', status: 'pending' },
       { id: '9', subject: 'Full e2e pass', status: 'pending' }],
     features: { passing: 12, total: 20 },
-    rows: lanes(NOW - min(102)),
+    rows: lanes(),
     share: { model: min(26), test: min(17), typecheck: min(1), read: min(4), edit: min(8), gate: min(7), fidelity: min(5), git: min(2), shell: min(1), build: min(1), waitUser: min(23), idle: min(4), compact: min(3) },
     busyMs: min(100), parallel: 2.34,
     counts: { compactions: 2 },
@@ -108,9 +132,8 @@ const checkout = () => {
     },
     commits,
     events: [
-      { t: at(14, 27), kind: 'gateFail', text: 'checkout.spec.ts › rejects expired card', who: 'Lane B unit 13: payment screen' },
-      { t: NOW - min(12), kind: 'gatePass', text: '6 checks in 2m 40s', who: 'proof gate' },
-      { t: NOW - min(34), kind: 'agentDone', text: 'Agent finished: Lane A unit 12: cart screen', who: 'Lane A unit 12: cart screen' },
+      ...CK.gates.map(([t, ok, text]) => (ok ? { t, kind: 'gatePass', text, who: 'proof gate' } : { t, kind: 'gateFail', text, who: LB })),
+      { t: at(13, 38), kind: 'agentDone', text: 'Agent finished: Lane A unit 12: cart screen', who: 'Lane A unit 12: cart screen' },
       { t: at(14, 22), kind: 'memory', text: 'proof memory: held back the verifier for 40s, the Mac was at 86%', who: 'Main thread' },
       { t: at(14, 12), kind: 'compact', text: 'Compacted context', who: 'Main thread' },
     ].concat(commits.map(c => ({ t: c.t, kind: 'commit', text: `${c.sha.slice(0, 7)} ${c.msg}`, who: c.who }))).sort((a, b) => b.t - a.t),
@@ -188,9 +211,7 @@ const others = () => [
 const busyMachine = () => {
   const m = machine(84.56);
   Object.assign(m.system, { usedMB: 20782, headroomMB: 2073, swapMB: 14915 });
-  const pts = [62, 63, 63, 65, 64, 66, 68, 70, 69, 72, 74, 73, 76, 78, 77, 79, 80, 82, 81, 83, 84, 86, 85, 84, 85];
-  const t0 = at(9, 0);
-  m.samples = pts.map((p, i) => [t0 + (i / (pts.length - 1)) * (NOW - t0), p]);
+  m.samples = MEM_HI;
   m.apps = [{ name: 'Brave Browser', mb: 3914, n: 29, claude: false }, { name: 'OrbStack', mb: 2691, n: 2, claude: false }, { name: 'Claude Code', mb: 2130, n: 17, claude: true }, { name: 'Orca', mb: 800, n: 14, claude: false }, { name: 'Visual Studio Code', mb: 544, n: 8, claude: false }, { name: 'Claude', mb: 483, n: 5, claude: false }];
   m.runs = [
     { pgid: 501, pid: 501, mb: 1434, start: NOW - sec(372), command: 'npx playwright test checkout.spec.ts', session: 'checkout', cwd: '/Users/you/code/shop-app/.worktrees/lane-b' },

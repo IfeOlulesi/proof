@@ -83,10 +83,14 @@ body { margin: 0; background: var(--background); color: var(--foreground); font-
 @keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--run) 50%, transparent); } 70%, 100% { box-shadow: 0 0 0 6px transparent; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes flow { to { stroke-dashoffset: -18; } }
+@keyframes ring-in { from { stroke-dasharray: 0 1000; } }
 @keyframes skp { 50% { opacity: .55; } }
 
 /* Everything inside the page, except the views still on design v1 (.v1, below) until their units port them. */
 @scope (.app) to (.v1) {
+/* the page's own additions to the mockup's styles: rings draw in from 0 once (interactions.json, rings) */
+.ring { animation: ring-in var(--dur-slow) var(--ease) both; }
+@media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 input { font: inherit; color: inherit; background: none; border: 0; outline: 0; }
@@ -710,6 +714,7 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
   };
   // design v2 icons, as drawn in the mockup
   const I = {
+    check: html`<svg width="9" height="9" viewBox="0 0 10 10"><path d="M2 5.2l2 2 4-4.4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     x: html`<svg width="9" height="9" viewBox="0 0 10 10"><path d="M3 3l4 4M7 3l-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`,
     chev: html`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>`,
     moon: html`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
@@ -941,6 +946,195 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     return String(e.text).replace(/^proof( memory)?:\s*/, m => (m.includes('memory') ? 'Memory: ' : ''));
   }
 
+  // ---- design v2: activity groups ------------------------------------------------------------------------------------
+  // The feed's categories in the six groups the charts show, in stack order (colours validated for colour-blind
+  // separation in this order). Mac asleep is left out of activity.
+  const ORDER = ['think', 'work', 'cmd', 'check', 'you', 'idle'];
+  const GROUP = { model: 'think', plan: 'think', edit: 'work', read: 'work', web: 'work', shell: 'cmd', git: 'cmd', build: 'cmd', devserver: 'cmd', hooks: 'cmd', subagent: 'cmd', api: 'cmd',
+    test: 'check', typecheck: 'check', fidelity: 'check', gate: 'check', waitUser: 'you', idle: 'idle', compact: 'idle' };
+  const GCOL = { think: 'var(--c-think)', work: 'var(--c-work)', cmd: 'var(--c-cmd)', check: 'var(--c-check)', you: 'var(--c-you)', idle: 'var(--c-idle)' };
+  const GNAME = { think: 'Thinking & writing', work: 'Reading & editing', cmd: 'Commands', check: 'Checks & screens', you: 'Waiting on you', idle: 'Stalls' };
+  const byGroup = share => { const o = {}; for (const [k, ms] of Object.entries(share || {})) { const g = GROUP[k]; if (g) o[g] = (o[g] || 0) + ms; } return o; };
+  const working = g => (g.think || 0) + (g.work || 0) + (g.cmd || 0) + (g.check || 0);
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  // Every activity block of a session (all lanes: main thread and agents), as [start, end, group].
+  const blocksOf = v => v.rows.flatMap(r => (r.lane || []).filter(b => GROUP[b[2]]).map(b => [b[0], b[1], GROUP[b[2]]]));
+  // The home's scope: the whole session, or its last hour (range tabs).
+  function scopeOf(v, st, now) {
+    const hour = st.r === 'hour', from = Math.max(v.start, v.from || 0, hour ? now - 3600e3 : 0);   // lanes only cover the data window
+    let g = byGroup(v.share);
+    if (hour) {   // the main thread's time in the last hour, from its timeline lane
+      const main = v.rows.find(r => r.key === 'main');
+      g = {};
+      if (main) for (const [a, b, c] of main.lane) { const gr = GROUP[c], ov = Math.min(b, now) - Math.max(a, from); if (gr && ov > 0) g[gr] = (g[gr] || 0) + ov; }
+    }
+    const span = Math.max(1, now - (hour ? from : v.start));   // the rings' share covers the whole session
+    return { hour, from, span, g, bucket: hour || span < 3600e3 ? 5 * 60e3 : 10 * 60e3 };
+  }
+
+  // Width of an element, kept current: the charts draw to the pixel width they get.
+  function useWidth() {
+    const ref = useRef(null), [w, setW] = useState(0);
+    useEffect(() => {
+      const el = ref.current; if (!el) return;
+      const ro = new ResizeObserver(() => setW(el.clientWidth)); ro.observe(el); setW(el.clientWidth);
+      return () => ro.disconnect();
+    }, []);
+    return [ref, w];
+  }
+
+  // Concentric progress rings (Tremor ProgressCircle).
+  function Rings({ vals, size }) {
+    const C = size / 2, SW = size * .07, R = [C - SW / 2 - 2, C - SW * 1.5 - 6, C - SW * 2.5 - 10];
+    return html`<svg width=${size} height=${size} viewBox=${`0 0 ${size} ${size}`} data-testid="rings">${vals.map((r, i) => {
+      const L = 2 * Math.PI * R[i];
+      return html`<circle cx=${C} cy=${C} r=${R[i]} fill="none" stroke="var(--track)" stroke-width=${SW} />${r.v > 0 ? html`<circle class="ring" cx=${C} cy=${C} r=${R[i]} fill="none" stroke=${r.c} stroke-width=${SW} stroke-linecap="round" stroke-dasharray=${`${Math.max(.01, L * Math.min(1, r.v))} ${L}`} transform=${`rotate(-90 ${C} ${C})`} data-tip=${`<b>${r.n}</b> · ${r.val}`} />` : null}`;
+    })}</svg>`;
+  }
+  const RingLegend = ({ vals }) => html`<div class="leg">${vals.map((x, i) => html`<div><i style=${`background:${x.c}`}></i><span class="mf" data-testid=${`leg-${i + 1}-name`}>${x.n}</span><b data-testid=${`leg-${i + 1}-value`}>${x.val}</b></div>`)}</div>`;
+
+  const tasksDone = v => v.tasks.filter(t => t.status === 'completed').length;
+  function ringVals(v, sc) {
+    const work = working(sc.g), wait = sc.g.you || 0, n = v.tasks.length, done = tasksDone(v);
+    const units = v.units.length, unitsDone = v.units.filter(u => !u.running).length;
+    return [
+      { v: work / sc.span, c: 'var(--c-think)', n: 'Claude working', val: dur(work) },
+      { v: wait / sc.span, c: 'var(--c-you)', n: 'Waiting on you', val: dur(wait) },
+      n ? { v: done / n, c: 'var(--c-work)', n: 'Tasks done', val: `${done} of ${n}` }
+        : { v: units ? unitsDone / units : 0, c: 'var(--c-work)', n: 'Agents done', val: `${unitsDone} of ${units}` }];
+  }
+
+  // A stable test id from an agent's name: "Lane B unit 13: payment screen" → lane-b, "Verifier: cart screen" → verifier.
+  const agentIds = names => {
+    const seen = {};
+    return names.map(n => {
+      const base = String(n).split(':')[0].replace(/\s+unit\s+\d+.*$/i, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'agent';
+      seen[base] = (seen[base] || 0) + 1;
+      return seen[base] > 1 ? `${base}-${seen[base]}` : base;
+    });
+  };
+  // Gate rounds in the session, oldest first: [t, passed, what ran].
+  const gateRounds = v => v.events.filter(e => e.kind === 'gatePass' || e.kind === 'gateFail').map(e => [e.t, e.kind === 'gatePass', e.text]).sort((a, b) => a[0] - b[0]);
+  const failsSincePass = v => { const lastPass = (v.events.find(e => e.kind === 'gatePass') || { t: 0 }).t; return v.events.filter(e => e.kind === 'gateFail' && e.t > lastPass); };
+  const shortStep = label => String(label || '').split(' · ')[0];
+
+  // The run graph (GitHub Actions style): main thread → agents (running first, then done) → gate.
+  function JobGraph({ v, h, set }) {
+    const [ref, W] = useWidth(), now = NOW();
+    const running = runningJobs(v).map(j => { const u = unitFor(v, j.who); return { name: j.who, type: j.type, run: true, start: u ? u.start : j.start || j.since, now: shortStep(j.label), where: j.where, commits: u ? u.commits : 0 }; });
+    const done = doneUnits(v).slice().sort((a, b) => a.start - b.start).map(u => ({ name: u.desc, type: u.type, run: false, start: u.start, end: u.end, where: u.where, commits: u.commits }));
+    // As many nodes as fit at 30px with 8px gaps: running first, then the newest done; the rest fold into "+N more".
+    const fit = Math.max(1, Math.floor((h + 8) / 38)), all = [...running, ...done];
+    const shownDone = done.slice(Math.max(0, done.length - Math.max(0, fit - running.length)));
+    let agents = [...running.slice(0, fit), ...shownDone].slice(0, fit);
+    const hidden = all.length - agents.length;
+    if (hidden) agents = [...agents.slice(0, fit - 1), { more: hidden + 1 }];
+    const ids = agentIds(agents.map(a => a.name || 'more'));
+    const rounds = gateRounds(v), passed = rounds.filter(r => r[1]).length, gfail = rounds.length && !rounds[rounds.length - 1][1];
+    const mainJob = v.now.find(n => n.type === 'main');
+    const mainBadge = running.length ? `waiting on ${running.length}` : v.status.state === 'thinking' ? 'thinking' : shortStep(mainJob && mainJob.label) || 'idle';
+    const mainW = 210, gateW = 124, x = mainW + 64, gateX = W - gateW, nodeW = gateX - 64 - x, gy = h / 2;
+    const nh = agents.length && h / agents.length > 38 ? 34 : 30, stepY = (h - nh) / Math.max(1, agents.length - 1);
+    return html`<div ref=${ref} style=${`position:relative;height:${h}px;margin-top:14px`}>${W ? html`
+      <svg width=${W} height=${h} style="position:absolute;inset:0;overflow:visible" data-testid="graph-wires">${agents.map((a, i) => {
+        const y1 = i * stepY + nh / 2;
+        return html`<path d=${`M${mainW} ${gy} C ${mainW + 34} ${gy}, ${x - 34} ${y1}, ${x} ${y1}`} stroke=${a.run ? 'var(--run)' : 'var(--border)'} stroke-width=${a.run ? 1.8 : 1.5} fill="none" stroke-dasharray=${a.run ? '5 4' : null} class=${a.run ? 'flow' : null} /><path d=${`M${x + nodeW} ${y1} C ${x + nodeW + 34} ${y1}, ${gateX - 34} ${gy}, ${gateX} ${gy}`} stroke="var(--border)" stroke-width="1.5" fill="none" />`;
+      })}</svg>
+      <button class="jn root" style=${`left:0;top:${gy - 21}px;width:${mainW}px`} data-tip=${`<b>Main thread</b><br><span class=m>orchestrates, talks to you · ${plural(v.commits.length, 'commit')}</span>`} data-testid="node-main" onClick=${() => set({ v: 'job', j: 'Main thread' })}><span class=${`dot ${running.length || !BUSY(v.status.state) ? 'idle' : 'live'}`}></span><span class="nm">Main thread</span><span class="badge" style="margin-left:auto;height:20px">${mainBadge}</span></button>
+      ${agents.map((a, i) => {
+        if (a.more) return html`<div class="jn" style=${`left:${x}px;top:${i * stepY}px;width:${nodeW}px;height:${nh}px;color:var(--muted-foreground);font-weight:400`} data-testid="node-more">+${a.more} more agents · the drawers list them all</div>`;
+        const d = (a.end || now) - a.start;
+        return html`<button class=${`jn ${a.run ? 'run' : ''}`} style=${`left:${x}px;top:${i * stepY}px;width:${nodeW}px;height:${nh}px`} data-testid=${`node-${ids[i]}`} onClick=${() => set({ v: 'job', j: a.name })}
+          data-tip=${`<b>${esc(a.name)}</b><br><span class=m>${esc(a.type)} · ${a.run ? esc(a.now) : 'done'} · ${dur(d)}</span><br><span class=m>worktree ${esc(a.where || 'main')} · ${plural(a.commits || 0, 'commit')}</span>`}>${a.run ? html`<span class="spin"></span>` : html`<span class="ck">${I.check}</span>`}<span class="nm">${a.name}</span>${a.run ? html`<span class="mf" style="font-weight:400;overflow:hidden;text-overflow:ellipsis;margin-left:6px">· ${a.now}</span>` : null}<span class="d">${a.run && d < 10 * 60e3 ? timer(d) : dur(d)}</span></button>`;
+      })}
+      <div class=${`jn ${gfail ? 'fail' : ''}`} style=${`left:${gateX}px;top:${gy - 17}px;width:${gateW}px`} data-tip=${`<b>Gate</b> · ${passed} of ${rounds.length} rounds passed`} data-testid="node-gate"><span class=${`ck ${gfail ? 'bad' : ''}`}>${gfail ? I.x : I.check}</span>Gate<span class="d">${passed}/${rounds.length}</span></div>` : null}
+    </div>`;
+  }
+
+  // Stacked activity bars per time slot (Tremor BarChart, stacked).
+  function ActivityChart({ blocks, t0, t1, bucket, id }) {
+    const [ref, W] = useWidth(), [hRef, Hh] = useHeight();
+    const n = Math.max(1, Math.ceil((t1 - t0) / bucket)), AX = 40, PB = 22, cw = (W - AX) / n, bw = Math.min(44, cw * .62);
+    const slots = []; let max = 0;
+    for (let i = 0; i < n; i++) {
+      const a = t0 + i * bucket, b = Math.min(t1, a + bucket), acc = {};
+      for (const s of blocks) { const ov = Math.min(b, s[1]) - Math.max(a, s[0]); if (ov > 0) acc[s[2]] = (acc[s[2]] || 0) + ov; }
+      max = Math.max(max, Object.values(acc).reduce((p, q) => p + q, 0)); slots.push({ a, b, acc });
+    }
+    const M = 60e3, step = max > 30 * M ? 10 : max > 8 * M ? 5 : 2, top = Math.max(step, Math.ceil(max / M / step) * step), Y = m => (Hh - PB) - m / (top * M) * (Hh - PB - 8);
+    const every = Math.max(n > 14 ? 3 : n > 8 ? 2 : 1, Math.ceil(48 / Math.max(1, cw))), ticks = [];
+    for (let m = 0; m <= top; m += step) ticks.push(m);
+    const fmtS = ms => { const s = Math.round(ms / 1000), m = Math.floor(s / 60); return m >= 60 ? `${Math.floor(m / 60)}h ${pad(m % 60)}m` : m >= 1 ? `${m}m` : `${s}s`; };
+    return html`<div ref=${hRef} style="flex:1;min-height:0"><div ref=${ref} style="width:100%;height:100%">${W && Hh ? html`<svg width=${W} height=${Hh} style="display:block" data-testid=${id}>
+      <defs><pattern id=${`hatch-${id}`} width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--track)" /><rect width="1.6" height="5" fill="var(--c-idle)" /></pattern></defs>
+      ${ticks.map(m => html`<line x1=${AX} x2=${W} y1=${Y(m * M)} y2=${Y(m * M)} stroke="var(--grid)" stroke-dasharray=${m ? '3 3' : null} /><text x=${AX - 10} y=${Y(m * M) + 4} font-size="11.5" fill="var(--muted-foreground)" text-anchor="end">${m}m</text>`)}
+      ${slots.map((s, i) => {
+        const x = AX + i * cw + (cw - bw) / 2; let y = Y(0);
+        const tip = ORDER.filter(f => s.acc[f]).map(f => `<span style='display:inline-block;width:8px;height:8px;border-radius:50%;background:${GCOL[f]};margin-right:6px'></span>${GNAME[f]} <b style='float:right;margin-left:16px'>${fmtS(s.acc[f])}</b>`).join('<br>');
+        const bars = ORDER.filter(f => s.acc[f]).map(f => { const h = s.acc[f] / (top * M) * (Hh - PB - 8); const r = html`<rect x=${x} y=${y - h} width=${bw} height=${Math.max(0, h - 1.5)} fill=${f === 'idle' ? `url(#hatch-${id})` : GCOL[f]} pointer-events="none" />`; y -= h; return r; });
+        return html`<rect x=${AX + i * cw} y="0" width=${cw} height=${Hh - PB} fill="transparent" data-tip=${`<b>${clock(s.a)}–${clock(s.b)}</b><br>${tip || '<span class=m>nothing ran</span>'}`} />${bars}${i % every === 0 ? html`<text x=${x + bw / 2} y=${Hh - 4} font-size="11.5" fill="var(--muted-foreground)" text-anchor="middle">${clock(s.a)}</text>` : null}`;
+      })}
+    </svg>` : null}</div></div>`;
+  }
+  function useHeight() {
+    const ref = useRef(null), [h, setH] = useState(0);
+    useEffect(() => {
+      const el = ref.current; if (!el) return;
+      const ro = new ResizeObserver(() => setH(el.clientHeight)); ro.observe(el); setH(el.clientHeight);
+      return () => ro.disconnect();
+    }, []);
+    return [ref, h];
+  }
+  const ActLegend = ({ id = 'act-legend' }) => html`<div class="tleg" data-testid=${id}>${ORDER.map(f => html`<span><i class=${f === 'idle' ? 'hatch' : ''} style=${`background:${GCOL[f]}`}></i>${GNAME[f]}</span>`)}</div>`;
+
+  const Tracker = ({ rounds, n, id }) => html`<div class="tracker" data-testid=${id}>${rounds.map(g => html`<i style=${`background:${g[1] ? 'var(--run)' : 'var(--bad)'}`} data-tip=${`<b>${g[1] ? 'Passed' : 'Failed'}</b> · ${clock(g[0])}<br><span class=m>${esc(g[2])}</span>`}></i>`)}${Array.from({ length: Math.max(0, n - rounds.length) }, () => html`<i></i>`)}</div>`;
+
+  // Room for more runs, estimated: a typical test run or agent needs about 2 GB (a guess, not measured per run).
+  const RUN_MB = 2048;
+  // Tasks, features and memory are as of now; gate rounds follow the range (session or last hour).
+  function Kpis({ v, data, sc }) {
+    const n = v.tasks.length, done = tasksDone(v), next = v.tasks.find(t => t.status === 'in_progress') || v.tasks.find(t => t.status === 'pending');
+    const all = gateRounds(v).filter(r => r[0] >= sc.from), rounds = all.slice(-14), passed = all.filter(r => r[1]).length, fails = failsSincePass(v);
+    const failWhere = fails.length ? (unitFor(v, fails[0].who) || runningJobs(v).find(j => j.who === fails[0].who) || {}).where : null;
+    const sys = data.machine && data.machine.system, hi = sys && sys.pct >= sys.warnPct, room = sys ? Math.max(0, Math.floor(sys.headroomMB / RUN_MB)) : 0;
+    const f = v.features;
+    return html`<div class="grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="card kpi" data-testid="kpi-tasks"><div class="ch"><span class="desc" data-testid="kpi-tasks-label">Tasks</span>${next ? html`<span class="r desc" data-testid="kpi-tasks-next">next: ${next.subject}</span>` : null}</div>
+        <div class="v num" data-testid="kpi-tasks-value">${done}<small>${n ? `of ${n} done` : 'no task list yet'}</small></div>
+        <div class="foot"><div class="catbar" data-testid="kpi-tasks-bar">${v.tasks.map(t => html`<i style=${`flex:1;background:${t.status === 'completed' ? 'var(--c-work)' : t.status === 'in_progress' ? 'color-mix(in srgb, var(--c-work) 35%, var(--track))' : 'var(--track)'}`} data-tip=${`<b>${esc(t.subject)}</b><br><span class=m>${t.status === 'completed' ? 'done' : t.status === 'in_progress' ? `in progress${t.owner ? ` · ${esc(t.owner)}` : ''}` : 'not started'}</span>`}></i>`)}</div></div></div>
+      <div class="card kpi" data-testid="kpi-features"><div class="ch"><span class="desc" data-testid="kpi-features-label">Features</span><span class="r desc" data-testid="kpi-features-hint">features.json</span></div>
+        <div class="v num" data-testid="kpi-features-value">${f ? f.passing : 0}<small>${f ? `of ${f.total} passing` : 'none yet'}</small></div>
+        <div class="foot"><div class="tracker sm" data-testid="kpi-features-tracker">${Array.from({ length: f ? f.total : 0 }, (_, i) => html`<i style=${`background:${i < f.passing ? 'var(--run)' : 'var(--track)'}`} data-tip=${`F${i + 1} · ${i < f.passing ? 'passing' : 'not yet'}`}></i>`)}</div></div></div>
+      <div class="card kpi" data-testid="kpi-gate"><div class="ch"><span class="desc" data-testid="kpi-gate-label">Gate checks</span>${fails.length ? html`<span class="r badge bad" data-testid="kpi-gate-badge">${I.x} ${fails.length} failing${failWhere ? ` in ${failWhere}` : ''}</span>` : all.length ? html`<span class="r badge run" data-testid="kpi-gate-badge">${I.check} passing</span>` : null}</div>
+        <div class="v num" data-testid="kpi-gate-value">${passed}<small>${all.length ? `of ${plural(all.length, 'round')} passed` : 'no rounds yet'}</small></div>
+        <div class="foot"><${Tracker} rounds=${rounds} n=${14} id="kpi-gate-tracker" /></div></div>
+      <div class="card kpi" data-testid="kpi-memory"><div class="ch"><span class="desc" data-testid="kpi-memory-label">Memory</span>${sys ? hi ? html`<span class="r badge warn" data-testid="kpi-memory-badge">Runs wait their turn</span>` : html`<span class="r badge" data-testid="kpi-memory-badge">${room ? `Room for ${plural(room, 'more run')}` : 'No room for another run'}</span>` : null}</div>
+        <div class="v num" data-testid="kpi-memory-value">${sys ? pct(sys.pct) : '–'}<small>${sys ? `${(sys.usedMB / 1024).toFixed(1)} of ${Math.round(sys.totalMB / 1024)} GB` : 'not measured'}</small></div>
+        <div class="foot" data-tip=${`<b>Memory, last 6 hours</b><br><span class=m>dashed line: proof's ${sys ? sys.ceilingPct : 93}% ceiling</span>`}>${sys ? html`<${Spark} series=${data.machine.samples || []} w=${288} h=${30} fluid=${true} id="kpi-memory-spark" ceiling=${sys.ceilingPct} color=${hi ? 'var(--warn)' : 'var(--c-think)'} />` : null}</div></div>
+    </div>`;
+  }
+
+  const RangeTabs = ({ st, set }) => html`<div class="tabs" data-testid="range">${[['hour', 'Last hour'], [null, 'Session']].map(([r, label], i) => html`<button class=${(st.r || null) === r ? 'on' : ''} data-testid=${`range-${i + 1}`} aria-pressed=${(st.r || null) === r} onClick=${() => set({ r })}>${label}</button>`)}</div>`;
+  const Head2 = ({ v, right }) => html`<div class="head"><h1 data-testid="title">${v.title}</h1><span class="meta" data-testid="meta">${v.project}${v.branch ? html` · <code>${v.branch}</code>` : null} · started ${ago(NOW() - v.start)}${v.model ? ` · ${modelName(v.model)}` : ''}</span><div class="r">${right}</div></div>`;
+
+  // Home while Claude works: status rings, the run graph, KPI cards, activity.
+  function HomeWorking({ v, st, set, data, banner }) {
+    const now = NOW(), sc = scopeOf(v, st, now), vals = ringVals(v, sc), n = runningJobs(v).length;
+    const sub = [n ? `${plural(n, 'agent')} running` : shortStep(v.status.label) || (v.status.state === 'thinking' ? 'Thinking' : 'Working'), v.commits.length ? plural(v.commits.length, 'commit') : null].filter(Boolean).join(' · ');
+    return html`<${Head2} v=${v} right=${html`<${RangeTabs} st=${st} set=${set} />`} />
+      <div class="grid" style=${`grid-template-columns:420px 1fr;height:${banner ? 236 : 262}px`}>
+        <div class="card status" data-testid="status-card"><${Rings} vals=${vals} size=${banner ? 150 : 170} />
+          <div><div class="ch"><span class="badge run" data-testid="status-badge"><span class="dot live" style="width:6px;height:6px"></span>Live</span>${v.status.since ? html`<span class="r timer num" data-testid="status-timer">${timer(now - v.status.since)}</span>` : null}</div>
+            <div class="big" data-testid="status-title">${v.status.state === 'thinking' ? 'Thinking' : 'Working'}</div><div class="desc" style="margin-top:4px" data-testid="status-sub">${sub}</div>
+            <${RingLegend} vals=${vals} /></div></div>
+        <div class="card pad col" data-testid="agents-card"><div class="ch"><h3 data-testid="agents-title">Agents</h3><span class="badge run" data-testid="agents-running">${n} running</span><span class="badge" data-testid="agents-done">${doneUnits(v).length} done</span><span class="r desc" data-testid="agents-hint">Select an agent to open it</span></div>
+          <${JobGraph} v=${v} h=${banner ? 168 : 190} set=${set} /></div>
+      </div>
+      <${Kpis} v=${v} data=${data} sc=${sc} />
+      <div class="card pad col" style="flex:1;min-height:0;gap:10px"><div class="ch"><h3 data-testid="act-title">Activity</h3><span class="desc" data-testid="act-desc">every ${sc.bucket / 60e3} minutes, all agents combined</span><span class="r"><${ActLegend} /></span></div>
+        <${ActivityChart} blocks=${blocksOf(v)} t0=${sc.from} t1=${now} bucket=${sc.bucket} id="activity" /></div>`;
+  }
+
   function Home({ v, st, set, banner }) {
     const s = v.status.state;
     if (st.d === 'timeline' || st.d === 'time' || st.d === 'log') return html`<div class="body"><${Head} v=${v} /><${StatusCard} v=${v} compact=${true} />
@@ -1145,6 +1339,7 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     const [data, setData] = useState(EMBEDDED && !EMBEDDED.moments ? EMBEDDED : EMBEDDED && EMBEDDED.moments ? EMBEDDED.moments[EMBEDDED.moments.length > 1 ? 1 : 0].data : null);
     const [lastOk, setLastOk] = useState(FROZEN ? 0 : Date.now());
     const [failed, setFailed] = useState(false);
+    const [tip, setTip] = useState(null);
     const [, tick] = useState(0);
     const [st, setSt] = useState(readHash());
     // set(patch) or set(prev => patch): the second form decides from the latest state (Esc right after a click).
@@ -1198,7 +1393,15 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     if (!sel) return html`<div class="app st-none"><${Top} st=${st} set=${set} data=${data} live=${live} /><div class="main"><${V1}><${Empty} set=${set} st=${st} /><//></div></div>`;
     // The top glow: green while Claude works, coral when it needs you, amber past the memory warning line, none otherwise.
     const glow = offline ? 'none' : NEEDS(sel.status.state) ? 'you' : banner ? 'warn' : BUSY(sel.status.state) ? 'run' : 'none';
-    return html`<div class=${`app st-${glow}`}>
+    // Hover tooltips: any element with data-tip (markup the page built, with feed text escaped) shows it by the pointer.
+    const onMove = e => {
+      const t = e.target.closest && e.target.closest('[data-tip]');
+      if (!t) { if (tip) setTip(null); return; }
+      const r = e.currentTarget.getBoundingClientRect();
+      setTip({ html: t.getAttribute('data-tip'), x: e.clientX - r.left + 14, y: e.clientY - r.top + 14 });
+    };
+    const working = !st.d && (BUSY(sel.status.state) || runningJobs(sel).length > 0) && !NEEDS(sel.status.state) && sel.status.state !== 'stalled';
+    return html`<div class=${`app st-${glow}`} onMouseMove=${onMove} onMouseLeave=${() => setTip(null)}>
       <${Top} st=${st} set=${set} data=${data} sel=${sel} live=${live} />
       <${V1} inline=${true}>
       ${st.m ? html`<${Menu} data=${data} sel=${sel} st=${st} set=${set} />` : null}
@@ -1206,12 +1409,14 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       ${offline ? html`<${Offline} lastOk=${lastOk} data=${data} />` : banner && st.v !== 'memory' ? html`<${MemBanner} data=${data} set=${set} />` : null}
       <//>
       <div class="main">
-        <${V1}>${offline ? html`<div class="body dim" aria-hidden="true"><${Head} v=${sel} /><${StatusCard} v=${sel} /></div>`
-          : st.v === 'memory' && data.machine ? html`<${MemoryView} data=${data} sel=${sel} set=${set} />`
-          : st.v === 'job' && st.j ? html`<${JobView} v=${sel} who=${st.j} st=${st} set=${set} />`
-          : html`<${Home} v=${sel} st=${st} set=${set} banner=${banner} />`}<//>
+        ${offline ? html`<${V1}><div class="body dim" aria-hidden="true"><${Head} v=${sel} /><${StatusCard} v=${sel} /></div><//>`
+          : st.v === 'memory' && data.machine ? html`<${V1}><${MemoryView} data=${data} sel=${sel} set=${set} /><//>`
+          : st.v === 'job' && st.j ? html`<${V1}><${JobView} v=${sel} who=${st.j} st=${st} set=${set} /><//>`
+          : working ? html`<${HomeWorking} v=${sel} st=${st} set=${set} data=${data} banner=${banner} />`
+          : html`<${V1}><${Home} v=${sel} st=${st} set=${set} banner=${banner} /><//>`}
         <${FootBar} st=${st} set=${set} v=${offline ? null : sel} updated=${updated} />
       </div>
+      ${tip ? html`<div class="tip" style=${`left:${tip.x}px;top:${tip.y}px`} dangerouslySetInnerHTML=${{ __html: tip.html }}></div>` : null}
     </div>`;
   }
 
