@@ -132,6 +132,16 @@ await open('', 'recap--none');
 await expect('nothing caught: a grey 0, every check passed', async () => (await text('recap-caught-label')) === 'failures to catch. Every check passed' && (await id('recap-caught-value').getAttribute('class')).includes('mf') && !(await count('recap-handed-bar')));
 await open('&theme=dark', 'home--memory-warning');
 await expect('under the memory banner the card is the tight one', async () => (await id('recap-card').getAttribute('class')).includes('tight'));
+// A replay page with the memory banner too: two banners. Every number in the card stays inside it.
+const both = { ...(await (await fetch(`${FIX}/home--memory-warning.json`)).json()), replay: { source: 'checkout' } };
+await page.route('**/tests/fixtures/dashboard/two-banners.json', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify(both) }));
+await open('&theme=dark', 'two-banners');
+await expect('under two banners the card drops its bars and nothing is cut off', async () => {
+  const box = await id('recap-card').boundingBox();
+  const rows = await page.locator('[data-testid="recap-card"] .rstat').evaluateAll(els => els.map(e => e.getBoundingClientRect().bottom));
+  return await count('replay-banner') && (await id('recap-card').getAttribute('class')).includes('tighter') && rows.length > 0 && rows.every(b => b <= box.y + box.height + 0.5);
+});
+await page.unroute('**/tests/fixtures/dashboard/two-banners.json');
 
 console.log('== theme');
 await open('&theme=light');

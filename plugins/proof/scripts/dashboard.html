@@ -292,6 +292,8 @@ svg text { font-family: var(--font); }
 .rstat .catbar { width: 44px; height: 6px; }
 /* tight: when a banner takes height (memory warning), the card loses ~36px and keeps every piece */
 .recap.tight { gap: 7px; padding: 14px 18px; } .recap.tight .hero .n { font-size: 28px; } .recap.tight .rbars { height: 34px; } .recap.tight .rbars-axis { margin-top: 3px; } .recap.tight .rstat { height: 28px; }
+/* tighter: two banners (replay and memory): the weekly bars give way so every number stays in view */
+.recap.tighter .rbars, .recap.tighter .rbars-axis { display: none; }
 .cmd .cf { display: flex; align-items: center; gap: 14px; height: 40px; padding: 0 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
 .cmd .cf span { display: inline-flex; align-items: center; gap: 6px; }
 
@@ -693,7 +695,7 @@ svg text { font-family: var(--font); }
       <${Kpis} v=${v} data=${data} sc=${sc} />
       <div class="grid" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
         <${ActivityCard} v=${v} t0=${sc.from} t1=${now} bucket=${sc.bucket} desc=${`every ${sc.bucket / 60e3} minutes, all agents combined`} legendBelow=${true} />
-        <${RecapCard} v=${v} data=${data} tight=${banner} /></div>`;
+        <${RecapCard} v=${v} data=${data} tight=${(banner ? 1 : 0) + (data.replay ? 1 : 0)} /></div>`;
   }
 
   // ---- what proof caught: from the gate's ledger (data.recap: all time and 7 days; v.recap: this session) -------------
@@ -706,7 +708,7 @@ svg text { font-family: var(--font); }
   function RecapCard({ v, data, tight }) {
     const [on, setOn] = useState(readRange);
     const pick = k => { setOn(k); try { localStorage.setItem(RECAP_KEY, k); } catch {} };
-    const rc = data.recap || {}, now = NOW(), cls = `card recap ${tight ? 'tight' : ''}`;
+    const rc = data.recap || {}, now = NOW(), cls = `card recap ${tight ? 'tight' : ''} ${tight > 1 ? 'tighter' : ''}`;
     const tabs = html`<div class="ch"><h3 data-testid="recap-title">What proof caught</h3><span class="r"><div class="tabs" data-testid="recap-range">${RECAP_TABS.map(([k, n], i) => html`<button class=${k === on ? 'on' : ''} data-testid=${`recap-range-${i + 1}`} aria-pressed=${k === on} onClick=${() => pick(k)}>${n}</button>`)}</div></span></div>`;
     if (rc.reading) {   // the first backfill is still reading Claude's past sessions
       const { done, total } = rc.reading;
