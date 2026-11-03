@@ -15,7 +15,7 @@ thinking → reading/editing → commands → checks.
 | 1 | Foundation: tokens, Geist fonts embedded, top bar, footer bar, card/badge/tabs/kbd | - | done |
 | 2 | Home, working: rings, agent graph, KPI cards, activity chart | home--working (+ dark) | done |
 | 3 | Needs you, finished, stalled | 3 × 2 | done (1 copy item for sign-off) |
-| 4 | Memory banner and memory view | 2 × 2 | |
+| 4 | Memory banner and memory view | 2 × 2 | done (1 copy item for sign-off) |
 | 5 | Agent drill-down | job (+ dark) | |
 | 6 | Drawers as a bottom sheet: timeline, time, log | 3 × 2 | |
 | 7 | Switcher (command palette), hidden needs-you | 3 × 2 | |
@@ -113,6 +113,21 @@ Playwright: `npm i --no-save --no-package-lock playwright@1.56.1` (matches the c
   turned-down plan reads "You turned down the release plan" and isn't a tool error; the finished bars keep to 12
   slots, the last 2 hours of a long session (a 49 h session drew 294 invisible bars); longest steps leave out waits on
   you and whole subagent runs.
+
+## v2 unit 4. Memory banner and memory view
+
+- Page: `MemAlert` (the amber banner past warnPct, with what closing the two biggest apps frees) and `Memory` (gauge,
+  headroom, swap, pressure, 6-hour chart with warning and ceiling lines, apps, advice, Claude's runs, what proof
+  stopped or held back). The run graph now fits nodes at 4 px gaps (5 in the banner's 168 px, as drawn).
+- Rules chosen: the stop list is ordered by memory needed, largest first (the mockup's list isn't "newest first", and
+  its order only holds that way); swap counts as swapping from 512 MB.
+- Checks: verify-screen ALL PASS for home--memory-warning (light and dark), home--working still ALL PASS; memory
+  (light and dark) passes every item except `meta`.
+- Contract copy for sign-off: 3. memory `meta` "Real memory · sample history and runs" describes where the fixture's
+  numbers came from, which the feed can't know. The page says "Measured on this Mac · history every 2 minutes", or
+  "Sample figures · old logs carry no memory readings" for a replay's example machine.
+- Used in Playwright: banner → memory view (banner hides), chart tooltip, back, Esc; no page errors.
+- Not run for this unit: the verifier and the screen judge (skipped to save time, at the user's request).
 
 # Dashboard v1 build: progress
 

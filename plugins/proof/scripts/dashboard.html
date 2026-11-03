@@ -1004,12 +1004,12 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
   }
 
   // Concentric progress rings (Tremor ProgressCircle).
-  function Rings({ vals, size }) {
+  function Rings({ vals, size, id = 'rings', children }) {
     const C = size / 2, SW = size * .07, R = [C - SW / 2 - 2, C - SW * 1.5 - 6, C - SW * 2.5 - 10];
-    return html`<svg width=${size} height=${size} viewBox=${`0 0 ${size} ${size}`} data-testid="rings">${vals.map((r, i) => {
+    return html`<svg width=${size} height=${size} viewBox=${`0 0 ${size} ${size}`} data-testid=${id}>${vals.map((r, i) => {
       const L = 2 * Math.PI * R[i];
       return html`<circle cx=${C} cy=${C} r=${R[i]} fill="none" stroke="var(--track)" stroke-width=${SW} />${r.v > 0 ? html`<circle class="ring" cx=${C} cy=${C} r=${R[i]} fill="none" stroke=${r.c} stroke-width=${SW} stroke-linecap="round" stroke-dasharray=${`${Math.max(.01, L * Math.min(1, r.v))} ${L}`} transform=${`rotate(-90 ${C} ${C})`} data-tip=${`<b>${r.n}</b> · ${r.val}`} />` : null}`;
-    })}</svg>`;
+    })}${children}</svg>`;
   }
   const RingLegend = ({ vals }) => html`<div class="leg">${vals.map((x, i) => html`<div><i style=${`background:${x.c}`}></i><span class="mf" data-testid=${`leg-${i + 1}-name`}>${x.n}</span><b data-testid=${`leg-${i + 1}-value`}>${x.val}</b></div>`)}</div>`;
 
@@ -1043,8 +1043,8 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     const [ref, W] = useWidth(), now = NOW();
     const running = runningJobs(v).map(j => { const u = unitFor(v, j.who); return { name: j.who, type: j.type, run: true, start: u ? u.start : j.start || j.since, now: shortStep(j.label), where: j.where, commits: u ? u.commits : 0 }; });
     const done = doneUnits(v).slice().sort((a, b) => a.start - b.start).map(u => ({ name: u.desc, type: u.type, run: false, start: u.start, end: u.end, where: u.where, commits: u.commits }));
-    // As many nodes as fit at 30px with 8px gaps: running first, then the newest done; the rest fold into "+N more".
-    const fit = Math.max(1, Math.floor((h + 8) / 38)), all = [...running, ...done];
+    // As many nodes as fit at 30px with 4px gaps: running first, then the newest done; the rest fold into "+N more".
+    const fit = Math.max(1, Math.floor((h + 4) / 34)), all = [...running, ...done];
     const shownDone = done.slice(Math.max(0, done.length - Math.max(0, fit - running.length)));
     let agents = [...running.slice(0, fit), ...shownDone].slice(0, fit);
     const hidden = all.length - agents.length;
@@ -1303,6 +1303,68 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
         <${MemKpi} data=${data} w=${300} />
       </div>
       <${ActivityCard} v=${v} t0=${Math.max(v.start, v.from || 0)} t1=${now} bucket=${bucket * 60e3} desc=${`every ${bucket} minutes · the hatched end is the stall`} />`;
+  }
+
+  // ---- design v2: memory ------------------------------------------------------------------------------------------------
+  // Past the warning line: what memory is at, and what closing the biggest apps would free.
+  function MemAlert({ data, set }) {
+    const s = data.machine.system, apps = ((data.machine.advice || {}).userApps || []).slice(0, 2), free = apps.reduce((n, x) => n + x.mb, 0);
+    return html`<div class="alert" data-testid="mem-banner"><span data-testid="mem-banner-icon">${I.warn}</span><div>
+      <div class="at" data-testid="mem-banner-title">Memory is at ${pct(s.pct)}: ${(s.usedMB / 1024).toFixed(1)} of ${Math.round(s.totalMB / 1024)} GB. Runs and agents now wait their turn.</div>
+      ${apps.length ? html`<div class="ad" data-testid="mem-banner-body">Closing ${apps.map(x => `${x.name} (${gb(x.mb)})`).join(' and ')} would free about ${gb(free)}, so checks and agents run side by side again.</div>` : null}</div>
+      <button class="btn out" data-testid="mem-banner-open" onClick=${() => set({ v: 'memory', m: null })}>What's using it</button></div>`;
+  }
+
+  // Memory over the samples' span, 0–100%, with the warning and ceiling lines.
+  function MemChart({ samples, s }) {
+    const [ref, W] = useWidth(), [hRef, Hh] = useHeight(), now = NOW();
+    const pts0 = samples.length ? samples : [[now, s.pct]], t0 = pts0[0][0], span = Math.max(1, now - t0);
+    const AX = 40, PB = 22, X = t => AX + (t - t0) / span * (W - AX - 4), Y = p => (Hh - PB) - p / 100 * (Hh - PB - 6);
+    const pts = pts0.map(x => `${X(x[0]).toFixed(1)},${Y(x[1]).toFixed(1)}`).join(' '), hrs = span / 3600e3, step = hrs > 4 ? 1.5 : hrs > 2 ? 1 : .5;
+    const ticks = []; for (let h = 0; h <= hrs + 1e-9; h += step) ticks.push(h);
+    const isNow = h => Math.abs(h - hrs) < .01;
+    return html`<div ref=${hRef} style="flex:1;min-height:0"><div ref=${ref} style="width:100%;height:100%">${W && Hh ? html`<svg width=${W} height=${Hh} style="display:block" data-testid="mem-chart">
+      ${[0, 25, 50, 75, 100].map(p => html`<line x1=${AX} x2=${W} y1=${Y(p)} y2=${Y(p)} stroke="var(--grid)" stroke-dasharray=${p ? '3 3' : null} /><text x=${AX - 10} y=${Y(p) + 4} font-size="11.5" fill="var(--muted-foreground)" text-anchor="end">${p}%</text>`)}
+      <defs><linearGradient id="memg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--warn)" stop-opacity=".25" /><stop offset="1" stop-color="var(--warn)" stop-opacity="0" /></linearGradient></defs>
+      <polygon points=${`${X(t0)},${Y(0)} ${pts} ${X(now)},${Y(0)}`} fill="url(#memg)" /><polyline points=${pts} fill="none" stroke="var(--warn)" stroke-width="2" stroke-linejoin="round" />
+      <line x1=${AX} x2=${W} y1=${Y(s.ceilingPct)} y2=${Y(s.ceilingPct)} stroke="var(--bad)" stroke-dasharray="4 4" /><text x=${W - 4} y=${Y(s.ceilingPct) - 5} font-size="11.5" fill="var(--bad-ink)" text-anchor="end">Ceiling ${s.ceilingPct}%</text>
+      <line x1=${AX} x2=${W} y1=${Y(s.warnPct)} y2=${Y(s.warnPct)} stroke="var(--warn)" stroke-dasharray="4 4" /><text x=${W - 4} y=${Y(s.warnPct) + 15} font-size="11.5" fill="var(--warn-ink)" text-anchor="end">Warning ${s.warnPct}%</text>
+      ${ticks.map((h, i) => html`<text x=${X(t0 + h * 3600e3)} y=${Hh - 4} font-size="11.5" fill="var(--muted-foreground)" text-anchor=${i === 0 ? 'start' : isNow(h) ? 'end' : 'middle'}>${isNow(h) ? 'now' : clock(t0 + h * 3600e3)}</text>`)}
+      ${pts0.filter((_, i) => i % 6 === 0).map(x => html`<rect x=${X(x[0]) - 6} y="0" width="12" height=${Hh - PB} fill="transparent" data-tip=${`${clock(x[0])} · ${Math.round(x[1])}% used`} />`)}
+    </svg>` : null}</div></div>`;
+  }
+
+  // What proof stopped or held back, the biggest memory need first.
+  const needMB = x => { const q = String(x.need).match(/([\d.]+) ([MG])B/); return q ? q[1] * (q[2] === 'G' ? 1024 : 1) : 0; };
+  function Memory({ data, sel, set }) {
+    const m = data.machine, s = m.system, now = NOW(), over = s.pct >= s.warnPct;
+    const apps = (m.apps || []).slice(0, 6), top = Math.max(1, ...apps.map(a => a.mb));
+    const userApps = ((m.advice || {}).userApps || []).slice(0, 2), free = userApps.reduce((n, a) => n + a.mb, 0), swapping = (s.swapMB || 0) >= 512;
+    const stops = data.sessions.flatMap(v => v.events.filter(e => e.kind === 'memory' || e.kind === 'guard').map(e => stopOf(e, v.title))).filter(x => x.what !== 'Memory')
+      .sort((a, b) => needMB(b) - needMB(a) || b.t - a.t).slice(0, 4);
+    const used = [{ v: s.pct / 100, c: over ? 'var(--warn)' : 'var(--c-think)', n: 'Used', val: pct(s.pct) }];
+    const hist = m.samples && m.samples.length ? now - m.samples[0][0] : 0;
+    return html`<div class="head"><button class="btn out" data-testid="back" onClick=${() => set({ v: null })}>${I.back}${sel.title}</button><h1 style="margin-left:6px" data-testid="title">Memory, this Mac</h1><span class="meta" data-testid="meta">${m.example ? 'Sample figures · old logs carry no memory readings' : 'Measured on this Mac · history every 2 minutes'}</span></div>
+      <div class="grid" style="grid-template-columns:400px repeat(3,1fr);height:150px">
+        <div class="card pad" style="display:flex;gap:18px;align-items:center" data-testid="mem-gauge-card"><${Rings} vals=${used} size=${112} id="mem-gauge"><text x="56" y="62" text-anchor="middle" font-size="22" font-weight="600" fill="var(--foreground)">${pct(s.pct)}</text><//>
+          <div><div style="font-weight:600;font-size:15px" data-testid="mem-used">${pct(s.pct)} used: ${(s.usedMB / 1024).toFixed(1)} of ${Math.round(s.totalMB / 1024)} GB</div><div class="desc" style="margin-top:4px" data-testid="mem-explain">${over ? `Past the ${s.warnPct}% warning line. proof holds the Mac under ${s.ceilingPct}%, so new runs and agents wait their turn.` : `Under the ${s.warnPct}% warning line. proof holds the Mac under ${s.ceilingPct}%.`}</div></div></div>
+        <div class="card kpi" data-testid="kpi-headroom"><span class="desc" data-testid="kpi-headroom-label">Headroom to ceiling</span><div class="v num" data-testid="kpi-headroom-value">${(Math.max(0, s.headroomMB) / 1024).toFixed(1)}<small>GB</small></div><div class="foot"><div class="prog" data-testid="kpi-headroom-bar"><i style=${`width:${Math.min(100, s.pct)}%;background:${over ? 'var(--warn)' : 'var(--c-think)'}`}></i><b style=${`left:${s.ceilingPct}%`}></b></div></div></div>
+        <div class="card kpi" data-testid="kpi-swap"><span class="desc" data-testid="kpi-swap-label">Swap in use</span><div class="v num" data-testid="kpi-swap-value">${((s.swapMB || 0) / 1024).toFixed(1)}<small>GB on disk</small></div><div class="foot"><span class="desc" data-testid="kpi-swap-note">${swapping ? 'macOS is swapping, which slows builds' : 'Not swapping'}</span></div></div>
+        <div class="card kpi" data-testid="kpi-pressure"><span class="desc" data-testid="kpi-pressure-label">Memory pressure</span><div class="v" data-testid="kpi-pressure-value">${PRESSURE[s.pressure] || 'Normal'}</div><div class="foot"><span class=${`badge ${s.pressure && s.pressure !== 'normal' ? 'warn' : ''}`} data-testid="kpi-pressure-badge">reported by ${s.platform === 'darwin' ? 'macOS' : 'the system'}</span></div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 400px;height:290px">
+        <div class="card pad col" style="gap:10px" data-testid="mem-history"><div class="ch"><h3 data-testid="mem-history-title">Last ${plural(Math.max(1, Math.round(hist / 3600e3)), 'hour')}</h3><span class="desc" data-testid="mem-history-desc">% of memory used</span></div><${MemChart} samples=${m.samples || []} s=${s} /></div>
+        <div class="card pad col" style="gap:8px;--bl-h:22px;--bl-gap:3px" data-testid="apps-card"><div class="ch"><h3 data-testid="apps-title">Using the most memory</h3><span class="r desc" data-testid="apps-by">by app</span></div>
+          <div class="barlist">${apps.map((a, i) => html`<div class="bl"><div class="bar"><i style=${`width:${a.mb / top * 100}%;background:${userApps.some(u => u.name === a.name) ? 'var(--warn)' : 'var(--subtle)'}`}></i><span data-testid=${`app-${i + 1}-name`}>${a.name}${a.claude ? html` <span class="badge" style="height:18px;margin-left:4px">Claude</span>` : null}</span></div><b data-testid=${`app-${i + 1}-size`}>${gb(a.mb)}</b></div>`)}</div>
+          ${over && userApps.length ? html`<div class="desc" style="margin-top:auto" data-testid="apps-advice">Close ${userApps.map(a => a.name).join(' and ')} to free about ${gb(free)}. Checks and agents then run side by side instead of waiting their turn${swapping ? ', and macOS stops swapping' : ''}.</div>` : null}</div>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 400px;flex:1;min-height:0">
+        <div class="card pad" data-testid="runs-card"><div class="ch"><h3 data-testid="runs-title">Claude's runs, the ones proof may stop</h3></div>
+          ${(m.runs || []).length ? html`<table class="tbl" style="margin-top:6px"><thead><tr><th data-testid="runs-h-cmd">Command</th><th data-testid="runs-h-session">Session</th><th data-testid="runs-h-time">Running</th><th class="rt" data-testid="runs-h-mem">Memory</th></tr></thead><tbody>
+            ${m.runs.slice(0, 5).map((r, i) => html`<tr><td><code data-testid=${`run-${i + 1}-cmd`}>${r.command}</code></td><td><span class="badge" data-testid=${`run-${i + 1}-session`}>${String(r.cwd || '').split('/').filter(Boolean).pop() || r.session}</span></td><td class="num" data-testid=${`run-${i + 1}-time`}>${now - r.start < 3600e3 ? durS(now - r.start) : dur(now - r.start)}</td><td class="rt num" data-testid=${`run-${i + 1}-mem`}>${size(r.mb)}</td></tr>`)}</tbody></table>` : html`<div class="desc" style="margin-top:8px">None right now.</div>`}</div>
+        <div class="card pad" data-testid="stops-card"><div class="ch"><h3 data-testid="stops-title">Stopped or held back by proof</h3></div>
+          <div class="list" style="margin-top:6px">${stops.length ? stops.map((x, k) => html`<${Li} id=${`stop-${k + 1}`} r=${{ t: x.t, cls: 'warn', ico: I.mem, text: `${x.what} · ${x.title}`, tag: html`<span class="mono mf">${x.need}</span>` }} />`) : html`<div class="desc">Nothing yet.</div>`}</div></div>
+      </div>`;
   }
 
   function Home({ v, st, set, banner }) {
@@ -1576,11 +1638,12 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       <${V1} inline=${true}>
       ${st.m ? html`<${Menu} data=${data} sel=${sel} st=${st} set=${set} />` : null}
       ${data.replay ? html`<div class="banner off" data-testid="replay-banner"><div class="bt"><div data-testid="replay-title"><b>Replay of your ${data.replay.source || 'build'} build</b>, as the dashboard showed it at ${clock(data.now)}.</div><div class="bs" data-testid="replay-sub">Live, it refreshes every 2 seconds and the timers tick.${data.machine && data.machine.example ? ' The memory figures are sample data: Claude Code\'s logs don\'t record memory.' : ''}</div></div></div>` : null}
-      ${offline ? html`<${Offline} lastOk=${lastOk} data=${data} />` : banner && st.v !== 'memory' ? html`<${MemBanner} data=${data} set=${set} />` : null}
+      ${offline ? html`<${Offline} lastOk=${lastOk} data=${data} />` : null}
       <//>
+      ${!offline && banner && st.v !== 'memory' ? html`<${MemAlert} data=${data} set=${set} />` : null}
       <div class="main">
         ${offline ? html`<${V1}><div class="body dim" aria-hidden="true"><${Head} v=${sel} /><${StatusCard} v=${sel} /></div><//>`
-          : st.v === 'memory' && data.machine ? html`<${V1}><${MemoryView} data=${data} sel=${sel} set=${set} /><//>`
+          : st.v === 'memory' && data.machine ? html`<${Memory} data=${data} sel=${sel} set=${set} />`
           : st.v === 'job' && st.j ? html`<${V1}><${JobView} v=${sel} who=${st.j} st=${st} set=${set} /><//>`
           : st.d ? html`<${V1}><${Home} v=${sel} st=${st} set=${set} banner=${banner} /><//>`
           : working ? html`<${HomeWorking} v=${sel} st=${st} set=${set} data=${data} banner=${banner} />`
