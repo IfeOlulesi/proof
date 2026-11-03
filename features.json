@@ -1,0 +1,256 @@
+{
+  "features": [
+    {
+      "id": "F1",
+      "title": "Normalised hook event and the Claude adapter",
+      "criteria": [
+        "The normalised event (kinds, session id, turn id, continuation flag, round, cwd, normalised tool name and input) is documented in plugins/proof/docs/agents.md",
+        "session-start, gate, wrap and admit read the normalised event and write a normalised result",
+        "plugins/proof/scripts/agents/claude.mjs translates Claude Code stdin/stdout to and from it",
+        "tests/agents.sh exists, validates fixtures against the shape and fails on a fixture without a source field",
+        "Claude Code hook outputs are unchanged for the same inputs"
+      ],
+      "verify": "bash tests/run.sh passes with no existing test edited; tests/agents.sh claude fixtures match and the source-field check fails on a fixture missing it",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F2",
+      "title": "Spike: continuing a turn in opencode and Gemini CLI",
+      "criteria": [
+        "A scratch opencode plugin sends one prompt through client.session.prompt on session.idle and opencode acts on it",
+        "A Gemini CLI AfterAgent block makes the agent retry once; a BeforeTool hook rewrites one shell command",
+        "Both: the follow-up proof sent can be told apart from a new user prompt"
+      ],
+      "verify": "manual run of each in a scratch project; result and versions recorded in the SPEC decision log",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F3",
+      "title": "Round counting owned by proof",
+      "criteria": [
+        "The gate counts rounds from the normalised turn id and continuation flag for every agent",
+        "After maxRounds failing rounds the turn ends with the ask-the-user message; a fresh user prompt resets the count"
+      ],
+      "verify": "tests/agents.sh drives maxRounds + 1 failing turn ends through the claude adapter and a stub adapter with no prompt_id; rounds 1..maxRounds continue, the next stops",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F4",
+      "title": "Capability table",
+      "criteria": [
+        "plugins/proof/docs/agents.md has one row per agent, one column per behaviour, event kind, skills, subagents and tested-live status",
+        "Each cell is yes (hook name), no or unknown; each yes has a fixture"
+      ],
+      "verify": "tests/agents.sh table check: a row per installer agent, valid cells, a fixture per yes",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F5",
+      "title": "Rules text per agent",
+      "criteria": [
+        "rules.md renders for each agent with that agent's names for background waits, the verifier and skills",
+        "No Claude-only tool name appears in a non-Claude render"
+      ],
+      "verify": "tests/agents.sh rules case renders every agent and greps for Claude-only names",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F6",
+      "title": "Skills and subagents per agent",
+      "criteria": [
+        "Skills render with resolved paths, no ${CLAUDE_*}, no !` injection, no TaskOutput or claude -p",
+        "Quick mode takes its session id from the normalised event",
+        "verifier and screen-judge install as subagents where the agent has them, else as skills"
+      ],
+      "verify": "tests/agents.sh installs for each agent into a scratch folder and greps installed skill files; quick mode turned on through a non-Claude adapter is seen by the gate; installed paths checked",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F7",
+      "title": "Shared data folder",
+      "criteria": [
+        "Every proof process uses PROOF_DATA_DIR, else the folder the installer resolved, written into each agent's config"
+      ],
+      "verify": "tests/dashboard.sh case: Claude and opencode fixture sessions started from separate processes with no shared env both appear in one monitor's data.json",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F8",
+      "title": "Event log writer and schema",
+      "criteria": [
+        "Adapters append session start, user prompt, tool start/end, turn end, gate run and waiting events to <data folder>/events/<agent>/<session>.jsonl",
+        "The schema is documented in plugins/proof/docs/agents.md"
+      ],
+      "verify": "tests/agents.sh scripted session through each adapter, event file checked line by line against the schema",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F9",
+      "title": "Timeline and monitor read the event log",
+      "criteria": [
+        "The timeline builds the same session model from an event log as from a Claude transcript, except token counts and model thinking",
+        "The monitor lists event-log sessions from the last day and keeps the Mac awake while one is working",
+        "A session with no event for 10 minutes and no live gate run counts as stopped"
+      ],
+      "verify": "timeline comparison test with an event-log fixture hand-built from the Claude transcript fixture; tests/dashboard.sh cases for a mixed Claude + opencode data.json and a stale truncated log",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F10",
+      "title": "Design: agent label on the dashboard",
+      "criteria": [
+        "Mockup frames show the agent name in the session header and the switcher, light and dark",
+        "The thinking category reads \"<Agent> thinking & writing\"",
+        "Fidelity inventories updated for the changed frames"
+      ],
+      "verify": "user approves the mockup frames (recorded in the decision log)",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F11",
+      "title": "Build: agent label on the dashboard",
+      "criteria": [
+        "dashboard.html shows the agent label as mocked up"
+      ],
+      "verify": "fidelity/verify-screen.mjs ALL PASS for every changed screen, light and dark",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F12",
+      "title": "opencode adapter (tested live)",
+      "criteria": [
+        "Rules via experimental.chat.system.transform",
+        "Gate on session.idle with a follow-up prompt on failure, stopping after maxRounds",
+        "tool.execute.before denies a failing git commit, rewrites test commands and adds the subagent memory note",
+        "Events written to the log"
+      ],
+      "verify": "the six manual steps in SPEC.md with opencode, plus tests/agents.sh fixtures captured from that run",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F13",
+      "title": "Gemini CLI adapter (tested live)",
+      "criteria": [
+        "SessionStart adds rules, AfterAgent runs the gate, BeforeTool denies a failing commit, rewrites test commands and adds the subagent note",
+        "Events written to the log"
+      ],
+      "verify": "the six manual steps in SPEC.md with gemini, plus tests/agents.sh fixtures captured from that run",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F14",
+      "title": "Codex adapter (built from docs)",
+      "criteria": [
+        "Ships as a Codex plugin: .codex-plugin/plugin.json and hooks/hooks.json",
+        "SessionStart rules, Stop decision block, PreToolUse deny and updatedInput, SubagentStart note"
+      ],
+      "verify": "tests/agents.sh fixtures from the Codex hooks docs for each behaviour, each citing its source",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F15",
+      "title": "Cursor adapter (built from docs)",
+      "criteria": [
+        "sessionStart additional_context, stop followup_message with loop_limit above maxRounds",
+        "beforeShellExecution deny for commits with failClosed, preToolUse updated_input for test commands, subagentStart note"
+      ],
+      "verify": "tests/agents.sh fixtures from the Cursor hooks docs for each behaviour, each citing its source",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F16",
+      "title": "Grok Build adapter (built from docs)",
+      "criteria": [
+        "Hook files in .grok/hooks/: rules at SessionStart, Stop blocks on a failing gate, PreToolUse denies a failing commit and rewrites test commands",
+        "Unconfirmed behaviours marked unknown in the capability table"
+      ],
+      "verify": "tests/agents.sh fixtures from xAI's Grok Build docs for each behaviour marked yes, each citing its source",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F17",
+      "title": "Antigravity agy adapter (built from docs)",
+      "criteria": [
+        "Hooks in .agents/hooks.json for rules, turn-end gate, commit deny and test rewrite; skills in .agents/skills/",
+        "Unconfirmed behaviours marked unknown in the capability table"
+      ],
+      "verify": "tests/agents.sh fixtures from Google's Antigravity docs for each behaviour marked yes, each citing its source; git diff --stat for this unit shows only adapter, fixtures, table row and installer entry (checked by proof:verifier)",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F18",
+      "title": "Installer and uninstaller",
+      "criteria": [
+        "install.mjs <agent> merges into existing files, creates missing ones, sets hook timeouts and fail-closed where supported, prints the capability row",
+        "--uninstall restores pre-existing files byte for byte and deletes only what proof created",
+        "Agents not tested live are labelled in the installer output",
+        "Non-Claude sessions get the update notice at session start"
+      ],
+      "verify": "tests/agents.sh round trips for every agent into a config with other hooks and into an empty project; timeout fields checked; label grepped; update notice checked with a stubbed newer version",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F19",
+      "title": "README section per agent",
+      "criteria": [
+        "Install command, what works, what doesn't, and the 'built from docs, not tested live' label where it applies"
+      ],
+      "verify": "tests/agents.sh greps the label; proof:verifier checks each section against its row in plugins/proof/docs/agents.md",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F20",
+      "title": "Gate ledger and catch counting",
+      "criteria": [
+        "Every gate run that ran or reused a check appends one line to ~/.config/proof/ledger.jsonl (or PROOF_LEDGER), no output stored",
+        "A catch is fail then pass on different code in the same session; same code is flaky"
+      ],
+      "verify": "bash tests/ledger.sh",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F21",
+      "title": "Turn receipt and recap CLI",
+      "criteria": [
+        "After fail → fix → pass in a turn, the passing message adds what was caught and the session totals",
+        "A clean pass keeps today’s message",
+        "recap.mjs prints totals for 7 days, --since, --session, --json"
+      ],
+      "verify": "bash tests/ledger.sh receipt and recap cases",
+      "passes": false,
+      "evidence": ""
+    },
+    {
+      "id": "F22",
+      "title": "Backfill from Claude transcripts",
+      "criteria": [
+        "recap.mjs --backfill reads past gate runs from transcripts once, marked as from transcripts, never double counted",
+        "A transcript catch needs a file edit between failure and pass",
+        "Session start runs it once in the background"
+      ],
+      "verify": "bash tests/ledger.sh backfill cases; a manual run over this machine’s transcripts",
+      "passes": false,
+      "evidence": ""
+    }
+  ]
+}
