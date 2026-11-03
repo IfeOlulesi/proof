@@ -1813,6 +1813,15 @@
    ],
    "feed": [
     {
+     "t": 1792243860000,
+     "end": null,
+     "cat": "test",
+     "desc": "npx playwright test checkout.spec.ts",
+     "ok": null,
+     "who": "Lane B unit 13: payment screen",
+     "bg": false
+    },
+    {
      "t": 1792243800000,
      "end": 1792243802000,
      "cat": "edit",
@@ -1827,15 +1836,6 @@
      "cat": "read",
      "desc": "Read src/lib/card.ts",
      "ok": true,
-     "who": "Lane B unit 13: payment screen",
-     "bg": false
-    },
-    {
-     "t": 1792243668000,
-     "end": null,
-     "cat": "test",
-     "desc": "npx playwright test checkout.spec.ts",
-     "ok": null,
      "who": "Lane B unit 13: payment screen",
      "bg": false
     },
@@ -1867,8 +1867,8 @@
      "bg": false
     },
     {
-     "t": 1792243419000,
-     "end": 1792243420000,
+     "t": 1792243399000,
+     "end": 1792243400000,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1876,8 +1876,8 @@
      "bg": false
     },
     {
-     "t": 1792243408000,
-     "end": 1792243409000,
+     "t": 1792243388689.6553,
+     "end": 1792243389689.6553,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1885,8 +1885,8 @@
      "bg": false
     },
     {
-     "t": 1792243397000,
-     "end": 1792243398000,
+     "t": 1792243378379.3103,
+     "end": 1792243379379.3103,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -1894,8 +1894,8 @@
      "bg": false
     },
     {
-     "t": 1792243386000,
-     "end": 1792243387000,
+     "t": 1792243368068.9656,
+     "end": 1792243369068.9656,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1903,8 +1903,8 @@
      "bg": false
     },
     {
-     "t": 1792243375000,
-     "end": 1792243376000,
+     "t": 1792243357758.6206,
+     "end": 1792243358758.6206,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1912,8 +1912,8 @@
      "bg": false
     },
     {
-     "t": 1792243364000,
-     "end": 1792243365000,
+     "t": 1792243347448.276,
+     "end": 1792243348448.276,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -1921,8 +1921,8 @@
      "bg": false
     },
     {
-     "t": 1792243353000,
-     "end": 1792243354000,
+     "t": 1792243337137.9312,
+     "end": 1792243338137.9312,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1930,8 +1930,8 @@
      "bg": false
     },
     {
-     "t": 1792243342000,
-     "end": 1792243343000,
+     "t": 1792243326827.5862,
+     "end": 1792243327827.5862,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1939,8 +1939,8 @@
      "bg": false
     },
     {
-     "t": 1792243331000,
-     "end": 1792243332000,
+     "t": 1792243316517.2415,
+     "end": 1792243317517.2415,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -1948,8 +1948,8 @@
      "bg": false
     },
     {
-     "t": 1792243320000,
-     "end": 1792243321000,
+     "t": 1792243306206.8965,
+     "end": 1792243307206.8965,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1957,8 +1957,8 @@
      "bg": false
     },
     {
-     "t": 1792243309000,
-     "end": 1792243310000,
+     "t": 1792243295896.5518,
+     "end": 1792243296896.5518,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1966,8 +1966,8 @@
      "bg": false
     },
     {
-     "t": 1792243298000,
-     "end": 1792243299000,
+     "t": 1792243285586.2068,
+     "end": 1792243286586.2068,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -1975,8 +1975,8 @@
      "bg": false
     },
     {
-     "t": 1792243287000,
-     "end": 1792243288000,
+     "t": 1792243275275.862,
+     "end": 1792243276275.862,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1984,8 +1984,8 @@
      "bg": false
     },
     {
-     "t": 1792243276000,
-     "end": 1792243277000,
+     "t": 1792243264965.5173,
+     "end": 1792243265965.5173,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -1993,8 +1993,8 @@
      "bg": false
     },
     {
-     "t": 1792243265000,
-     "end": 1792243266000,
+     "t": 1792243254655.1724,
+     "end": 1792243255655.1724,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -2002,8 +2002,8 @@
      "bg": false
     },
     {
-     "t": 1792243254000,
-     "end": 1792243255000,
+     "t": 1792243244344.8276,
+     "end": 1792243245344.8276,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2011,8 +2011,8 @@
      "bg": false
     },
     {
-     "t": 1792243243000,
-     "end": 1792243244000,
+     "t": 1792243234034.4827,
+     "end": 1792243235034.4827,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2020,8 +2020,8 @@
      "bg": false
     },
     {
-     "t": 1792243232000,
-     "end": 1792243233000,
+     "t": 1792243223724.138,
+     "end": 1792243224724.138,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -2029,8 +2029,8 @@
      "bg": false
     },
     {
-     "t": 1792243221000,
-     "end": 1792243222000,
+     "t": 1792243213413.7932,
+     "end": 1792243214413.7932,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2038,8 +2038,8 @@
      "bg": false
     },
     {
-     "t": 1792243210000,
-     "end": 1792243211000,
+     "t": 1792243203103.4482,
+     "end": 1792243204103.4482,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2047,8 +2047,8 @@
      "bg": false
     },
     {
-     "t": 1792243199000,
-     "end": 1792243200000,
+     "t": 1792243192793.1035,
+     "end": 1792243193793.1035,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -2056,8 +2056,8 @@
      "bg": false
     },
     {
-     "t": 1792243188000,
-     "end": 1792243189000,
+     "t": 1792243182482.7585,
+     "end": 1792243183482.7585,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2065,8 +2065,8 @@
      "bg": false
     },
     {
-     "t": 1792243177000,
-     "end": 1792243178000,
+     "t": 1792243172172.4138,
+     "end": 1792243173172.4138,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2074,8 +2074,8 @@
      "bg": false
     },
     {
-     "t": 1792243166000,
-     "end": 1792243167000,
+     "t": 1792243161862.0688,
+     "end": 1792243162862.0688,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -2083,8 +2083,8 @@
      "bg": false
     },
     {
-     "t": 1792243155000,
-     "end": 1792243156000,
+     "t": 1792243151551.724,
+     "end": 1792243152551.724,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2092,8 +2092,8 @@
      "bg": false
     },
     {
-     "t": 1792243144000,
-     "end": 1792243145000,
+     "t": 1792243141241.3794,
+     "end": 1792243142241.3794,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2101,8 +2101,8 @@
      "bg": false
     },
     {
-     "t": 1792243133000,
-     "end": 1792243134000,
+     "t": 1792243130931.0344,
+     "end": 1792243131931.0344,
      "cat": "edit",
      "desc": "Edit src/screens/Payment.tsx",
      "ok": true,
@@ -2110,8 +2110,8 @@
      "bg": false
     },
     {
-     "t": 1792243122000,
-     "end": 1792243123000,
+     "t": 1792243120620.6897,
+     "end": 1792243121620.6897,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2119,8 +2119,8 @@
      "bg": false
     },
     {
-     "t": 1792243111000,
-     "end": 1792243112000,
+     "t": 1792243110310.3447,
+     "end": 1792243111310.3447,
      "cat": "edit",
      "desc": "Edit src/screens/PaymentForm.tsx",
      "ok": true,
@@ -2137,8 +2137,8 @@
      "bg": false
     },
     {
-     "t": 1792242900000,
-     "end": 1792242902000,
+     "t": 1792242898000,
+     "end": 1792242900000,
      "cat": "read",
      "desc": "Read src/screens/Cart.tsx",
      "ok": true,
@@ -2146,8 +2146,8 @@
      "bg": false
     },
     {
-     "t": 1792242880000,
-     "end": 1792242882000,
+     "t": 1792242878666.6667,
+     "end": 1792242880666.6667,
      "cat": "read",
      "desc": "Search for the card form",
      "ok": true,
@@ -2155,8 +2155,8 @@
      "bg": false
     },
     {
-     "t": 1792242860000,
-     "end": 1792242862000,
+     "t": 1792242859333.3333,
+     "end": 1792242861333.3333,
      "cat": "read",
      "desc": "Read SPEC.md",
      "ok": true,

@@ -72,14 +72,15 @@ const laneB = () => {
   const who = 'Lane B unit 13: payment screen', out = [];
   const add = (t, ms, cat, desc, ok = true) => out.push({ t, end: ms == null ? null : t + ms, cat, desc, ok: ms == null ? null : ok, who, bg: false });
   const t0 = NOW - min(20);
-  ['Read mockup/app.html', 'Read SPEC.md', 'Search for the card form', 'Read src/screens/Cart.tsx'].forEach((d, i) => add(t0 + i * 20e3, 2e3, 'read', d));
-  for (let i = 0; i < 30; i++) add(at(14, 18, 20) + i * 11e3, 1e3, 'edit', `Edit src/screens/Payment${i % 3 ? 'Form' : ''}.tsx`);
+  // Steps as the mockup draws them: reading 1m, editing 5m, then tests, a commit, the gate, a fix and the e2e run.
+  ['Read mockup/app.html', 'Read SPEC.md', 'Search for the card form', 'Read src/screens/Cart.tsx'].forEach((d, i) => add(t0 + i * (58e3 / 3), 2e3, 'read', d));
+  for (let i = 0; i < 30; i++) add(at(14, 18, 20) + i * (299e3 / 29), 1e3, 'edit', `Edit src/screens/Payment${i % 3 ? 'Form' : ''}.tsx`);
   add(at(14, 24), 41e3, 'test', 'Run the unit tests');
   add(at(14, 25), 1e3, 'git', 'Commit the payment form');
   add(at(14, 27), 58e3, 'gate', 'Gate: test failed, rejects expired card', false);
   add(at(14, 29), 1e3, 'read', 'Read src/lib/card.ts');
   add(at(14, 30), 2e3, 'edit', 'Edit src/screens/Payment.tsx');
-  add(NOW - sec(372), null, 'test', 'npx playwright test checkout.spec.ts');
+  add(at(14, 31), null, 'test', 'npx playwright test checkout.spec.ts');   // labelled 14:31 in the mockup; timed from the step's start (6:12)
   return out.sort((a, b) => b.t - a.t);
 };
 

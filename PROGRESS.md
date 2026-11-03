@@ -16,7 +16,7 @@ thinking → reading/editing → commands → checks.
 | 2 | Home, working: rings, agent graph, KPI cards, activity chart | home--working (+ dark) | done |
 | 3 | Needs you, finished, stalled | 3 × 2 | done (1 copy item for sign-off) |
 | 4 | Memory banner and memory view | 2 × 2 | done (1 copy item for sign-off) |
-| 5 | Agent drill-down | job (+ dark) | |
+| 5 | Agent drill-down | job (+ dark) | done |
 | 6 | Drawers as a bottom sheet: timeline, time, log | 3 × 2 | |
 | 7 | Switcher (command palette), hidden needs-you | 3 × 2 | |
 | 8 | Loading, offline, empty | 3 × 2 | |
@@ -128,6 +128,18 @@ Playwright: `npm i --no-save --no-package-lock playwright@1.56.1` (matches the c
   "Sample figures · old logs carry no memory readings" for a replay's example machine.
 - Used in Playwright: banner → memory view (banner hides), chart tooltip, back, Esc; no page errors.
 - Not run for this unit: the verifier and the screen judge (skipped to save time, at the user's request).
+
+## v2 unit 5. Agent drill-down
+
+- Page: `Job` for an agent or the main thread: current step against the 10-minute limit, commits, errors (with gate
+  failures named), worktree, start, steps (consecutive calls of one kind, the last 12), every tool call with Show N
+  earlier (+40), the brief and result. The running call is the agent's current step, so it's timed from the step's
+  start (`now[].since`).
+- Fixture: lane B's calls spaced so its steps are the mockup's (reading 1m, editing 5m); the running e2e call sits at
+  its 14:31 label (the mockup's v1 clock again; its time comes from the step).
+- Checks: verify-screen ALL PASS for job and job--dark; home--working still ALL PASS. Playwright: show earlier (6 → 40
+  rows), main-thread drill-down ("Waiting on 3 agents"), a finished agent, a review agent with no unit; no errors.
+- Not run for this unit: the verifier and the screen judge (skipped to save time).
 
 # Dashboard v1 build: progress
 

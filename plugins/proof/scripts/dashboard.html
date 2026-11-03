@@ -1305,6 +1305,48 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       <${ActivityCard} v=${v} t0=${Math.max(v.start, v.from || 0)} t1=${now} bucket=${bucket * 60e3} desc=${`every ${bucket} minutes · the hatched end is the stall`} />`;
   }
 
+  // ---- design v2: one agent, or the main thread, on its own ------------------------------------------------------------
+  const STEP_NAME = { read: 'Reading & searching', edit: 'Editing code', test: 'Tests', git: 'Git', gate: 'proof gate', typecheck: 'Type checks & lint', build: 'Builds', shell: 'Commands', model: 'Thinking', web: 'Web lookups', fidelity: 'Screens & browser', waitUser: 'Waiting on you' };
+  function Job({ v, who, st, set }) {
+    const now = NOW(), main = who === 'Main thread', job = v.now.find(n => n.who === who), u = unitFor(v, who);
+    const [shown, setShown] = useState(6);
+    // The running call is the agent's current step, so it's timed from the step's start.
+    const calls = v.feed.filter(f => f.who === who), took = c => (c.end != null ? c.end - c.t : job && job.since ? now - job.since : now - c.t);
+    const start = main ? v.start : u ? u.start : job ? job.start || job.since : calls.length ? calls[calls.length - 1].t : now;
+    const steps = []; for (const c of calls.slice().reverse()) { const l = steps[steps.length - 1]; if (l && l.cat === c.cat) l.calls.push(c); else steps.push({ cat: c.cat, calls: [c] }); }
+    const stepMs = s => { const ends = s.calls.map(c => c.t + took(c)); return Math.max(...ends) - s.calls[0].t; };
+    const groups = ORDER.filter(g => steps.some(s => GROUP[s.cat] === g));
+    const nJobs = runningJobs(v).length;
+    const running = !!job && (main ? BUSY(v.status.state) : true), label = main && nJobs ? `Waiting on ${plural(nJobs, 'agent')}` : String((job && job.label) || ''), [what, detail] = [label.split(' · ')[0], label.split(' · ').slice(1).join(' · ')];
+    const stepFor = job && job.since ? now - job.since : 0, LIMIT = 600e3;
+    const gateFails = v.events.filter(e => e.kind === 'gateFail' && e.who === who).length;
+    const errs = u ? u.errors || 0 : calls.filter(c => c.ok === false).length;
+    const icon = c => (c.end == null ? ['run', html`<span class="spin" style="width:10px;height:10px;border-width:1.5px"></span>`] : c.ok === false ? ['bad', c.cat === 'gate' ? I.gate : I.x] : c.cat === 'git' ? ['run', I.commit] : c.cat === 'edit' ? ['work', I.edit] : c.cat === 'read' ? ['work', I.search] : ['', I.shell]);
+    return html`<div class="head"><button class="btn out" data-testid="back" onClick=${() => set({ v: null, j: null })}>${I.back}${v.title}</button><h1 style="margin-left:6px" data-testid="title">${who}</h1><span class="badge" data-testid="job-type">${main ? 'main thread' : (u && u.type) || (job && job.type) || 'agent'}</span><span class="badge" data-testid="job-lane">${(u && u.where) || (job && job.where) || 'main'}</span></div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;height:200px">
+        <div class="card pad col" style="justify-content:space-between" data-testid="status-card">
+          <div class="ch">${running ? html`<span class="badge run" data-testid="status-badge"><span class="spin" style="width:10px;height:10px;border-width:1.5px"></span>Running</span>` : html`<span class="badge" data-testid="status-badge"><span class="ck">${I.check}</span>Done</span>`}${running && stepFor ? html`<span class="r timer lg num" data-testid="status-timer">${timer(stepFor)}</span>` : null}</div>
+          <div><div class="big" style="font-size:28px;font-weight:600;letter-spacing:-.03em" data-testid="status-title">${running ? what || 'Working' : 'Finished'}</div>${running && detail ? html`<div class="desc" style="margin-top:4px"><code data-testid="status-sub">${detail}</code></div>` : !running && u && u.end ? html`<div class="desc" style="margin-top:4px" data-testid="status-sub">after ${dur(u.end - u.start)}</div>` : null}</div>
+          ${running && stepFor ? html`<div><div class="ch" style="margin-bottom:8px"><span class="desc" data-testid="limit-label">Against the 10-minute limit</span><span class="r num" style="font-weight:500" data-testid="limit-value">${pct(Math.min(100, stepFor / LIMIT * 100))}</span></div>
+            <div class="prog" data-testid="limit-bar"><i style=${`width:${Math.min(100, stepFor / LIMIT * 100)}%;background:${stepFor > 0.8 * LIMIT ? 'var(--warn)' : 'var(--run)'}`}></i></div></div>` : html`<div></div>`}</div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px">
+          ${[['commits', 'Commits', main ? v.commits.filter(c => c.who === 'Main thread').length : u ? u.commits || 0 : 0, ''], ['errors', 'Errors', errs, gateFails ? `${gateFails === 1 ? 'one' : gateFails} gate failure${gateFails === 1 ? '' : 's'}` : ''],
+            ['worktree', 'Worktree', (u && u.where) || (job && job.where) || 'main', ''], ['started', 'Started', dur(now - start), 'ago']].map(([k, l, val, small]) => html`<div class="card kpi" style="padding:12px 16px" data-testid=${`out-${k}`}><span class="desc" data-testid=${`out-${k}-label`}>${l}</span><div class="v num" style="font-size:22px" data-testid=${`out-${k}-value`}>${val}${small ? html`<small>${small}</small>` : null}</div></div>`)}
+        </div>
+      </div>
+      <div class="card pad" data-testid="steps-card"><div class="ch"><h3 data-testid="steps-title">Steps</h3><span class="desc" data-testid="steps-total">${dur(now - start)}, oldest to newest</span><span class="r"><div class="tleg" data-testid="steps-legend">${groups.map(f => html`<span><i class=${f === 'idle' ? 'hatch' : ''} style=${`background:${GCOL[f]}`}></i>${GNAME[f]}</span>`)}</div></span></div>
+        <div style="display:flex;gap:3px;height:36px;margin-top:14px" data-testid="steps-bar">${steps.slice(-12).map((s, i, a) => { const d = stepMs(s), run = s.calls.some(c => c.end == null); return html`<i style=${`flex:${Math.max(d, 25e3)};background:${GCOL[GROUP[s.cat]] || 'var(--c-cmd)'};border-radius:4px;${run ? 'background-image:repeating-linear-gradient(90deg,transparent 0 10px,rgb(255 255 255 / .18) 10px 12px)' : ''}`} data-tip=${`<b>${STEP_NAME[s.cat] || esc(s.cat)}</b> · ${dur(d)}${run ? ' · running' : ''}`}></i>`; })}</div>
+        <div style="display:flex;gap:3px;margin-top:6px;font-size:11.5px;color:var(--muted-foreground)">${steps.slice(-12).map((s, i) => html`<span style=${`flex:${Math.max(stepMs(s), 25e3)};overflow:hidden;white-space:nowrap;text-overflow:ellipsis`} data-testid=${`step-${i + 1}`}>${dur(stepMs(s))}</span>`)}</div></div>
+      <div class="grid" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
+        <div class="card pad" style="overflow:auto" data-testid="activity-card"><div class="ch"><h3 data-testid="activity-title">Activity</h3><span class="desc" data-testid="activity-desc">every tool call, newest first</span></div>
+          <div class="list" style="margin-top:4px">${calls.slice(0, shown).map((c, k) => { const [cls, ico] = icon(c); return html`<${Li} id=${`call-${k + 1}`} r=${{ t: c.t, cls, ico, text: codey(c.desc), tag: html`<span class="mono mf">${c.end == null ? timer(took(c)) : durS(took(c))}</span>` }} />`; })}</div>
+          ${calls.length > shown ? html`<button class="btn ghost" style="margin-top:4px" data-testid="show-earlier" onClick=${() => setShown(n => n + 40)}>Show ${calls.length - shown} earlier</button>` : null}</div>
+        <div class="card pad col" style="gap:10px" data-testid="brief-card"><div class="ch"><h3 data-testid="brief-title">Brief</h3><span class="r desc" data-testid="brief-desc">what it was asked</span></div>
+          <div style="font-size:13.5px;line-height:1.6" data-testid="brief-text">${main ? 'Talks to you and runs the agents.' : u && u.prompt ? codey(u.prompt) : 'No brief recorded.'}</div>
+          <div class="desc" style="margin-top:auto" data-testid="result">Result: ${running ? 'still running' : (u && u.result) || 'finished'}</div></div>
+      </div>`;
+  }
+
   // ---- design v2: memory ------------------------------------------------------------------------------------------------
   // Past the warning line: what memory is at, and what closing the biggest apps would free.
   function MemAlert({ data, set }) {
@@ -1644,7 +1686,7 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       <div class="main">
         ${offline ? html`<${V1}><div class="body dim" aria-hidden="true"><${Head} v=${sel} /><${StatusCard} v=${sel} /></div><//>`
           : st.v === 'memory' && data.machine ? html`<${Memory} data=${data} sel=${sel} set=${set} />`
-          : st.v === 'job' && st.j ? html`<${V1}><${JobView} v=${sel} who=${st.j} st=${st} set=${set} /><//>`
+          : st.v === 'job' && st.j ? html`<${Job} v=${sel} who=${st.j} st=${st} set=${set} />`
           : st.d ? html`<${V1}><${Home} v=${sel} st=${st} set=${set} banner=${banner} /><//>`
           : working ? html`<${HomeWorking} v=${sel} st=${st} set=${set} data=${data} banner=${banner} />`
           : NEEDS(sel.status.state) ? html`<${HomeNeedsYou} v=${sel} st=${st} set=${set} data=${data} />`
