@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>proof: Your agent says done. proof makes sure it is.</title>
+<meta name="description" content="A free plugin for Claude Code. Coding agents move fast. proof double-checks their work before it reaches you: pages load, buttons do what they should, screens match the design. If something's off, your agent fixes it first.">
+<meta property="og:title" content="proof: Your agent says done. proof makes sure it is.">
+<meta property="og:description" content="A free plugin for Claude Code that double-checks your agent's work before it reaches you.">
+<meta property="og:image" content="https://proof.ifeolulesi.com/assets/dashboard-dark.png">
+<meta property="og:url" content="https://proof.ifeolulesi.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#08090B">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* proof site — dark first, light by toggle. Lead with the problem.
+   Colour rules: green = passing / proof; red = failing; amber = asks you. */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #08090B; --bg-2: #0C0D10; --surface: #111317; --surface-2: #171A1F; --line: #1F2228; --line-2: #2C3037;
+  --ink: #F5F5F4; --ink-2: #D4D5D8; --muted: #A0A4AB; --faint: #80858D;
+  --green: #22C55E; --green-ink: #4ADE80; --green-soft: rgba(34,197,94,.12); --green-line: rgba(34,197,94,.35);
+  --red: #F87171; --red-ink: #FCA5A5; --red-soft: rgba(248,113,113,.12); --red-line: rgba(248,113,113,.35);
+  --amber: #FBBF24; --amber-soft: rgba(251,191,36,.12);
+  --sand: #E2D3B1; --sand-ink: #EADFC4; --sand-soft: rgba(226,211,177,.09); --sand-line: rgba(226,211,177,.30);
+  --glow: rgba(34,197,94,.20); --shadow: 0 30px 80px -20px rgba(0,0,0,.7);
+  --on-green: #04140A; --logo: url(assets/logo-dark.svg); --dot: #2C3037;
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #FAFAF9; --bg-2: #F3F3F1; --surface: #FFFFFF; --surface-2: #F6F6F4; --line: #E8E7E3; --line-2: #D9D8D3;
+  --ink: #0E1116; --ink-2: #30353D; --muted: #555B65; --faint: #6B7079;
+  --green: #16A34A; --green-ink: #15803D; --green-soft: #EAF6EE; --green-line: #BFE3CB;
+  --red: #DC2626; --red-ink: #B91C1C; --red-soft: #FDEEEE; --red-line: #F5C9C9;
+  --amber: #B45309; --amber-soft: #FEF5E7;
+  --sand: #A88B5C; --sand-ink: #7E6539; --sand-soft: #F6F0E4; --sand-line: #E3D5B8;
+  --glow: rgba(22,163,74,.24); --shadow: 0 30px 70px -24px rgba(14,17,22,.25);
+  --on-green: #FFFFFF; --logo: url(assets/logo.svg); --dot: #BDBCB5;
+}
+:root {
+  --font: "Geist", system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
+  --col: 1120px; --gutter: 16px; --r: 16px;
+  --ease: cubic-bezier(0.2, 0, 0, 1); --dur: 200ms;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; transition: background .3s, color .3s; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+code { font-family: var(--mono); font-size: .9em; }
+.wrap { width: min(var(--col), 100% - 2 * var(--gutter)); margin: 0 auto; position: relative; }
+.mono { font-family: var(--mono); }
+.ph { display: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* nav */
+nav.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--green); box-shadow: 0 0 10px var(--green); transform: scaleX(0); transform-origin: left center; pointer-events: none; }
+nav.top .wrap { display: flex; align-items: center; height: 64px; gap: 40px; }
+.logo { display: block; height: 24px; width: 66px; background: var(--logo) no-repeat left center / contain; flex: 0 0 auto; }
+nav.top .links { display: flex; gap: 28px; font-size: 14px; color: var(--muted); }
+nav.top .links a:hover { color: var(--ink); }
+nav.top .right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 10px; font: 500 14px var(--font); border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); cursor: pointer; white-space: nowrap; transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), filter var(--dur) var(--ease); }
+.btn:hover { border-color: var(--faint); }
+.btn:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.btn.go { background: var(--green); color: var(--on-green); border-color: transparent; font-weight: 600; box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset, 0 8px 24px -8px var(--glow); }
+.btn.go:hover { filter: brightness(1.08); }
+.btn.lg { height: 48px; padding: 0 22px; font-size: 15px; border-radius: 12px; }
+.btn svg { width: 16px; height: 16px; flex: 0 0 auto; }
+.icon-btn { width: 40px; padding: 0; }
+.stars { display: inline-flex; align-items: center; gap: 5px; margin-left: 2px; padding-left: 10px; border-left: 1px solid var(--line-2); font: 500 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.stars svg { width: 13px; height: 13px; color: var(--amber); }
+.stars[hidden] { display: none; }
+/* magnetic buttons reach a little past their edges */
+.mag::before { content: ""; position: absolute; inset: -14px; z-index: -1; }
+.copy.copied .ic-copy, .copy:not(.copied) .ic-ok { display: none; }
+
+/* hero */
+.hero { position: relative; min-height: calc(100vh - 64px); min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; padding: 96px 0 128px; text-align: center; overflow: hidden; overflow: clip visible; }
+.hero .bgfx { position: absolute; inset: 0; z-index: -1; pointer-events: none; -webkit-mask-image: linear-gradient(transparent, #000 10%, #000 80%, transparent); mask-image: linear-gradient(transparent, #000 10%, #000 80%, transparent); }
+.hero .bgfx::after { content: ""; position: absolute; left: 50%; top: 260px; width: 1200px; height: 700px; transform: translateX(-50%); background: radial-gradient(closest-side, var(--glow), transparent); animation: breathe 8s ease-in-out infinite; }
+#dots { position: absolute; left: 0; top: 0; }
+@keyframes breathe { 50% { opacity: .55; transform: translateX(-50%) scale(1.06); } }
+.chip { display: inline-flex; align-items: center; gap: 10px; height: 32px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); font-size: 13px; color: var(--muted); position: relative; }
+.live { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 var(--green); animation: ping 2s ease-out infinite; }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 var(--green-line); } 100% { box-shadow: 0 0 0 8px transparent; } }
+.hero h1 { position: relative; font-size: clamp(42px, 9.4vw, 80px); line-height: .98; letter-spacing: -0.05em; font-weight: 600; margin: 26px auto 24px; cursor: default; }
+.hero h1 .q { color: var(--muted); }
+.hero h1 .p { background: linear-gradient(180deg, var(--ink) 30%, var(--green-ink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* proof's tick pops onto "is" */
+.isw { position: relative; display: inline-block; }
+.tick { position: absolute; right: -.74em; top: .1em; width: .44em; height: .44em; border-radius: 50%; background: var(--green); color: var(--on-green); display: grid; place-items: center; box-shadow: 0 0 0 .08em var(--bg), 0 0 .5em -.05em var(--green); transform: scale(0); }
+.tick svg { width: 62%; height: 62%; }
+.hero .sub { position: relative; font-size: 19px; color: var(--muted); max-width: 600px; margin: 0 auto 36px; }
+.hero .ctas { position: relative; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* sections */
+section.s { padding: 72px 0; }
+#problem { padding-top: 140px; }
+/* bands: some sections sit on their own background so the page doesn't read as one long black sheet */
+section.band { position: relative; isolation: isolate; padding: 120px 0; border-block: 1px solid var(--line); }
+.band-raised { background: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 8%, transparent) 1px, transparent 1.6px) 0 0 / 22px 22px fixed, var(--bg-2); }
+/* catches flows straight into phases: no line, same grey and dot grid where they meet */
+section.band-raised + section.band-blend { border-top: 0; }
+section.band.band-raised:has(+ .band-blend) { border-bottom: 0; }
+/* phases: the dot grid fades out downwards into the dashboard's green; the two read as one band */
+section.band.band-blend { border-bottom: 0; } .band-blend { background: radial-gradient(1000px 420px at 50% 100%, color-mix(in srgb, var(--green) 16%, transparent), transparent 72%), linear-gradient(180deg, var(--bg-2) 0%, var(--bg-2) 15%, color-mix(in srgb, var(--bg) 95%, var(--green) 5%) 100%); }
+:root section.s.band-blend::before { content: ""; position: absolute; inset: 0; width: auto; height: auto; transform: none; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 9%, transparent) 1px, transparent 1.6px) 0 0 / 22px 22px fixed;
+  -webkit-mask-image: linear-gradient(#000 0%, #000 35%, transparent 95%); mask-image: linear-gradient(#000 0%, #000 35%, transparent 95%); }
+section.band-blend + section.band-green { border-top: 0; }
+.band-green { background: radial-gradient(1000px 420px at 50% 0%, color-mix(in srgb, var(--green) 16%, transparent), transparent 72%), color-mix(in srgb, var(--bg) 95%, var(--green) 5%); border-color: var(--green-line); }
+.eyebrow { font: 500 13px var(--mono); color: var(--green-ink); letter-spacing: .02em; }
+.h2 { text-wrap: balance; font-size: clamp(34px, 6vw, 52px); line-height: 1.04; letter-spacing: -0.045em; font-weight: 600; margin: 14px 0 16px; }
+.h2.sm { font-size: clamp(32px, 5vw, 44px); }
+.h2 .m { color: var(--muted); }
+.lead { font-size: 18px; color: var(--muted); max-width: 640px; margin: 0; }
+.center { text-align: center; } .center .lead { margin: 0 auto; }
+
+/* problem cards */
+.pains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 56px; }
+.pain { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; transition: border-color .2s var(--ease), transform .2s var(--ease); }
+.pain:hover { border-color: var(--line-2); transform: translateY(-2px); }
+.pain .vis { height: 200px; background: var(--bg-2); border-bottom: 1px solid var(--line); position: relative; display: grid; place-items: center; overflow: hidden; }
+.pain .txt { padding: 22px 24px 26px; }
+.pain h3 { margin: 0 0 6px; font-size: 19px; letter-spacing: -0.02em; font-weight: 600; }
+.pain p { margin: 0; color: var(--muted); font-size: 15px; }
+/* problem illustrations: three small scenes, played by GSAP while on screen */
+.win { position: relative; width: 84%; border-radius: 12px; border: 1px solid var(--line-2); background: var(--surface); box-shadow: 0 14px 34px -18px rgba(0,0,0,.55); overflow: hidden; font-size: 12.5px; text-align: left; }
+.wbar { display: flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.wbar > i { width: 7px; height: 7px; border-radius: 50%; background: var(--line-2); flex: 0 0 auto; }
+.wbar > span { margin-left: 8px; font: 11px var(--mono); color: var(--faint); }
+.wbody { position: relative; display: grid; gap: 10px; padding: 12px; }
+.say { display: flex; align-items: center; gap: 7px; width: max-content; max-width: 100%; padding: 7px 10px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); }
+.say b { font: 500 10px var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .06em; }
+.sayok { font-style: normal; font-weight: 700; color: var(--green-ink); transition: color .5s; }
+.sayok.off { color: var(--faint); }
+.ord { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tot { color: var(--muted); } .tot b { color: var(--ink); font-weight: 600; }
+.po { display: grid; place-items: center; height: 32px; padding: 0 14px; border-radius: 8px; background: var(--green); color: var(--on-green); font-weight: 600; transition: filter .3s, opacity .3s; }
+.po > * { grid-area: 1 / 1; }
+.po.dead { filter: grayscale(1); opacity: .5; }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--on-green) 30%, transparent); border-top-color: var(--on-green); animation: spin .7s linear infinite; visibility: hidden; }
+.nope { justify-self: end; font: 11px var(--mono); color: var(--sand-ink); visibility: hidden; }
+.cur { position: absolute; right: 34px; bottom: 30px; width: 18px; height: 18px; visibility: hidden; filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+.cur path { fill: var(--ink); stroke: var(--bg); stroke-width: 1; }
+.wbar > .url { flex: 1; display: flex; align-items: center; height: 16px; padding: 0 6px; border-radius: 5px; background: var(--bg-2); border: 1px solid var(--line); font: 10.5px var(--mono); color: var(--muted); overflow: hidden; white-space: nowrap; }
+.caret { width: 1px; height: 10px; margin-left: 1px; background: var(--ink-2); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.load { display: block; height: 2px; background: var(--green); box-shadow: 0 0 8px var(--green); transform: scaleX(.7); transform-origin: left center; transition: background .3s; }
+.load.stuck { background: var(--sand); box-shadow: none; }
+.wbody.pg { min-height: 108px; }
+.skel { display: grid; gap: 8px; }
+.skel i { display: block; height: 9px; border-radius: 4px; background: linear-gradient(90deg, var(--surface-2) 25%, var(--line-2) 50%, var(--surface-2) 75%) 0 0 / 200% 100%; animation: shimmer 1.4s linear infinite; }
+.sk-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .sk-row i { height: 34px; border-radius: 7px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.err { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 3px; text-align: center; visibility: hidden; }
+.err-ic { width: 26px; height: 26px; margin-bottom: 4px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--sand-soft); color: var(--sand-ink); border: 1px solid var(--sand-line); }
+.err b { font-size: 13px; font-weight: 600; } .err small { font-size: 11.5px; color: var(--faint); }
+.cmpx { position: relative; width: 88%; height: 160px; }
+.side { position: absolute; left: 50%; top: 44%; display: grid; justify-items: center; gap: 8px; transform: translate(-50%, -50%); }
+.side.s-b { z-index: 1; }
+.cap { font: 11.5px var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .05em; }
+.bx { position: relative; height: 40px; padding: 0 18px; border-radius: 10px; display: flex; align-items: center; font-weight: 600; font-size: 14px; background: var(--ink); color: var(--bg); white-space: pre; }
+.bx { transition: background .35s, color .35s, box-shadow .35s; }
+.bx.ghost { background: transparent; color: transparent; outline: 1.5px dashed var(--green); outline-offset: -1px; }
+.side.s-m:has(.ghost) { z-index: 2; }
+.bx.off { border-radius: 7px; font-weight: 500; background: color-mix(in srgb, var(--ink) 80%, var(--bg)); transition: translate .45s cubic-bezier(.3,1.5,.5,1), background .35s; }
+.s-b.over .bx.off { translate: 9px 7px; }
+.o { position: relative; }
+.oring { position: absolute; left: 50%; top: 50%; width: 1.75em; height: 1.75em; margin: -.875em 0 0 -.875em; border: 2px solid var(--sand); border-radius: 50%; visibility: hidden; }
+.tag3 { position: absolute; right: -16px; top: -24px; padding: 1px 6px; border-radius: 6px; font: 500 10.5px var(--mono); color: var(--sand-ink); background: var(--sand-soft); border: 1px solid var(--sand-line); visibility: hidden; }
+.sw { position: absolute; left: 0; right: 0; bottom: 4px; display: flex; justify-content: center; gap: 14px; font: 10.5px var(--mono); color: var(--muted); visibility: hidden; }
+.sw span { display: inline-flex; align-items: center; gap: 6px; } .sw i { width: 11px; height: 11px; border-radius: 3px; border: 1px solid var(--line-2); }
+
+/* loop */
+.loopwrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; margin-top: 8px; }
+/* how it works: a relay. Agent → proof → you, with one trip back */
+.relaybox { position: relative; }
+.relay { position: relative; width: 440px; height: 500px; transform-origin: top left; }
+.relay > svg { position: absolute; inset: 0; overflow: visible; }
+.rn { position: absolute; display: flex; align-items: center; gap: 12px; width: 300px; height: 64px; padding: 0 16px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line-2); box-shadow: var(--shadow); transition: border-color .35s, box-shadow .35s; }
+.rn b { display: block; font-size: 15px; font-weight: 600; }
+.rn small { display: block; font: 12px var(--mono); color: var(--faint); transition: color .3s; }
+.rn .av { width: 36px; height: 36px; flex: 0 0 auto; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line-2); color: var(--ink-2); }
+.rn .av svg { width: 18px; height: 18px; }
+.rn.busy { border-color: var(--sand-line); } .rn.busy small { color: var(--sand-ink); }
+.rn.good small { color: var(--green-ink); }
+.rn.you.good { border-color: var(--green-line); box-shadow: var(--shadow), 0 0 40px -8px var(--glow); }
+.rn.you.good .av { background: var(--green); border-color: transparent; color: var(--on-green); }
+.rn.gate { display: block; width: 360px; height: 194px; padding: 16px 18px; }
+.gate-h { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; margin-bottom: 6px; border-bottom: 1px solid var(--line); }
+.glogo { display: block; width: 54px; height: 20px; background: var(--logo) no-repeat left center / contain; }
+.r-g.ok { color: var(--green-ink); } .r-g.bad { color: var(--sand-ink); }
+.cl { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.cl li { display: flex; align-items: center; gap: 10px; height: 28px; font-size: 14px; color: var(--muted); transition: color .25s; }
+.cl i { position: relative; width: 16px; height: 16px; flex: 0 0 auto; border-radius: 50%; border: 1.5px solid var(--line-2); transition: background .2s, border-color .2s; }
+.cl i::after { content: ""; position: absolute; inset: 0; background: center / 10px no-repeat; }
+.cl li.run i { border-top-color: var(--green); animation: spin .7s linear infinite; }
+.cl li.ok { color: var(--ink); } .cl li.ok i { background: var(--green); border-color: var(--green); }
+.cl li.ok i::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2304140A' stroke-width='3'%3E%3Cpath d='M3 8.5l3 3 7-7'/%3E%3C/svg%3E"); }
+.cl li.bad { color: var(--sand-ink); } .cl li.bad i { background: var(--sand); border-color: var(--sand); }
+.cl li.bad i::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2304140A' stroke-width='3'%3E%3Cpath d='M4 4l8 8M12 4l-8 8'/%3E%3C/svg%3E"); }
+.note { margin-top: 6px; padding: 5px 10px; border-radius: 8px; width: max-content; font: 12px var(--mono); color: var(--sand-ink); background: var(--sand-soft); border: 1px solid var(--sand-line); visibility: hidden; }
+.rules { display: grid; gap: 14px; }
+.rulec { display: grid; grid-template-columns: 44px 1fr; gap: 16px; padding: 22px 24px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
+.rulec .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line-2); }
+.rulec .ic svg { width: 20px; height: 20px; }
+.rulec h3 { margin: 0 0 4px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.rulec p { margin: 0; color: var(--muted); font-size: 15px; }
+
+/* catches report */
+.report { margin-top: 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.report .head { display: flex; align-items: center; gap: 16px; padding: 14px 22px; border-bottom: 1px solid var(--line); background: var(--surface-2); flex-wrap: wrap; }
+.report .head .file { font: 500 13px var(--mono); color: var(--ink-2); }
+.summary { font: 500 13px var(--mono); }
+.summary .p { color: var(--green-ink); } .summary .f { color: var(--red-ink); }
+.seg { margin-left: auto; display: inline-flex; padding: 3px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--line); }
+.seg button { height: 34px; padding: 0 14px; border: 0; background: none; border-radius: 7px; font: 500 13px var(--font); color: var(--muted); cursor: pointer; }
+.seg button.on { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line-2); }
+.row { display: grid; grid-template-columns: 40px 1fr 1fr; gap: 28px; padding: 20px 22px; border-bottom: 1px solid var(--line); align-items: start; }
+.row:last-child { border-bottom: 0; }
+.st { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; margin-top: 2px; transition: background .2s; }
+.st svg { width: 13px; height: 13px; }
+.st.ok { background: var(--green-soft); color: var(--green-ink); }
+.st.bad { background: var(--red-soft); color: var(--red-ink); }
+.row h3 { margin: 0 0 2px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.row .why { color: var(--muted); font-size: 15px; margin: 0; }
+.row .fix { color: var(--ink-2); font-size: 15px; margin: 0; padding-left: 20px; border-left: 2px solid var(--green-line); transition: opacity .2s; }
+
+/* phases */
+.phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 56px; position: relative; }
+.phases::before { content: ""; position: absolute; left: 40px; right: 40px; top: 40px; height: 2px; background: linear-gradient(90deg, var(--line-2), var(--green)); transform: scaleX(var(--rail, 1)); transform-origin: left center; }
+.phase { position: relative; padding: 0 4px; }
+.phase .node { width: 80px; height: 80px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line-2); display: grid; place-items: center; font: 600 22px var(--mono); position: relative; z-index: 1; }
+.phase:last-child .node { background: var(--green); color: var(--on-green); border-color: transparent; box-shadow: 0 10px 40px -10px var(--green); }
+.phase h3 { margin: 24px 0 4px; font-size: 24px; letter-spacing: -0.03em; font-weight: 600; }
+.phase .for { margin: 0 0 14px; color: var(--muted); }
+.phase .cmd { display: inline-block; font: 500 13px var(--mono); padding: 5px 10px; border-radius: 7px; background: var(--surface); border: 1px solid var(--line-2); }
+.phase .check { margin-top: 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: var(--ink-2); }
+.phase .check svg { flex: 0 0 16px; height: 16px; color: var(--green-ink); margin-top: 4px; }
+
+/* dashboard */
+.dash { margin-top: 56px; border-radius: 22px; padding: 1px; background: linear-gradient(180deg, var(--line-2), var(--line)); box-shadow: var(--shadow); }
+.dash .in { border-radius: 21px; overflow: hidden; background: var(--surface); padding: 8px; }
+.dash img { display: block; width: 100%; height: auto; border-radius: 14px; }
+.dash-feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 36px; }
+.dash-feats h3 { margin: 0 0 4px; font-size: 16.5px; font-weight: 600; }
+.dash-feats p { margin: 0; color: var(--muted); font-size: 15px; }
+
+/* memory strip */
+.memstrip { margin-top: 56px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px; }
+.bar { position: relative; height: 44px; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--line); margin: 34px 0 12px; }
+.bar i { position: absolute; top: 5px; bottom: 5px; border-radius: 7px; }
+.bar .a { left: 5px; width: 42%; background: var(--line-2); }
+.bar .b { left: calc(42% + 8px); width: 26%; background: var(--ink-2); }
+.bar .c { left: calc(68% + 11px); width: 7%; background: var(--green); box-shadow: 0 0 20px -2px var(--green); }
+.bar .ceil { position: absolute; top: -12px; bottom: -12px; left: 90%; width: 2px; background: var(--sand); }
+.bar .ceil span { position: absolute; top: -22px; right: 0; font: 500 11.5px var(--mono); color: var(--sand-ink); white-space: nowrap; }
+.memchart { height: 96px; margin: 8px 0 6px; padding-top: 22px; }
+.memchart.drawn { padding-top: 0; }
+.memchart .bar { margin: 12px 0 0; }
+.big { font-size: 56px; font-weight: 600; letter-spacing: -0.05em; line-height: 1; font-variant-numeric: tabular-nums; }
+.big small { font-size: 17px; color: var(--muted); font-weight: 500; letter-spacing: 0; margin-left: 8px; }
+.legend { display: flex; gap: 8px 18px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.fig { font: 12px var(--mono); color: var(--faint); display: flex; justify-content: space-between; }
+.memlist { display: grid; gap: 18px; }
+.memlist div { display: grid; grid-template-columns: 28px 1fr; gap: 12px; }
+.memlist b { width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line-2); display: grid; place-items: center; font: 500 12px var(--mono); }
+.memlist h3 { margin: 0 0 2px; font-size: 16.5px; font-weight: 600; }
+.memlist p { margin: 0; color: var(--muted); font-size: 15px; }
+
+/* close */
+.close { position: relative; text-align: center; padding: 160px 0 150px; overflow: hidden; }
+.close::before { content: ""; position: absolute; left: 50%; bottom: -300px; width: 1100px; height: 600px; transform: translateX(-50%); background: radial-gradient(closest-side, var(--glow), transparent); }
+.close h2 { position: relative; font-size: clamp(40px, 8vw, 68px); letter-spacing: -0.05em; line-height: 1; font-weight: 600; margin: 0 0 20px; }
+.close p { position: relative; color: var(--muted); font-size: 18px; margin: 0 auto 36px; max-width: 640px; }
+.close .ctas { position: relative; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+footer { border-top: 1px solid var(--line); }
+footer .wrap { display: flex; align-items: center; gap: 12px 28px; min-height: 88px; padding: 20px 0; font-size: 14px; color: var(--muted); flex-wrap: wrap; }
+footer .r { margin-left: auto; display: flex; gap: 24px; flex-wrap: wrap; }
+footer .r a:hover { color: var(--ink); }
+
+/* motion: the hero builds itself on load; elements wait hidden only when script and motion are on */
+@media (prefers-reduced-motion: no-preference) { .js .hero .in, .js .hero .li { visibility: hidden; } }
+.hero h1 .ln { display: block; overflow: hidden; padding: 0 .12em .1em; margin: 0 -.12em -.1em; }
+.hero h1 .ln.l2 { overflow: visible; }
+.hero h1 .ln.l2 .clip { display: block; overflow: hidden; padding: 0 .9em .1em; margin: 0 -.9em -.1em; }
+.hero h1 .li { display: inline-block; }
+.hero h1.done .ln, .hero h1.done .ln.l2 .clip { overflow: visible; }
+/* split headings: each word rises out of its own mask */
+.wd { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+.wi { display: inline-block; }
+
+@keyframes spin { to { transform: rotate(1turn); } }
+/* hero: a scroll cue at the bottom edge */
+.cue { position: absolute; left: 0; right: 0; margin: 0 auto; width: max-content; bottom: 20px; z-index: 1; display: grid; justify-items: center; gap: 10px; font: 500 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); transition: color var(--dur) var(--ease); }
+.cue:hover { color: var(--ink); }
+.cue:focus-visible { outline: 2px solid var(--green); outline-offset: 6px; border-radius: 8px; }
+.cue .mouse { position: relative; width: 22px; height: 34px; border-radius: 12px; border: 1.5px solid currentColor; opacity: .8; }
+.cue .mouse::after { content: ""; position: absolute; left: 50%; top: 6px; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 2px; background: var(--green); animation: wheel 1.8s var(--ease) infinite; }
+@keyframes wheel { 0% { transform: translateY(0); opacity: 0; } 25% { opacity: 1; } 70% { transform: translateY(11px); opacity: 0; } 100% { opacity: 0; } }
+
+/* cards light up around the cursor */
+.spot { position: relative; isolation: isolate; }
+.spot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; z-index: 2;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), var(--green-line), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; transition: opacity .3s var(--ease); }
+.spot::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--green) 6%, transparent), transparent 70%);
+  opacity: 0; transition: opacity .3s var(--ease); }
+.spot:hover::after, .spot:hover::before { opacity: 1; }
+
+/* the loop's dashed track drifts slowly */
+/* dashboard: a light sweep once it settles */
+.dash .in { position: relative; }
+.dash .in::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.09) 50%, transparent 65%) no-repeat; background-size: 250% 100%; background-position: 160% 0; }
+.dash.shine .in::after { animation: sweep 1.6s var(--ease) forwards; }
+@keyframes sweep { to { background-position: -60% 0; } }
+.close::before { transform: translateX(-50%) scale(var(--g, 1)); }
+
+/* light mode: more depth. A green and teal aurora, soft card shadows, tinted panels, washes behind sections */
+[data-theme="light"] .hero .bgfx { background: linear-gradient(180deg, #EEF6F0 0%, transparent 85%); }
+[data-theme="light"] .hero .bgfx::before { content: ""; position: absolute; left: 50%; top: -120px; width: 1500px; height: 620px; transform: translateX(-50%);
+  background: radial-gradient(closest-side at 30% 55%, rgba(34,197,94,.20), transparent), radial-gradient(closest-side at 72% 45%, rgba(20,184,166,.16), transparent); filter: blur(10px); animation: drift 14s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translateX(-46%) translateY(30px) scale(1.05); } }
+[data-theme="light"] .hero h1 .p { background-image: linear-gradient(180deg, var(--ink) 20%, #15803D 75%, #0D9488); }
+[data-theme="light"] :is(.pain, .rulec, .card, .report, .chip, .phase .node) { box-shadow: 0 1px 2px rgba(14,17,22,.04), 0 12px 32px -16px rgba(14,17,22,.14); }
+[data-theme="light"] :is(.pain, .rulec, .card):hover { box-shadow: 0 1px 2px rgba(14,17,22,.05), 0 22px 44px -18px rgba(21,128,61,.28); }
+[data-theme="light"] .pain .vis { background: radial-gradient(circle at 1px 1px, #DCDBD5 1px, transparent 1.4px) 0 0 / 16px 16px, linear-gradient(180deg, #EEF6F0, #F6F6F3); }
+[data-theme="light"] .rulec .ic { background: var(--green-soft); border-color: var(--green-line); color: var(--green-ink); }
+[data-theme="light"] .memlist b { background: var(--green-soft); border-color: var(--green-line); color: var(--green-ink); }
+[data-theme="light"] .eyebrow { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--green-soft); border: 1px solid var(--green-line); }
+[data-theme="light"] section.s { position: relative; }
+[data-theme="light"] section.s::before { content: ""; position: absolute; z-index: -1; left: 50%; top: 40px; width: min(1200px, 100%); height: 520px; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(closest-side, rgba(34,197,94,.08), transparent); }
+[data-theme="light"] #how::before, [data-theme="light"] #phases::before { background: radial-gradient(closest-side at 70% 50%, rgba(20,184,166,.09), transparent); }
+[data-theme="light"] .close { background: linear-gradient(180deg, var(--bg), #EDF6F0); }
+[data-theme="light"] .close::before { background: radial-gradient(closest-side, rgba(34,197,94,.26), transparent); }
+
+/* short screens: tighter hero so the scroll cue is on the first screen */
+@media (max-height: 760px) { .hero { padding: 48px 0 104px; } .hero h1 { margin: 18px auto 18px; } .hero .sub { margin-bottom: 26px; } }
+
+/* tablet */
+@media (max-width: 980px) {
+  nav.top .links { display: none; }
+  .loopwrap { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  .pains { grid-template-columns: 1fr 1fr; }
+  .pains .pain:last-child { grid-column: 1 / -1; }
+  .memstrip { grid-template-columns: 1fr; }
+}
+/* phone */
+@media (max-width: 680px) {
+  nav.top .wrap { gap: 16px; }
+  .gh .word { display: none; }
+  .ph { display: inline; }
+  .gh .stars { margin-left: 0; padding-left: 0; border-left: 0; }
+  .hero { padding: 56px 0 120px; }
+  .hero .sub { font-size: 17px; }
+  .hero .ctas, .close .ctas { flex-direction: column; align-items: stretch; }
+  section.s { padding: 56px 0; }
+  #problem { padding-top: 96px; }
+  section.band { padding: 88px 0; }
+  .h2 { font-size: clamp(30px, 8.6vw, 34px); }
+  .lead { font-size: 17px; }
+  .pains, .dash-feats { grid-template-columns: 1fr; }
+  .dash-feats { gap: 20px; }
+  .phases { grid-template-columns: 1fr; gap: 36px; }
+  .phases::before { display: none; }
+  .phase:not(:last-child)::after { content: ""; position: absolute; left: 43px; top: 80px; bottom: -36px; width: 2px; background: var(--line-2); transform: scaleY(var(--rail, 1)); transform-origin: top center; }
+  .phase:nth-child(2)::after { background: linear-gradient(180deg, var(--line-2), var(--green)); }
+  .phase .cmd { justify-self: start; }
+  .phase { display: grid; grid-template-columns: 80px 1fr; column-gap: 20px; }
+  .phase .node { grid-row: span 4; }
+  .phase h3 { margin: 4px 0 2px; }
+  .report .head { padding: 14px 16px; }
+  .seg { margin-left: 0; width: 100%; } .seg button { flex: 1; }
+  .row { grid-template-columns: 24px 1fr; gap: 10px 14px; padding: 18px 16px; }
+  .row .fix { grid-column: 2; padding-left: 14px; }
+  .rulec { padding: 18px; }
+  .card { padding: 22px; }
+  .big { font-size: 46px; }
+  .close { padding: 112px 0 104px; }
+  footer .r { margin-left: 0; }
+}
+
+/* short phones: keep the scroll cue on the first screen */
+@media (max-width: 680px) and (max-height: 760px) { .hero { padding: 28px 0 92px; } .hero h1 { margin: 16px auto 14px; } .hero .sub { font-size: 16px; margin-bottom: 20px; } .hero .ctas { gap: 10px; } }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<nav class="top"><span class="progress" id="progress" aria-hidden="true"></span><div class="wrap">
+  <a class="logo" href="#" aria-label="proof"></a>
+  <div class="links"><a href="#problem">The problem</a><a href="#how">How it works</a><a href="#catches">What it catches</a><a href="#phases">Phases</a><a href="#dashboard">Dashboard</a></div>
+  <div class="right">
+    <button class="btn icon-btn" id="theme" aria-label="Switch to light mode"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1"/></svg></button>
+    <a class="btn gh" href="https://github.com/IfeOlulesi/proof" aria-label="proof on GitHub"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg><span class="word">GitHub</span><span class="stars" id="stars" hidden><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.2l2 4.3 4.7.5-3.5 3.2 1 4.6L8 11.5l-4.2 2.3 1-4.6L1.3 6l4.7-.5z"/></svg><span id="starn"></span><span class="sr"> stars</span></span></a>
+    <a class="btn go" href="#install">Install</a>
+  </div>
+</div></nav>
+
+<!-- HERO: the problem first -->
+<header class="hero" id="install"><div class="bgfx"><canvas id="dots" aria-hidden="true"></canvas></div><div class="wrap">
+  <span class="chip in"><span class="live"></span>A free plugin for Claude Code · v0.5.0</span>
+  <h1 id="headline"><span class="ln"><span class="li q">Your agent says "done".</span></span><span class="ln l2"><span class="clip"><span class="li"><span class="p">proof makes<br class="ph"> sure it </span><span class="isw"><span class="p">is</span><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg></span></span><span class="p">.</span></span></span></span></h1>
+  <p class="sub in">Coding agents move fast. proof double-checks their work before it reaches you: pages load, buttons do what they should, screens match the design. If something's off, your agent fixes it first.</p>
+  <div class="ctas in">
+    <button class="btn go lg mag copy"><svg class="ic-copy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="9" height="9" rx="2"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg><svg class="ic-ok" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 8.5l3 3 7-7"/></svg><span class="lbl">Copy the install prompt</span></button>
+    <a class="btn lg mag" href="#how"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M4 9l4 4 4-4"/></svg>See how it works</a>
+  </div>
+</div><a class="cue in" href="#problem" aria-label="Scroll to the problem"><span class="mouse" aria-hidden="true"></span><span aria-hidden="true">Scroll</span></a></header>
+
+<!-- THE PROBLEM -->
+<section class="s" id="problem"><div class="wrap center">
+  <span class="eyebrow">The problem</span>
+  <h2 class="h2">Fast work still needs checking.<br><span class="m">Usually by you.</span></h2>
+  <p class="lead">A button that doesn't respond. A page that never loads. A screen that's almost, but not quite, the design. Small things slip through, and you're the one who finds them.</p>
+  <div class="pains" style="text-align:left">
+    <div class="pain spot"><div class="vis"><div class="win" id="ilA" aria-hidden="true">
+        <div class="wbar"><i></i><i></i><i></i><span>shop · checkout</span></div>
+        <div class="wbody">
+          <div class="say"><b>agent</b><span>Done! Checkout is ready</span><em class="sayok">✓</em></div>
+          <div class="ord"><span class="tot">Total <b>$48.00</b></span><span class="po"><span class="po-t">Place order</span><span class="spin"></span></span></div>
+          <span class="nope">no response</span>
+        </div>
+        <svg class="cur" viewBox="0 0 16 16"><path d="M2.5 1.5l10.5 6.8-4.6.9 2.8 4.6-1.9 1.1-2.8-4.6-3.5 3z"/></svg>
+      </div></div>
+      <div class="txt"><h3>The button doesn't respond</h3><p>It looked finished. Nobody clicked it.</p></div></div>
+    <div class="pain spot"><div class="vis"><div class="win" id="ilB" aria-hidden="true">
+        <div class="wbar"><i></i><i></i><i></i><span class="url"><span class="url-t">myapp.com/dashboard</span><span class="caret"></span></span></div>
+        <span class="load"></span>
+        <div class="wbody pg">
+          <div class="skel"><i style="width:55%"></i><i style="width:85%"></i><div class="sk-row"><i></i><i></i></div></div>
+          <div class="err"><span class="err-ic">!</span><b>Something went wrong</b><small>The page didn't load.</small></div>
+        </div>
+      </div></div>
+      <div class="txt"><h3>The page never loads</h3><p>Fine in the code. Blank in the browser.</p></div></div>
+    <div class="pain spot"><div class="vis"><div class="cmpx" id="ilC" aria-hidden="true">
+        <div class="side s-m"><span class="cap">Design</span><span class="bx">Place order</span></div>
+        <div class="side s-b"><span class="cap">Built</span><span class="bx off">Place <span class="o">O<i class="oring"></i></span>rder<span class="tag3">3px off</span></span></div>
+        <div class="sw"><span><i style="background:var(--ink)"></i>design</span><span><i style="background:color-mix(in srgb, var(--ink) 80%, var(--bg))"></i>built</span></div>
+      </div></div>
+      <div class="txt"><h3>The screen is <em>almost</em> the design</h3><p>Wrong word, a few pixels off, the wrong grey.</p></div></div>
+  </div>
+</div></section>
+
+<!-- HOW -->
+<section class="s" id="how"><div class="wrap">
+  <div class="loopwrap">
+    <div>
+      <span class="eyebrow">How it works</span>
+      <h2 class="h2 sm">Your agent checks its own work.<br><span class="m">Before you ever see it.</span></h2>
+      <p class="lead" style="margin-bottom:32px">Each time your agent finishes, proof checks the app still works. If something's off, the agent sees exactly what and fixes it before handing back.</p>
+      <div class="rules">
+        <div class="rulec spot"><span class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10.5l4 4 8-9"/></svg></span><div><h3>Fails go back to your agent</h3><p>Your agent gets the error and keeps working. You see the reply once the checks pass.</p></div></div>
+        <div class="rulec spot"><span class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="3"/><path d="M10 2v5M10 13v5"/></svg></span><div><h3>Commits are gated</h3><p>Before every <code>git commit</code> the full checks run. A failure blocks the commit.</p></div></div>
+        <div class="rulec spot"><span class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="9" width="12" height="8" rx="2"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></svg></span><div><h3>Checks can't be loosened</h3><p>If your agent edits <code>proof.json</code>, proof stops it and asks you first.</p></div></div>
+      </div>
+    </div>
+    <div class="relaybox" id="relaybox"><div class="relay" id="relay" aria-hidden="true">
+      <svg viewBox="0 0 440 500" fill="none">
+        <path id="rDown1" d="M 220 84 L 220 168" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="3 6"/>
+        <path id="rDown2" d="M 220 362 L 220 416" stroke="var(--line-2)" stroke-width="2" stroke-dasharray="3 6"/>
+        <path id="rBack" d="M 400 250 C 452 220, 452 70, 372 52" stroke="var(--sand-line)" stroke-width="2" stroke-dasharray="5 6"/>
+        <circle id="rPk" r="6" cx="220" cy="84" fill="var(--green)"/>
+      </svg>
+      <div class="rn ag" style="left:70px;top:20px"><span class="av"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4-4 4M10 14h6"/></svg></span><span><b>Your agent</b><small class="r-ag">Building checkout…</small></span></div>
+      <div class="rn gate" style="left:40px;top:168px">
+        <div class="gate-h"><span class="glogo"></span><small class="r-g">waiting for work</small></div>
+        <ul class="cl"><li><i></i>Page loads</li><li><i></i>“Place order” works</li><li><i></i>Matches the design</li></ul>
+        <div class="note">“Place order” does nothing. Sent back.</div>
+      </div>
+      <div class="rn you" style="left:70px;top:416px"><span class="av"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="7" r="3"/><path d="M4 17c1-3.3 3.3-5 6-5s5 1.7 6 5"/></svg></span><span><b>You</b><small class="r-you">waiting</small></span></div>
+    </div></div>
+  </div>
+</div></section>
+
+<!-- CATCHES -->
+<section class="s band band-raised" id="catches"><div class="wrap center">
+  <span class="eyebrow">What it catches</span>
+  <h2 class="h2">Seven ways "done" can slip.<br><span class="m">proof catches all seven.</span></h2>
+  <p class="lead">Flip the switch to see each one without proof, then with it.</p>
+  <div class="report" style="text-align:left">
+    <div class="head"><span class="file">what-it-catches.test</span><span class="summary"><span class="p">7 passed</span> <span style="color:var(--faint)">· 0 failed</span></span>
+      <div class="seg"><button>Without proof</button><button class="on">With proof</button></div></div>
+    <div class="row"><span class="st ok"></span><div><h3>Your agent says "done"</h3><p class="why">…and the tests fail when you run them.</p></div><p class="fix">Checks run after every reply that changes files. Your agent sees the failure and fixes it before handing back.</p></div>
+    <div class="row"><span class="st ok"></span><div><h3>A failing check gets switched off</h3><p class="why">…so the work "passes".</p></div><p class="fix">Editing <code>proof.json</code>, <code>settings.json</code> or the fidelity kit makes your agent stop and ask you first.</p></div>
+    <div class="row"><span class="st ok"></span><div><h3>The screen is <em>almost</em> the design</h3><p class="why">Wrong copy, a few pixels off, the wrong grey.</p></div><p class="fix">Every tagged element is checked against the mockup: exact copy, position and size within 2px, font, colour.</p></div>
+    <div class="row"><span class="st ok"></span><div><h3>The empty state never got built</h3><p class="why">The spec didn't mention it.</p></div><p class="fix">Every state needs its own mockup frame, and every requirement says how it'll be verified.</p></div>
+    <div class="row"><span class="st ok"></span><div><h3>A test run hangs</h3><p class="why">Your agent waits forever.</p></div><p class="fix">Test runs and builds have time limits. A breach is reported as a hang.</p></div>
+    <div class="row"><span class="st ok"></span><div><h3>Your laptop freezes</h3><p class="why">Three agents and a simulator at once.</p></div><p class="fix">Heavy runs wait for memory. If the machine goes over the ceiling, the newest run is stopped.</p></div>
+    <div class="row"><span class="st ok"></span><div><h3>You come back after an hour</h3><p class="why">No idea what happened.</p></div><p class="fix">The dashboard shows every session: what's running, for how long, the plan and the check results.</p></div>
+  </div>
+</div></section>
+
+<!-- PHASES -->
+<section class="s band band-blend" id="phases"><div class="wrap">
+  <span class="eyebrow">From idea to finished</span>
+  <h2 class="h2">From idea to working app.<br><span class="m">Checked at every step.</span></h2>
+  <p class="lead">Your agent plans it, designs it, then builds it. Each step has to pass before the next one starts, and a second agent double-checks the work before it's saved.</p>
+  <div class="phases">
+    <div class="phase"><div class="node">01</div><h3>Discover</h3><p class="for">Idea → spec</p><span class="cmd">/proof:discover</span><div class="check"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3 3 7-7"/></svg>Every requirement says how it's verified</div></div>
+    <div class="phase"><div class="node">02</div><h3>Design</h3><p class="for">Spec → HTML mockup</p><span class="cmd">/proof:design</span><div class="check"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3 3 7-7"/></svg>Every screen, state and test ID exists</div></div>
+    <div class="phase"><div class="node">03</div><h3>Build</h3><p class="for">Any code change</p><span class="cmd">/proof:build</span><div class="check"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3 3 7-7"/></svg>Tests come first, the app is run, screens match the mockup</div></div>
+  </div>
+</div></section>
+
+<!-- DASHBOARD -->
+<section class="s band band-green" id="dashboard"><div class="wrap center">
+  <span class="eyebrow">The dashboard</span>
+  <h2 class="h2">Walk away for an hour.<br><span class="m">See what happened at a glance.</span></h2>
+  <p class="lead"><code>/proof:watch</code> shows every session live: what your agents are working on, how far they've got, and whether everything still works.</p>
+  <div class="dash"><div class="in"><img id="dashimg" width="2880" height="1802" src="assets/dashboard-dark.png" alt="The proof dashboard: one session with three agents running, their progress, and the plan" loading="lazy"></div></div>
+  <div class="dash-feats" style="text-align:left">
+    <div><h3>Needs you, in coral</h3><p>A session that stopped on a question stands out from the ones still working.</p></div>
+    <div><h3>Every agent in one run view</h3><p>Lanes, verifiers and explorers, with timers and commits.</p></div>
+    <div><h3>Local only</h3><p>Listens on 127.0.0.1. proof makes no network calls.</p></div>
+  </div>
+</div></section>
+
+<!-- MEMORY -->
+<section class="s" id="sessions"><div class="wrap">
+  <span class="eyebrow">Several sessions at once</span>
+  <h2 class="h2">Run three agents at once.<br><span class="m">Your laptop keeps up.</span></h2>
+  <p class="lead">proof keeps an eye on memory and makes the heavy jobs take turns, so your computer never freezes.</p>
+  <div class="memstrip">
+    <div class="card spot">
+      <div class="fig"><span>Memory, one machine</span><span>sample</span></div>
+      <div class="big" style="margin-top:18px"><span id="mempct">68%</span><small>16.3 of 24 GB</small></div>
+      <div class="memchart" id="memchart" role="img" aria-label="Sample memory on one machine with 24 GB: your apps use 10.1 GB and your agents' runs 6.2 GB, 68% in all. The next run needs 1.7 GB and fits under the 90% ceiling of 21.6 GB.">
+        <div class="bar"><i class="a"></i><i class="b"></i><i class="c"></i><span class="ceil"><span>ceiling 90%</span></span></div>
+      </div>
+      <div class="legend"><span><i style="background:var(--line-2)"></i>Your apps</span><span><i style="background:var(--ink-2)"></i>Your agents' runs</span><span><i style="background:var(--green)"></i>Next run</span></div>
+    </div>
+    <div class="card memlist spot">
+      <div><b>1</b><span><h3>Heavy runs and new agents wait</h3><p>until there's room.</p></span></div>
+      <div><b>2</b><span><h3>If the machine goes over anyway</h3><p>the newest run your agent started is stopped.</p></span></div>
+      <div><b>3</b><span><h3>Your apps are never closed</h3><p>proof tells you which ones are using the most.</p></span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- CLOSE -->
+<section class="close"><div class="wrap">
+  <h2>Let your agent build.<br>proof makes sure it works.</h2>
+  <p>Paste one prompt into Claude Code. It checks for git and Node.js, asks before installing anything, and sets proof up for you.</p>
+  <div class="ctas"><button class="btn go lg mag copy"><svg class="ic-copy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="9" height="9" rx="2"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg><svg class="ic-ok" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 8.5l3 3 7-7"/></svg><span class="lbl">Copy the install prompt</span></button><a class="btn lg mag" href="https://github.com/IfeOlulesi/proof">Read the docs on GitHub</a></div>
+</div></section>
+
+<footer><div class="wrap">
+  <span class="logo" style="height:20px;width:56px"></span>
+  <span>MIT licensed · v0.5.0 · macOS and Linux</span>
+  <div class="r"><a href="https://github.com/IfeOlulesi/proof">GitHub</a><a href="https://github.com/IfeOlulesi/proof#configuration">Docs</a><a href="https://github.com/IfeOlulesi/proof/blob/main/CHANGELOG.md">Changelog</a><a href="https://github.com/IfeOlulesi/proof#roadmap">Roadmap</a></div>
+</div></footer>
+
+<div class="sr" aria-live="polite" id="announce"></div>
+
+<!-- the prompt from the README's Install section, copied verbatim by the copy buttons -->
+<script type="text/plain" id="install-prompt">Install the proof plugin (github.com/IfeOlulesi/proof).
+
+1. It needs git and Node.js 20 or later on my PATH. Check both first. If either is
+   missing or too old, tell me and offer to install it.
+2. Run `claude plugin marketplace add IfeOlulesi/proof`, then
+   `claude plugin install proof@proof`. Check `claude plugin list` shows
+   proof@proof as enabled.
+3. If we're in a git repo, turn proof on here: write .claude/proof.json
+   (format: github.com/IfeOlulesi/proof#turn-it-on-in-a-project) with checks for
+   the type check, lint and tests this project already uses. Run each one once
+   and show me which pass and which fail.
+4. Finally, tell me to run /reload-plugins.</script>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script>
+const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
+if (!window.gsap) document.documentElement.classList.remove('js');   // never leave the hero hidden
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FINE = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const OK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 8.5l3 3 7-7"/></svg>';
+const NO = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+$$('.st').forEach(s => s.innerHTML = OK);
+
+/* theme: dark first; the choice is remembered on this browser */
+const setTheme = t => {
+  document.documentElement.dataset.theme = t;
+  $('#theme').setAttribute('aria-label', t === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+  $('#dashimg').src = t === 'light' ? 'assets/dashboard.png' : 'assets/dashboard-dark.png';
+  document.dispatchEvent(new Event('themechange'));
+};
+$('#theme').onclick = () => {
+  const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  setTheme(t); try { localStorage.setItem('proof-theme', t); } catch {}
+};
+{ let t = new URLSearchParams(location.search).get('theme');
+  if (!t) try { t = localStorage.getItem('proof-theme'); } catch {}
+  if (t === 'light') setTheme('light'); }
+
+/* GitHub stars: live count, hidden if GitHub doesn't answer */
+(async () => {
+  let n;
+  try { const c = JSON.parse(sessionStorage.getItem('proof-stars')); if (c && Date.now() - c.t < 6e5) n = c.n; } catch {}
+  if (n == null) try {
+    const r = await fetch('https://api.github.com/repos/IfeOlulesi/proof');
+    if (r.ok) { n = (await r.json()).stargazers_count; try { sessionStorage.setItem('proof-stars', JSON.stringify({ n, t: Date.now() })); } catch {} }
+  } catch {}
+  if (typeof n !== 'number') return;
+  $('#starn').textContent = n >= 1000 ? (n / 1000).toFixed(n >= 1e4 ? 0 : 1).replace(/\.0$/, '') + 'k' : n;
+  $('#stars').hidden = false;
+})();
+
+/* copy the install prompt */
+const PROMPT = $('#install-prompt').textContent.trim();
+$$('.copy').forEach(btn => btn.addEventListener('click', async () => {
+  let ok = false;
+  try { await navigator.clipboard.writeText(PROMPT); ok = true; } catch {
+    const t = document.createElement('textarea'); t.value = PROMPT; t.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy'); } catch {} t.remove();
+  }
+  const lbl = btn.querySelector('.lbl');
+  btn.style.minWidth = btn.offsetWidth + 'px';
+  btn.classList.toggle('copied', ok);
+  lbl.textContent = ok ? 'Copied. Paste it into Claude Code' : 'Couldn’t copy. It’s in the README';
+  $('#announce').textContent = ok ? 'Install prompt copied' : 'Copy failed';
+  if (ok && !REDUCE) gsap.fromTo(btn.querySelector('.ic-ok'), { scale: 0, rotate: -30 }, { scale: 1, rotate: 0, duration: .45, ease: 'back.out(2.6)' });
+  clearTimeout(btn._t);
+  btn._t = setTimeout(() => { btn.classList.remove('copied'); lbl.textContent = 'Copy the install prompt'; btn.style.minWidth = ''; }, 2400);
+}));
+
+/* magnetic buttons: lean towards the cursor */
+if (FINE && !REDUCE) $$('.mag').forEach(el => {
+  const xTo = gsap.quickTo(el, 'x', { duration: .45, ease: 'power3' }), yTo = gsap.quickTo(el, 'y', { duration: .45, ease: 'power3' });
+  el.addEventListener('pointermove', e => { const r = el.getBoundingClientRect();
+    xTo((e.clientX - r.left - r.width / 2) * .22); yTo((e.clientY - r.top - r.height / 2) * .32); });
+  el.addEventListener('pointerleave', () => { xTo(0); yTo(0); gsap.to(el, { scale: 1, duration: .3 }); });
+  el.addEventListener('pointercancel', () => gsap.to(el, { scale: 1, duration: .3 }));
+  el.addEventListener('pointerdown', () => gsap.to(el, { scale: .97, duration: .1 }));
+  el.addEventListener('pointerup', () => gsap.to(el, { scale: 1, duration: .3, ease: 'back.out(3)' }));
+});
+
+/* proof ticks "is" in the headline */
+const h1 = $('#headline');
+const act = gsap.timeline({ paused: true })
+  .fromTo('.tick', { scale: 0, rotate: -40 }, { scale: 1, rotate: 0, duration: .55, ease: 'back.out(2.4)' })
+  .fromTo('.isw', { y: 0 }, { y: -6, duration: .14, yoyo: true, repeat: 1, ease: 'power1.out' }, '<');
+const replay = () => { if (!act.isActive()) act.restart(); };
+if (REDUCE) { gsap.set('.tick', { scale: 1, rotate: 0 }); h1.classList.add('done'); }
+else {
+  h1.addEventListener(FINE ? 'pointerenter' : 'click', () => act.progress() === 1 && replay());
+  // the hero builds itself: the chip drops in, each headline line rises out of its mask, then proof ticks "is"
+  const show = { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
+  gsap.timeline({ defaults: { ease: 'power3.out' } })
+    .fromTo('#dots', { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.6, ease: 'power1.out' }, 0)
+    .fromTo('.hero .chip', { autoAlpha: 0, y: -14, filter: 'blur(6px)' }, { ...show, duration: .7 }, .1)
+    .fromTo('.hero h1 .li', { autoAlpha: 1, yPercent: 105, rotate: 2.5 },
+      { autoAlpha: 1, yPercent: 0, rotate: 0, duration: 1.05, ease: 'expo.out', stagger: .16, clearProps: 'transform' }, .2)
+    .call(() => { h1.classList.add('done'); act.play(); }, null, 1.15)
+    .fromTo('.hero .sub', { autoAlpha: 0, y: 18, filter: 'blur(6px)' }, { ...show, duration: .8, clearProps: 'filter' }, .75)
+    .fromTo('.hero .ctas', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: .8 }, .9)
+    .fromTo('.cue', { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: .8 }, 1.5);
+}
+
+/* problem illustrations: each scene loops while it's on screen; with reduced motion it shows its last frame */
+(() => {
+  const scene = (el, tl) => {
+    if (REDUCE) { tl.seek('end', false).pause(); return; }
+    tl.pause();
+    new IntersectionObserver(([e]) => e.isIntersecting ? tl.play() : tl.pause(), { threshold: .4 }).observe(el);
+  };
+  const IN = { autoAlpha: 1, y: 0, duration: .45, ease: 'back.out(2)' };
+
+  // A: the agent says checkout is ready; the button gets clicked and nothing happens
+  { const a = $('#ilA'), q = s => a.querySelector(s);
+    const say = q('.say'), ok = q('.sayok'), po = q('.po'), t = q('.po-t'), spin = q('.spin'), nope = q('.nope'), cur = q('.cur');
+    scene(a, gsap.timeline({ repeat: -1, repeatDelay: .3 })
+      .set(say, { autoAlpha: 0, y: 8 }).set(nope, { autoAlpha: 0, y: 6 }).set(spin, { autoAlpha: 0 }).set(t, { autoAlpha: 1 })
+      .set(cur, { autoAlpha: 0, x: 70, y: 46, scale: 1 })
+      .call(() => { ok.classList.remove('off'); po.classList.remove('dead'); })
+      .to(say, IN, .3)
+      .to(cur, { autoAlpha: 1, duration: .2 }, 1.1)
+      .to(cur, { x: 0, y: 0, duration: .85, ease: 'power3.inOut' }, 1.1)
+      .to([po, cur], { scale: .92, duration: .1 })
+      .to([po, cur], { scale: 1, duration: .3, ease: 'back.out(3)' })
+      .to(t, { autoAlpha: 0, duration: .15 }, '<').to(spin, { autoAlpha: 1, duration: .15 }, '<')
+      .to({}, { duration: 1.6 })
+      .to(spin, { autoAlpha: 0, duration: .2 }).to(t, { autoAlpha: 1, duration: .2 }, '<')
+      .call(() => { ok.classList.add('off'); po.classList.add('dead'); }, null, '<')
+      .to(nope, IN, '<.15')
+      .add('end')
+      .to({}, { duration: 2.2 })
+      .to([say, nope, cur], { autoAlpha: 0, duration: .4 }));
+  }
+
+  // B: the address is typed, the page starts loading, stalls, then fails
+  { const b = $('#ilB'), q = s => b.querySelector(s);
+    const url = q('.url-t'), full = url.textContent, load = q('.load'), skel = q('.skel'), err = q('.err'), o = { n: 0 };
+    scene(b, gsap.timeline({ repeat: -1, repeatDelay: .3 })
+      .set(o, { n: 0 }).set(load, { scaleX: 0, autoAlpha: 1 }).set(skel, { autoAlpha: 0 }).set(err, { autoAlpha: 0, scale: .92 })
+      .call(() => { url.textContent = ''; load.classList.remove('stuck'); })
+      .to(o, { n: full.length, duration: .9, ease: 'none', onUpdate: () => url.textContent = full.slice(0, Math.round(o.n)) }, .2)
+      .to(skel, { autoAlpha: 1, duration: .3 })
+      .to(load, { scaleX: .7, duration: 1, ease: 'power2.out' }, '<')
+      .to(load, { scaleX: .73, duration: 1.6, ease: 'none' })
+      .call(() => load.classList.add('stuck'))
+      .to(skel, { autoAlpha: 0, duration: .3 }, '+=.2')
+      .to(load, { autoAlpha: 0, duration: .3 }, '<')
+      .to(err, { autoAlpha: 1, scale: 1, duration: .5, ease: 'back.out(2)' })
+      .add('end')
+      .to({}, { duration: 2.2 })
+      .to(err, { autoAlpha: 0, duration: .4 }));
+  }
+
+  // C: the built button slides onto the design; the differences get marked
+  { const c = $('#ilC'), q = s => c.querySelector(s);
+    const m = q('.s-m'), bl = q('.s-b'), lbls = c.querySelectorAll('.cap'), ring = q('.oring'), tag = q('.tag3'), sw = q('.sw'), built = bl.querySelector('.bx');
+    gsap.set([m, bl], { xPercent: -50, yPercent: -50, x: 0, y: 0 });
+    scene(c, gsap.timeline({ repeat: -1, repeatDelay: .3 })
+      .set(m, { x: -72 }).set(bl, { x: 72 })
+      .set(lbls, { autoAlpha: 1 }).set(built, { opacity: 1 })
+      .call(() => { m.querySelector('.bx').classList.remove('ghost'); bl.classList.remove('over'); })
+      .set(ring, { autoAlpha: 0, scale: 0 }).set(tag, { autoAlpha: 0, y: 6 }).set(sw, { autoAlpha: 0, y: 6 })
+      .to([m, bl], { x: 0, duration: 1, ease: 'power3.inOut' }, .8)
+      .to(lbls, { autoAlpha: 0, duration: .3 }, .8)
+      .call(() => { m.querySelector('.bx').classList.add('ghost'); bl.classList.add('over'); }, null, 1.1)
+      .to(ring, { autoAlpha: 1, scale: 1, duration: .45, ease: 'back.out(2.4)' }, '+=.1')
+      .to(tag, IN, '+=.25')
+      .to(sw, IN, '+=.25')
+      .add('end')
+      .to({}, { duration: 2.2 })
+      .to([ring, tag, sw], { autoAlpha: 0, duration: .3 })
+      .call(() => { m.querySelector('.bx').classList.remove('ghost'); bl.classList.remove('over'); }, null, '<')
+      .to(m, { x: -72, duration: .8, ease: 'power3.inOut' })
+      .to(bl, { x: 72, duration: .8, ease: 'power3.inOut' }, '<')
+      .to(lbls, { autoAlpha: 1, duration: .3 }, '-=.3'));
+  }
+})();
+
+/* cards light up around the cursor */
+if (FINE) $$('.spot').forEach(el => el.addEventListener('pointermove', e => {
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--mx', e.clientX - r.left + 'px'); el.style.setProperty('--my', e.clientY - r.top + 'px');
+}));
+
+/* hero dot field: dots near the cursor light up green, and sand ones (unchecked) flip to green as it passes */
+(() => {
+  const hero = $('.hero'), cv = $('#dots'), ctx = cv.getContext('2d');
+  const GAP = 28, R = 210;
+  let W = 0, H = 0, dots = [], col = {}, mx = -1e4, my = -1e4, ripples = [], raf = 0, visible = true, lastSeed = 0, lastTwinkle = 0;
+  const colors = () => { const s = getComputedStyle(document.documentElement);
+    col = { base: s.getPropertyValue('--dot').trim(), green: s.getPropertyValue('--green').trim(), red: s.getPropertyValue('--sand').trim() }; };
+  // fades out towards the edges: an ellipse centred on the headline
+  const mask = (x, y) => { const t = Math.hypot((x - W / 2) / (W * .62), (y - H * .45) / (H * .62)); return t < .6 ? 1 : Math.max(0, 1 - (t - .6) / .5); };
+  function layout() {
+    const dpr = Math.min(2, devicePixelRatio || 1); W = hero.clientWidth; H = hero.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    dots = [];
+    for (let y = GAP / 2; y < H; y += GAP) for (let x = (W % GAP) / 2; x < W; x += GAP) {
+      const m = mask(x, y); if (m > .02) dots.push({ x, y, m, red: m > .25 && Math.random() < .035, ok: m > .15 && Math.random() < .14, g: 0, pop: 0 });
+    }
+  }
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    ripples = ripples.filter(r => (now - r.t) * .7 < Math.max(W, H));
+    let reds = 0;
+    for (const d of dots) {
+      let near = Math.max(0, 1 - Math.hypot(d.x - mx, d.y - my) / R); near *= near;
+      for (const r of ripples) near = Math.max(near, Math.max(0, 1 - Math.abs(Math.hypot(d.x - r.x, d.y - r.y) - (now - r.t) * .7) / 40));
+      if (d.red && near > .4) { d.red = false; d.ok = true; d.pop = 1; }
+      d.g += (near - d.g) * .14; d.pop *= .93;
+      ctx.globalAlpha = d.m * .75; ctx.fillStyle = col.base;
+      ctx.beginPath(); ctx.arc(d.x, d.y, 1.1, 0, 7); ctx.fill();
+      if (d.ok && !d.red) { ctx.globalAlpha = d.m * .55; ctx.fillStyle = col.green; ctx.beginPath(); ctx.arc(d.x, d.y, 1.4, 0, 7); ctx.fill(); }
+      if (d.red) { reds++; ctx.globalAlpha = d.m * .95; ctx.fillStyle = col.red; ctx.beginPath(); ctx.arc(d.x, d.y, 1.8, 0, 7); ctx.fill(); }
+      const a = Math.max(d.g, d.pop);
+      if (a > .02) { ctx.globalAlpha = d.m * a; ctx.fillStyle = col.green; ctx.beginPath(); ctx.arc(d.x, d.y, 1.2 + 1.8 * d.g + 3 * d.pop, 0, 7); ctx.fill(); }
+    }
+    // new mistakes keep turning up, away from the cursor, so there is always something to fix
+    if (now - lastSeed > 900 && reds < dots.length * .035) {
+      lastSeed = now;
+      const d = dots[Math.floor(Math.random() * dots.length)];
+      if (d && d.m > .25 && !d.red && Math.hypot(d.x - mx, d.y - my) > R * 1.6) { d.red = true; d.ok = false; }
+    }
+    // green twinkles: checks passing all over the field
+    if (now - lastTwinkle > 70) {
+      lastTwinkle = now;
+      const d = dots[Math.floor(Math.random() * dots.length)];
+      if (d && !d.red) d.pop = 1;
+    }
+    ctx.globalAlpha = 1;
+  }
+  const loop = now => { draw(now); raf = visible ? requestAnimationFrame(loop) : 0; };
+  const start = () => { if (!raf && !REDUCE) raf = requestAnimationFrame(loop); };
+  colors(); layout();
+  if (REDUCE) { draw(0); document.addEventListener('themechange', () => { colors(); draw(0); }); new ResizeObserver(() => { layout(); draw(0); }).observe(hero); return; }
+  document.addEventListener('themechange', colors);
+  new ResizeObserver(layout).observe(hero);
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); }).observe(hero);
+  const local = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  hero.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.pointerType === 'pen') [mx, my] = local(e); });
+  hero.addEventListener('pointerleave', () => { mx = my = -1e4; });
+  hero.addEventListener('pointerdown', e => { const [x, y] = local(e); ripples.push({ x, y, t: performance.now() }); });
+  // one ripple out from the headline on load, so touch screens see it too
+  setTimeout(() => { const r = h1.getBoundingClientRect(), hr = hero.getBoundingClientRect(); ripples.push({ x: r.left - hr.left + r.width / 2, y: r.top - hr.top + r.height / 2, t: performance.now() }); }, 1900);
+  start();
+})();
+
+/* what-it-catches switch */
+const seg = $$('.seg button');
+let touchedReport = false;
+const setReport = on => {
+  seg.forEach((x, i) => x.classList.toggle('on', (i === 1) === on));
+  $$('.row').forEach((r, n) => setTimeout(() => {
+    const st = r.querySelector('.st'); st.className = 'st ' + (on ? 'ok' : 'bad'); st.innerHTML = on ? OK : NO;
+    r.querySelector('.fix').style.opacity = on ? 1 : .25;
+  }, n * 70));
+  $('.summary').innerHTML = on ? '<span class="p">7 passed</span> <span style="color:var(--faint)">· 0 failed</span>' : '<span style="color:var(--faint)">0 passed ·</span> <span class="f">7 failed</span>';
+};
+seg.forEach((b, i) => b.onclick = () => { touchedReport = true; setReport(i === 1); });
+
+/* memory chart (ECharts, sample numbers). The library loads as the card nears the screen;
+   until then, or if it fails, the CSS bar above stands in. */
+(() => {
+  const MEM = { total: 24, ceiling: .9, apps: 10.1, runs: 6.2, next: 1.7 };
+  const el = $('#memchart'); let chart, lib;
+  if (!REDUCE) $('#mempct').textContent = '0%';   // counts up to the real value when the chart draws
+  const load = () => lib || (lib = new Promise((res, rej) => { const s = document.createElement('script');
+    s.src = 'vendor/echarts.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s); }));
+  const option = () => {
+    const c = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    const seg = (name, value, color, extra = {}) => ({ name, type: 'bar', stack: 'mem', data: [value], barWidth: 34,
+      itemStyle: { color, borderColor: c('--surface'), borderWidth: 2, ...extra } });
+    return {
+      animation: !REDUCE, animationDuration: 1100, animationEasing: 'cubicOut', animationDelay: i => i * 80,
+      grid: { left: 0, right: 0, top: 30, bottom: 6 },
+      xAxis: { type: 'value', min: 0, max: MEM.total, show: false },
+      yAxis: { type: 'category', data: ['memory'], show: false },
+      tooltip: { trigger: 'item', backgroundColor: c('--surface-2'), borderColor: c('--line-2'), padding: [8, 12],
+        textStyle: { color: c('--ink'), fontFamily: 'Geist, system-ui, sans-serif', fontSize: 13 },
+        formatter: p => `${p.marker}${p.seriesName}<br><b>${p.value} GB</b> · ${Math.round(p.value / MEM.total * 100)}%` },
+      series: [
+        { ...seg('Your apps', MEM.apps, c('--line-2'), { borderRadius: [7, 0, 0, 7] }),
+          showBackground: true, backgroundStyle: { color: c('--bg-2'), borderRadius: 9 } },
+        seg("Your agents' runs", MEM.runs, c('--ink-2')),
+        { ...seg('Next run, waiting for room', MEM.next, c('--green'), { borderRadius: [0, 7, 7, 0], shadowBlur: 16, shadowColor: c('--green') }),
+          markLine: { silent: true, symbol: 'none', animation: !REDUCE, animationDuration: 600,
+            lineStyle: { color: c('--sand'), width: 2, type: 'solid' },
+            label: { formatter: `ceiling ${MEM.ceiling * 100}%`, position: 'end', distance: 6, align: 'right', padding: [0, 0, 0, 0], offset: [1, 0], color: c('--sand-ink'), fontFamily: 'Geist Mono, ui-monospace, monospace', fontSize: 11.5 },
+            data: [{ xAxis: +(MEM.total * MEM.ceiling).toFixed(1) }] } },
+      ],
+    };
+  };
+  const draw = async () => {
+    try { await load(); } catch { $('#mempct').textContent = Math.round((MEM.apps + MEM.runs) / MEM.total * 100) + '%'; return; }
+    el.querySelector('.bar')?.remove(); el.classList.add('drawn');
+    chart = echarts.init(el, null, { renderer: 'canvas' });
+    chart.setOption(option());
+    const used = { v: 0 }, pct = Math.round((MEM.apps + MEM.runs) / MEM.total * 100);
+    if (!REDUCE) gsap.to(used, { v: pct, duration: 1.1, ease: 'power2.out', onUpdate: () => $('#mempct').textContent = Math.round(used.v) + '%' });
+    new ResizeObserver(() => chart.resize()).observe(el);
+    document.addEventListener('themechange', () => chart.setOption(option()));
+  };
+  new IntersectionObserver(([e], io) => { if (e.isIntersecting) { io.disconnect(); load().catch(() => {}); } }, { rootMargin: '800px' }).observe(el);
+  new IntersectionObserver(([e], io) => { if (e.isIntersecting) { io.disconnect(); draw(); } }, { threshold: .6 }).observe(el);
+})();
+
+/* how it works: the relay is drawn at 440×500 and scales to fit its column */
+const fitRelay = () => {
+  const box = $('#relaybox'), r = $('#relay');
+  const s = Math.min(1, box.clientWidth / 470);   // the trip-back curve sticks out ~30px on the right
+  r.style.transform = `translateX(${(box.clientWidth - 440 * s) / 2 - 15 * s}px) scale(${s})`;
+  box.style.height = 500 * s + 'px';
+};
+fitRelay(); addEventListener('resize', fitRelay);
+
+/* the relay: the agent finishes, proof checks the app, one thing fails and goes back,
+   the agent fixes it, everything passes and it reaches you. Loops while on screen. */
+(() => {
+  const R = $('#relay'), q = s => R.querySelector(s), pk = $('#rPk');
+  const ag = q('.ag'), gate = q('.gate'), you = q('.you'), agT = q('.r-ag'), gT = q('.r-g'), youT = q('.r-you'), note = q('.note');
+  const items = [...R.querySelectorAll('.cl li')];
+  const along = (id, dur, color) => { const path = $(id), L = path.getTotalLength(), o = { k: 0 };
+    return gsap.to(o, { k: 1, duration: dur, ease: 'power1.inOut', onStart: () => { pk.setAttribute('fill', color); pk.style.opacity = 1; },
+      onUpdate: () => { const pt = path.getPointAtLength(o.k * L); pk.setAttribute('cx', pt.x); pk.setAttribute('cy', pt.y); } }); };
+  const say = (el, t, c = '') => { el.textContent = t; el.className = el.className.split(' ')[0] + (c ? ' ' + c : ''); };
+  const li = (i, c) => items[i].className = c || '';
+  const check = (tl, results) => results.forEach((r, i) => tl.call(() => li(i, 'run')).to({}, { duration: .45 }).call(() => li(i, r)));
+  const tl = gsap.timeline({ repeat: -1, repeatDelay: .4 })
+    .call(() => {
+      say(agT, 'Building checkout…'); say(gT, 'waiting for work'); say(youT, 'waiting');
+      ag.className = 'rn ag busy'; gate.className = 'rn gate'; you.className = 'rn you';
+      items.forEach((_, i) => li(i)); gsap.set(note, { autoAlpha: 0, y: 6 }); pk.style.opacity = 0;
+    })
+    .to({}, { duration: 1.1 })
+    .call(() => { say(agT, 'Done ✓'); ag.className = 'rn ag good'; })
+    .add(along('#rDown1', .7, 'var(--green)'), '+=.3')
+    .call(() => { say(gT, 'checking…'); pk.style.opacity = 0; });
+  check(tl, ['ok', 'bad']);
+  tl.call(() => say(gT, '1 problem', 'bad'))
+    .to(note, { autoAlpha: 1, y: 0, duration: .4, ease: 'back.out(2)' })
+    .add(along('#rBack', 1, 'var(--sand)'), '+=.4')
+    .call(() => { pk.style.opacity = 0; say(agT, 'Fixing “Place order”…'); ag.className = 'rn ag busy'; })
+    .to({}, { duration: 1.3 })
+    .call(() => { say(agT, 'Done ✓'); ag.className = 'rn ag good'; })
+    .to(note, { autoAlpha: 0, duration: .3 }, '<')
+    .call(() => { items.forEach((_, i) => li(i)); say(gT, 'waiting for work'); }, null, '<')
+    .add(along('#rDown1', .7, 'var(--green)'), '+=.2')
+    .call(() => { say(gT, 'checking again…'); pk.style.opacity = 0; });
+  check(tl, ['ok', 'ok', 'ok']);
+  tl.call(() => say(gT, 'all good', 'ok'))
+    .add(along('#rDown2', .6, 'var(--green)'), '+=.3')
+    .call(() => { pk.style.opacity = 0; you.className = 'rn you good'; say(youT, 'Ready: checkout works ✓'); })
+    .add('end')
+    .to({}, { duration: 2.8 });
+  if (REDUCE) { tl.seek('end', false).pause(); return; }
+  tl.pause();
+  new IntersectionObserver(([e]) => e.isIntersecting ? tl.play() : tl.pause(), { threshold: .3 }).observe(R);
+})();
+
+/* scroll: a progress line under the nav, and reveals that play once as each part reaches the screen.
+   Elements are only hidden by script, so without it (or with reduced motion) the page is fully visible. */
+if (window.ScrollTrigger) {
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.to('#progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: REDUCE ? true : .3 } });
+}
+if (window.ScrollTrigger && !REDUCE) {
+  const EASE = 'power3.out';
+  const once = (trigger, start = 'top 85%') => ({ trigger, start, once: true });
+  // a group of items that rise in one after another; transforms are cleared after so hover effects still work
+  const group = (sel, from = {}, stagger = .1) => {
+    gsap.set(sel, { autoAlpha: 0, y: 36, ...from });
+    ScrollTrigger.batch(sel, { start: 'top 88%', once: true, onEnter: els =>
+      gsap.to(els, { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .8, ease: EASE, stagger, overwrite: true, clearProps: 'transform' }) });
+  };
+
+  // split a heading into words that each rise out of their own mask (spaces and line breaks stay as they are)
+  const split = el => {
+    const walk = n => [...n.childNodes].forEach(c => {
+      if (c.nodeType === 1) return walk(c);
+      if (c.nodeType !== 3 || !c.textContent.trim()) return;
+      const f = document.createDocumentFragment();
+      c.textContent.split(/(\s+)/).forEach(w => {
+        if (!w) return;
+        if (/^\s+$/.test(w)) return f.append(w);
+        const o = document.createElement('span'), i = document.createElement('span');
+        o.className = 'wd'; i.className = 'wi'; i.textContent = w; o.append(i); f.append(o);
+      });
+      c.replaceWith(f);
+    });
+    const c = el.cloneNode(true); c.querySelectorAll('br').forEach(b => b.replaceWith(' '));
+    el.setAttribute('aria-label', c.textContent.replace(/\s+/g, ' ').trim()); walk(el);
+    [...el.querySelectorAll('.wd')].forEach(w => w.setAttribute('aria-hidden', 'true'));
+    return el.querySelectorAll('.wi');
+  };
+  // the mono eyebrow decodes itself, letter by letter
+  const GLYPHS = 'abcdefghijklmnopqrstuvwxyz/_<>·';
+  const scramble = (el, dur = .7) => { const txt = el.textContent, o = { p: 0 };
+    return gsap.to(o, { p: 1, duration: dur, ease: 'none', onUpdate: () => {
+      const n = Math.floor(o.p * txt.length);
+      el.textContent = txt.slice(0, n) + [...txt.slice(n)].map(ch => ch === ' ' ? ' ' : GLYPHS[Math.random() * GLYPHS.length | 0]).join('');
+    }, onComplete: () => el.textContent = txt }); };
+
+  // section headings: eyebrow, title, intro
+  $$('section.s').forEach(sec => {
+    const eb = sec.querySelector('.eyebrow'), h2 = sec.querySelector('.h2'), lead = sec.querySelector('.lead');
+    if (!h2) return;
+    const words = split(h2);
+    const tl = gsap.timeline({ scrollTrigger: once(eb || h2) });
+    if (eb) tl.from(eb, { autoAlpha: 0, duration: .3 }).add(scramble(eb), 0);
+    tl.from(words, { yPercent: 110, rotate: 3, duration: .9, ease: 'expo.out', stagger: .045 }, .1);
+    if (lead) tl.from(lead, { autoAlpha: 0, y: 20, filter: 'blur(6px)', duration: .8, ease: EASE, clearProps: 'filter' }, .45);
+  });
+
+  // the hero's text drifts up and fades as you scroll past it; its dot field holds still, then fades
+  gsap.to('.hero > .wrap', { y: -90, autoAlpha: .25, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .4 } });
+  gsap.fromTo('.cue', { autoAlpha: 1 }, { autoAlpha: 0, immediateRender: false, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: '+=160', scrub: true } });
+  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true, invalidateOnRefresh: true } })
+    .fromTo('.hero .bgfx', { y: 0 }, { y: () => $('.hero').offsetHeight, ease: 'none', duration: 1 }, 0)
+    .to('.hero .bgfx', { autoAlpha: 0, ease: 'power1.in', duration: .7 }, .25);
+
+  group('.pain', { y: 48, scale: .97 }, .12);
+  // line icons draw themselves
+  const draw = (svgs, opts = {}) => svgs.forEach(svg => {
+    const parts = svg.querySelectorAll('path, circle, rect');
+    parts.forEach(p => { const L = p.getTotalLength(); gsap.set(p, { strokeDasharray: L, strokeDashoffset: L }); });
+    gsap.to(parts, { strokeDashoffset: 0, duration: .9, ease: 'power2.inOut', stagger: .15, ...opts, scrollTrigger: once(svg, 'top 88%') });
+  });
+  group('.rulec', { x: -28, y: 0 }, .1);
+  draw($$('.rulec .ic svg'), { delay: .3 });
+
+  // how it works: the relay's cards rise in, top to bottom
+  gsap.from('#relay .rn', { autoAlpha: 0, y: 24, duration: .7, ease: EASE, stagger: .15, scrollTrigger: once('#relaybox', 'top 80%') });
+
+  // what it catches: rows cascade in, then the report shows its story once: without proof, then with it
+  group('.report .row', { y: 18 }, .06);
+  ScrollTrigger.create({ trigger: '.report', start: 'top 55%', once: true, onEnter: () => {
+    if (touchedReport) return;
+    gsap.delayedCall(.9, () => !touchedReport && setReport(false));
+    gsap.delayedCall(2.6, () => !touchedReport && setReport(true));
+  } });
+
+  // phases: the rail draws across, each step pops on as the line reaches it
+  gsap.timeline({ scrollTrigger: once('.phases', 'top 80%') })
+    .fromTo('.phases', { '--rail': 0 }, { '--rail': 1, duration: 1.2, ease: 'power2.inOut' })
+    .from('.phase .node', { scale: .5, autoAlpha: 0, duration: .5, ease: 'back.out(2.4)', stagger: .4 }, 0)
+    .from('.phase > :not(.node)', { autoAlpha: 0, y: 16, duration: .6, ease: EASE, stagger: .06 }, .15);
+  draw($$('.phase .check svg'), { delay: .9 });
+
+  // dashboard: the screenshot tilts up flat as you scroll to it, then a light sweeps across it
+  gsap.fromTo('.dash', { rotateX: 24, y: 80, scale: .9, autoAlpha: .35, transformPerspective: 1400, transformOrigin: '50% 0%' },
+    { rotateX: 0, y: 0, scale: 1, autoAlpha: 1, ease: 'none', scrollTrigger: { trigger: '.dash', start: 'top 98%', end: 'top 30%', scrub: .6 } });
+  ScrollTrigger.create({ trigger: '.dash', start: 'top 28%', once: true, onEnter: () => $('.dash').classList.add('shine') });
+  group('.dash-feats > div', {}, .1);
+  group('.memstrip .card', {}, .12);
+  gsap.from('.memlist b', { scale: 0, rotate: -45, duration: .5, ease: 'back.out(2.6)', stagger: .15, delay: .35, scrollTrigger: once('.memlist') });
+
+  // close
+  gsap.timeline({ scrollTrigger: once('.close h2') })
+    .from(split($('.close h2')), { yPercent: 110, rotate: 3, duration: 1, ease: 'expo.out', stagger: .06 })
+    .from('.close p, .close .ctas', { autoAlpha: 0, y: 24, duration: .8, ease: EASE, stagger: .12 }, .35);
+  // its glow rises as you reach the end
+  gsap.fromTo('.close', { '--g': .5 }, { '--g': 1.15, ease: 'none', scrollTrigger: { trigger: '.close', start: 'top bottom', end: 'bottom bottom', scrub: .5 } });
+
+  // web fonts can change heights after first layout; the dashboard image has its size reserved, and
+  // ScrollTrigger refreshes itself on resize (refreshing mid-scroll would cancel smooth anchor jumps)
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+}
+</script>
+</body>
+</html>
