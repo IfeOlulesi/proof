@@ -1,0 +1,24 @@
+{
+  "source": "proof's opencode plugin (agents/opencode.mjs pluginSource), opencode plugin API https://opencode.ai/docs/plugins/ — hook arguments captured live from opencode 1.18.18 (F2 spike: tool.execute.before input.tool/sessionID/callID, output.args; session.idle properties.sessionID)",
+  "kind": "beforeTool",
+  "input": {
+    "sessionID": "ses_1",
+    "cwd": "/repo",
+    "hook": "beforeTool",
+    "tool": "bash",
+    "callID": "call_2",
+    "args": {
+      "command": "npx vitest run"
+    }
+  },
+  "result": {
+    "updatedCommand": "'node' 'guard.mjs' -- 'npx vitest run'",
+    "context": "proof memory: capped at 2 workers"
+  },
+  "output": {
+    "stdout": {
+      "updatedCommand": "'node' 'guard.mjs' -- 'npx vitest run'",
+      "context": "proof memory: capped at 2 workers"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "source": "proof's opencode plugin (agents/opencode.mjs pluginSource), opencode plugin API https://opencode.ai/docs/plugins/ — hook arguments captured live from opencode 1.18.18 (F2 spike: tool.execute.before input.tool/sessionID/callID, output.args; session.idle properties.sessionID)",
+  "kind": "sessionStart",
+  "input": {
+    "sessionID": "ses_1",
+    "cwd": "/repo",
+    "hook": "sessionStart",
+    "source": "startup"
+  },
+  "event": {
+    "kind": "sessionStart",
+    "session": "ses_1",
+    "source": "startup"
+  },
+  "result": {
+    "context": "proof — how work gets done in this session"
+  },
+  "output": {
+    "stdout": {
+      "context": "proof — how work gets done in this session"
+    }
+  }
+}

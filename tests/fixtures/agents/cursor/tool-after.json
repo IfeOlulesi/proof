@@ -1,0 +1,37 @@
+{
+  "source": "https://cursor.com/docs/hooks (read 2026-11-03): common fields conversation_id, generation_id, model, hook_event_name, cursor_version, workspace_roots, user_email, transcript_path; postToolUse adds tool_name, tool_input, tool_output, duration",
+  "kind": "afterTool",
+  "input": {
+    "conversation_id": "k1",
+    "generation_id": "g1",
+    "model": "auto",
+    "cursor_version": "2.4.0",
+    "workspace_roots": [
+      "/repo"
+    ],
+    "user_email": null,
+    "transcript_path": null,
+    "hook_event_name": "postToolUse",
+    "tool_name": "Write",
+    "tool_input": {
+      "file_path": "/repo/a.ts"
+    },
+    "tool_use_id": "w1",
+    "tool_output": "{}",
+    "duration": 12,
+    "cwd": "/repo"
+  },
+  "event": {
+    "kind": "afterTool",
+    "tool": {
+      "name": "edit",
+      "raw": "Write",
+      "input": {
+        "file_path": "/repo/a.ts"
+      },
+      "id": "w1"
+    }
+  },
+  "result": {},
+  "output": {}
+}

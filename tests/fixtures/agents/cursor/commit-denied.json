@@ -1,0 +1,43 @@
+{
+  "source": "https://cursor.com/docs/hooks (read 2026-11-03): common fields conversation_id, generation_id, model, hook_event_name, cursor_version, workspace_roots, user_email, transcript_path; beforeShellExecution adds command, cwd, sandbox; output permission deny with user_message and agent_message",
+  "kind": "beforeTool",
+  "input": {
+    "conversation_id": "k1",
+    "generation_id": "g1",
+    "model": "auto",
+    "cursor_version": "2.4.0",
+    "workspace_roots": [
+      "/repo"
+    ],
+    "user_email": null,
+    "transcript_path": null,
+    "hook_event_name": "beforeShellExecution",
+    "command": "git commit -m wip",
+    "cwd": "/repo",
+    "sandbox": false
+  },
+  "event": {
+    "kind": "beforeTool",
+    "cwd": "/repo",
+    "tool": {
+      "name": "shell",
+      "raw": "Shell",
+      "input": {
+        "command": "git commit -m wip",
+        "cwd": "/repo"
+      }
+    }
+  },
+  "result": {
+    "block": {
+      "reason": "proof: commit blocked — unit failing"
+    }
+  },
+  "output": {
+    "stdout": {
+      "permission": "deny",
+      "user_message": "proof: commit blocked — unit failing",
+      "agent_message": "proof: commit blocked — unit failing"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "source": "https://learn.chatgpt.com/docs/hooks (read 2026-11-03): common fields session_id, transcript_path, cwd, hook_event_name, model, permission_mode; turn-scoped events add turn_id; Stop adds turn_id, stop_hook_active, last_assistant_message; {\"decision\":\"block\",\"reason\"} continues the turn with the reason as a new prompt",
+  "kind": "turnEnd",
+  "input": {
+    "session_id": "c1",
+    "transcript_path": null,
+    "cwd": "/repo",
+    "model": "gpt-5.5-codex",
+    "permission_mode": "default",
+    "hook_event_name": "Stop",
+    "turn_id": "t1",
+    "stop_hook_active": true,
+    "last_assistant_message": "Done."
+  },
+  "event": {
+    "kind": "turnEnd",
+    "continuation": true,
+    "lastMessage": "Done.",
+    "turn": null
+  },
+  "result": {
+    "block": {
+      "reason": "proof gate: 1 of 2 check(s) failing"
+    },
+    "message": "proof: unit failing — sent back to Codex (round 1/5)"
+  },
+  "output": {
+    "stdout": {
+      "decision": "block",
+      "reason": "proof gate: 1 of 2 check(s) failing",
+      "systemMessage": "proof: unit failing — sent back to Codex (round 1/5)"
+    }
+  }
+}

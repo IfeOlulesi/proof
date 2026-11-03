@@ -116,6 +116,7 @@ export function sessionView(s, now, windowMs) {
 
   return {
     id: s.id, title: s.title || 'Untitled session', cwd: s.cwd, project: nameOf(s.cwd), branch: s.branch, model: s.model,
+    agent: s.harness || 'claude', agentLabel: s.harnessLabel || 'Claude',
     start: s.start, last: Math.max(s.end, ...agents.map(a => a.end)), to, from,
     status, now: nowList,
     rows, asleep,

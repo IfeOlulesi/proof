@@ -1,0 +1,33 @@
+{
+  "source": "https://antigravity.google/docs/hooks (read 2026-11-03): camelCase fields conversationId, workspacePaths, transcriptPath, artifactDirectoryPath, modelName; rewrite: \"overwrite\" is merged into toolCall.args",
+  "kind": "beforeTool",
+  "input": {
+    "conversationId": "ec33",
+    "workspacePaths": [
+      "/repo"
+    ],
+    "transcriptPath": "~/.gemini/antigravity-cli/brain/ec33/.system_generated/logs/transcript.jsonl",
+    "artifactDirectoryPath": "~/.gemini/antigravity-cli/brain/ec33",
+    "modelName": "gemini-3.6-flash-medium",
+    "toolCall": {
+      "name": "run_command",
+      "args": {
+        "CommandLine": "npx vitest run",
+        "Cwd": "/repo",
+        "WaitMsBeforeAsync": 5000
+      }
+    },
+    "stepIdx": 20
+  },
+  "result": {
+    "updatedCommand": "'node' 'guard.mjs' -- 'npx vitest run'"
+  },
+  "output": {
+    "stdout": {
+      "decision": "allow",
+      "overwrite": {
+        "CommandLine": "'node' 'guard.mjs' -- 'npx vitest run'"
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "source": "proof's opencode plugin (agents/opencode.mjs pluginSource), opencode plugin API https://opencode.ai/docs/plugins/ — hook arguments captured live from opencode 1.18.18 (F2 spike: tool.execute.before input.tool/sessionID/callID, output.args; session.idle properties.sessionID)",
+  "kind": "beforeTool",
+  "input": {
+    "sessionID": "ses_1",
+    "cwd": "/repo",
+    "hook": "beforeTool",
+    "tool": "task",
+    "callID": "call_3",
+    "args": {
+      "description": "review the diff",
+      "prompt": "…",
+      "subagent_type": "proof-verifier"
+    }
+  },
+  "event": {
+    "tool": {
+      "name": "subagent",
+      "raw": "task",
+      "input": {
+        "description": "review the diff",
+        "prompt": "…",
+        "subagent_type": "proof-verifier"
+      },
+      "id": "call_3"
+    }
+  },
+  "result": {
+    "context": "proof memory: the Mac is at 85%"
+  },
+  "output": {
+    "stdout": {
+      "context": "proof memory: the Mac is at 85%"
+    }
+  }
+}

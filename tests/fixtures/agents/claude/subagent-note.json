@@ -1,0 +1,37 @@
+{
+  "source": "https://code.claude.com/docs/en/hooks (read 2026-11-03): common fields session_id, prompt_id, cwd, hook_event_name; Stop adds stop_hook_active, last_assistant_message; PreToolUse adds tool_name, tool_input",
+  "kind": "beforeTool",
+  "input": {
+    "session_id": "s1",
+    "transcript_path": "/h/.claude/projects/p/s1.jsonl",
+    "cwd": "/repo",
+    "permission_mode": "default",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Agent",
+    "tool_input": {
+      "description": "Review the change",
+      "prompt": "…"
+    }
+  },
+  "event": {
+    "tool": {
+      "name": "subagent",
+      "raw": "Agent",
+      "input": {
+        "description": "Review the change",
+        "prompt": "…"
+      }
+    }
+  },
+  "result": {
+    "context": "proof memory: the Mac is at 82%"
+  },
+  "output": {
+    "stdout": {
+      "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "additionalContext": "proof memory: the Mac is at 82%"
+      }
+    }
+  }
+}

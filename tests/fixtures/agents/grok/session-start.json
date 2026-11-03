@@ -1,0 +1,23 @@
+{
+  "source": "https://docs.x.ai/build/features/hooks and the grok 1.0.70 user guide 10-hooks.md (read 2026-11-03): common fields hookEventName, sessionId, cwd, workspaceRoot, timestamp, permissionMode, promptId, plus Claude's snake_case aliases; SessionStart reads only a top-level systemMessage, so proof's rules go in .grok/rules/proof.md",
+  "kind": "sessionStart",
+  "input": {
+    "sessionId": "x1",
+    "session_id": "x1",
+    "cwd": "/repo",
+    "workspaceRoot": "/repo",
+    "permissionMode": "default",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hookEventName": "session_start",
+    "hook_event_name": "SessionStart"
+  },
+  "event": {
+    "kind": "sessionStart",
+    "session": "x1",
+    "cwd": "/repo"
+  },
+  "result": {
+    "context": "proof — how work gets done in this session"
+  },
+  "output": {}
+}

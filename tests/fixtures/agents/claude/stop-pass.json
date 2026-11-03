@@ -1,0 +1,24 @@
+{
+  "source": "https://code.claude.com/docs/en/hooks (read 2026-11-03): common fields session_id, prompt_id, cwd, hook_event_name; Stop adds stop_hook_active, last_assistant_message; PreToolUse adds tool_name, tool_input",
+  "kind": "turnEnd",
+  "input": {
+    "session_id": "s1",
+    "transcript_path": "/h/.claude/projects/p/s1.jsonl",
+    "cwd": "/repo",
+    "permission_mode": "default",
+    "hook_event_name": "Stop",
+    "prompt_id": "p1",
+    "stop_hook_active": false
+  },
+  "event": {
+    "continuation": false
+  },
+  "result": {
+    "message": "proof ✓ unit"
+  },
+  "output": {
+    "stdout": {
+      "systemMessage": "proof ✓ unit"
+    }
+  }
+}

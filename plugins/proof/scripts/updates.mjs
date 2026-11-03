@@ -26,13 +26,16 @@ export function newer(a, b) {
 }
 
 // The line for session context when a newer release is known, else null. Starts a background refresh when due.
-export function updateNotice(pluginRoot) {
+// `agent` is the coding agent this session runs in: Claude Code updates proof as a plugin, the others from the git
+// checkout the installer ran from.
+export function updateNotice(pluginRoot, agent = 'claude') {
   const cache = readJSON(cacheFile()) || {};
   if (!(Date.now() - (Number(cache.checkedAt) || 0) < DAY_MS)) {
     try { spawn(process.execPath, [join(here, 'updates.mjs'), '--refresh'], { detached: true, stdio: 'ignore', env: { ...process.env, PROOF_DATA_DIR: dataDir() } }).unref(); } catch {}
   }
   const current = readJSON(join(pluginRoot, '.claude-plugin', 'plugin.json'))?.version;
   if (!current || !cache.latest || !newer(cache.latest, current)) return null;
+  if (agent !== 'claude') return `proof update: ${cache.latest} is out (this session runs ${current}). Tell the user once, and offer to run \`git -C "${join(pluginRoot, '..', '..')}" pull\`, then \`node "${join(pluginRoot, 'scripts', 'install.mjs')}" ${agent}\` again in this project.`;
   return `proof update: ${cache.latest} is out (this session runs ${current}). Tell the user once, and offer to run \`claude plugin marketplace update proof && claude plugin update proof@proof\`, then /reload-plugins. To get updates without asking, they can turn on auto-update for the proof marketplace in /plugin → Marketplaces → proof → Enable auto-update.`;
 }
 

@@ -79,6 +79,96 @@ Restart Claude Code. `claude plugin list` should show `proof@proof` as enabled. 
 > [!NOTE]
 > Tested on macOS and Linux.
 
+## Other coding agents
+
+proof also runs in opencode, Gemini CLI, Codex, Cursor, Grok Build and Antigravity. They get the same gate, rules,
+memory limits and skills, and their sessions show on the same dashboard as Claude's. You need git and Node.js 20+.
+
+```bash
+git clone https://github.com/IfeOlulesi/proof ~/.proof
+cd your-project
+node ~/.proof/plugins/proof/scripts/install.mjs <agent>      # opencode, gemini, codex, cursor, grok, antigravity
+```
+
+Add `--global` to install for every project, and `--uninstall` to take proof out again: it puts back every file it
+touched exactly as it was and deletes only what it created. `install.mjs --list` shows what each agent gets. To
+update, `git -C ~/.proof pull` and run the installer again; proof says at session start when a newer version is out.
+The full table of what each agent can do, hook by hook, is in [docs/agents.md](plugins/proof/docs/agents.md).
+
+<details>
+<summary>opencode (tested live)</summary>
+
+`install.mjs opencode` writes a plugin to `.opencode/plugins/proof.js`, proof's skills to `.opencode/skills/`, and the
+verifier and screen-judge as subagents in `.opencode/agents/`.
+- **Works:** rules in the system prompt, the gate at the end of each turn (it sends opencode back with what failed,
+  up to `maxRounds`), the commit gate, test runs under proof's memory and time limits, the memory note before a
+  subagent, and the dashboard.
+- **Doesn't:** the gate can only send opencode back while it runs as a server (the TUI or `opencode serve`).
+  One-shot `opencode run` exits at the first idle, so there the gate only reports.
+</details>
+
+<details>
+<summary>Gemini CLI (built from docs, not tested live)</summary>
+
+`install.mjs gemini` adds proof's hooks to `.gemini/settings.json`, skills to `.gemini/skills/`, and the verifier and
+screen-judge to `.gemini/agents/`.
+- **Works:** rules at session start, the gate after each turn (AfterAgent), the commit gate and test-run limits
+  (BeforeTool), and the dashboard.
+- **Doesn't, or isn't known:** Gemini's docs don't say what a subagent call looks like to a hook, so the memory note
+  before subagents may not fire. Subagents are a preview feature in Gemini CLI. Trust proof's hooks in `/hooks` the
+  first time.
+</details>
+
+<details>
+<summary>Codex (built from docs, not tested live)</summary>
+
+`install.mjs codex` adds proof's hooks to `.codex/hooks.json`, skills to `.agents/skills/`, and the verifier and
+screen-judge to `.codex/agents/`.
+- **Works:** rules at session start, the gate after each turn (Stop), the commit gate and test-run limits
+  (PreToolUse), the memory note before a subagent, and the dashboard.
+- **Doesn't:** Codex lets an action through when a hook fails or times out, so a commit gate that's killed allows the
+  commit. Codex asks you to trust new hooks in `/hooks` before they run.
+</details>
+
+<details>
+<summary>Cursor (built from docs, not tested live)</summary>
+
+`install.mjs cursor` adds proof's hooks to `.cursor/hooks.json`, skills to `.cursor/skills/`, and the verifier and
+screen-judge to `.cursor/agents/`.
+- **Works:** rules at session start, the gate at the end of each turn (stop, as a follow-up message), the commit gate
+  (it fails closed if killed), test-run limits, and the dashboard.
+- **Doesn't:** Cursor's subagent hook can refuse a subagent but not add proof's memory note to it. When the gate gives
+  up after `maxRounds`, Cursor doesn't show proof's "still failing" message (its stop hook has no field for one), and
+  it stops proof's follow-ups after 20 in a row. Cursor also runs Claude Code's hooks from `.claude/settings.json`; if
+  proof is set up there too, it runs twice.
+</details>
+
+<details>
+<summary>Grok Build (built from docs, not tested live)</summary>
+
+`install.mjs grok` writes proof's hooks to `.grok/hooks/proof.json`, its rules to `.grok/rules/proof.md`, skills to
+`.grok/skills/` and the verifier and screen-judge to `.grok/agents/`.
+- **Works:** rules (from the rules file), the gate after each turn (Stop), the commit gate and test-run limits, the
+  memory note before a subagent, and the dashboard.
+- **Doesn't:** Grok's session-start hook can't add to the model's context, so the project's live status (which checks
+  are on, memory) isn't in its rules. Grok ends a turn after 8 send-backs whatever `maxRounds` says. Trust the folder
+  (`/hooks-trust`) the first time. Grok also reads Claude Code's hooks and plugins, so with proof installed in both, turn
+  off Grok's Claude Code compatibility for hooks.
+</details>
+
+<details>
+<summary>Antigravity (built from docs, not tested live)</summary>
+
+`install.mjs antigravity` adds a `proof` group to `.agents/hooks.json` (the `agy` CLI), skills to `.agents/skills/`,
+and the verifier and screen-judge to `.agents/agents/`.
+- **Works:** rules at session start, the gate after each turn (Stop), the commit gate and test-run limits, and the
+  dashboard.
+- **Doesn't, or isn't known:** Antigravity has no hook for a new prompt; proof counts the last thing you typed, sent
+  before each model call (CLI 1.4.7 or later), as one. Its docs don't say how to add a note before a subagent. It caps
+  how many times in a row the gate can send it back, and doesn't show proof's "still failing" message when the gate
+  gives up.
+</details>
+
 ## Turn it on in a project
 
 The gate only runs in a repo that has a `.claude/proof.json` listing its checks. The install prompt writes it for the project you installed from. For any other project, open Claude Code there and paste:
@@ -137,10 +227,9 @@ On macOS it also keeps the machine from idle-sleeping while Claude is working.
 
 ## Roadmap
 
-- **Other agent harnesses.** Codex CLI first, then Gemini CLI, Antigravity and OpenCode. The checks and limits are plain Node; what needs adapting is the hook wiring and the dashboard's log reader.
+- **Live tests in more agents.** Gemini CLI, Codex, Cursor, Grok Build and Antigravity are built from their docs; each gets tested live as it becomes available.
 - **Checks in CI.** A GitHub Action that runs the same `.claude/proof.json`, for cloud sessions and pull requests that didn't come from Claude.
 - **Setup that writes `proof.json` for you.** Suggests checks from `package.json`, `pyproject.toml` or `Cargo.toml`.
-- **Flaky tests named, not hidden.** A failure that passes on a re-run is reported as flaky.
 - **Notifications when Claude needs you.** A desktop or phone alert when a session stops on a question or runs out of rounds.
 - **Accessibility checks** in the design gate: contrast and basic rules on every screen.
 - **Closer comparison for Flutter and native apps**, beyond screenshots.
@@ -222,9 +311,23 @@ claude plugin update proof@proof
 
 If a repo has a `fidelity/` folder, also run `node <plugin>/skills/build/fidelity-kit/install.mjs --upgrade` once on its main branch.
 
+## What proof caught
+
+Every gate run is added to a history in `~/.config/proof/ledger.jsonl` (names, results and timings, never check
+output), and proof fills it once from your past Claude Code sessions. After a turn where proof caught a failure before
+you saw it, the gate's message says so, with the session's totals. For any stretch of time:
+
+```bash
+node <plugin>/scripts/recap.mjs              # the last 7 days
+node <plugin>/scripts/recap.mjs --since 30d  # or 12h, 4w; --json for the numbers
+```
+
+It counts failures caught (a check that failed, then passed on changed code), commits blocked, failures handed back to
+you, flaky checks (failed, then passed on the same code) and time spent in checks.
+
 ## Privacy
 
-proof makes one network call: at most once a day, in the background, it reads the released version number from GitHub (`raw.githubusercontent.com`) to tell you about updates. Nothing is sent. Turn it off with `"updateCheck": false` in `~/.config/proof/machine.json`. The dashboard listens on 127.0.0.1 only. It reads Claude Code's own logs in `~/.claude` to draw the dashboard, and only ever stops processes Claude started.
+proof makes one network call: at most once a day, in the background, it reads the released version number from GitHub (`raw.githubusercontent.com`) to tell you about updates. Nothing is sent. Turn it off with `"updateCheck": false` in `~/.config/proof/machine.json`. The dashboard listens on 127.0.0.1 only. It reads Claude Code's own logs in `~/.claude` to draw the dashboard (for other agents, a log proof's hooks write in its data folder), and only ever stops processes Claude started.
 
 ## Limits
 

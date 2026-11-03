@@ -1,0 +1,46 @@
+{
+  "source": "https://cursor.com/docs/hooks (read 2026-11-03): common fields conversation_id, generation_id, model, hook_event_name, cursor_version, workspace_roots, user_email, transcript_path; preToolUse adds tool_name, tool_input, tool_use_id, cwd; output permission allow with updated_input",
+  "kind": "beforeTool",
+  "input": {
+    "conversation_id": "k1",
+    "generation_id": "g1",
+    "model": "auto",
+    "cursor_version": "2.4.0",
+    "workspace_roots": [
+      "/repo"
+    ],
+    "user_email": null,
+    "transcript_path": null,
+    "hook_event_name": "preToolUse",
+    "tool_name": "Shell",
+    "tool_input": {
+      "command": "npx vitest run",
+      "working_directory": "/repo"
+    },
+    "tool_use_id": "abc123",
+    "cwd": "/repo"
+  },
+  "event": {
+    "tool": {
+      "name": "shell",
+      "raw": "Shell",
+      "input": {
+        "command": "npx vitest run",
+        "working_directory": "/repo"
+      },
+      "id": "abc123"
+    }
+  },
+  "result": {
+    "updatedCommand": "'node' 'guard.mjs' -- 'npx vitest run'"
+  },
+  "output": {
+    "stdout": {
+      "permission": "allow",
+      "updated_input": {
+        "command": "'node' 'guard.mjs' -- 'npx vitest run'",
+        "working_directory": "/repo"
+      }
+    }
+  }
+}

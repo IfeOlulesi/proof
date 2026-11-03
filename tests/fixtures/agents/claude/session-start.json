@@ -1,0 +1,30 @@
+{
+  "source": "https://code.claude.com/docs/en/hooks (read 2026-11-03): common fields session_id, prompt_id, cwd, hook_event_name; Stop adds stop_hook_active, last_assistant_message; PreToolUse adds tool_name, tool_input",
+  "kind": "sessionStart",
+  "input": {
+    "session_id": "s1",
+    "transcript_path": "/h/.claude/projects/p/s1.jsonl",
+    "cwd": "/repo",
+    "permission_mode": "default",
+    "hook_event_name": "SessionStart",
+    "source": "startup"
+  },
+  "event": {
+    "kind": "sessionStart",
+    "session": "s1",
+    "cwd": "/repo",
+    "source": "startup",
+    "turn": null
+  },
+  "result": {
+    "context": "rules"
+  },
+  "output": {
+    "stdout": {
+      "hookSpecificOutput": {
+        "hookEventName": "SessionStart",
+        "additionalContext": "rules"
+      }
+    }
+  }
+}

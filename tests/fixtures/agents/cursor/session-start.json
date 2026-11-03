@@ -1,0 +1,32 @@
+{
+  "source": "https://cursor.com/docs/hooks (read 2026-11-03): common fields conversation_id, generation_id, model, hook_event_name, cursor_version, workspace_roots, user_email, transcript_path; sessionStart adds session_id, is_background_agent, composer_mode; output additional_context",
+  "kind": "sessionStart",
+  "input": {
+    "conversation_id": "k1",
+    "generation_id": "g1",
+    "model": "auto",
+    "cursor_version": "2.4.0",
+    "workspace_roots": [
+      "/repo"
+    ],
+    "user_email": null,
+    "transcript_path": null,
+    "hook_event_name": "sessionStart",
+    "session_id": "k1",
+    "is_background_agent": false,
+    "composer_mode": "agent"
+  },
+  "event": {
+    "kind": "sessionStart",
+    "session": "k1",
+    "cwd": "/repo"
+  },
+  "result": {
+    "context": "proof — how work gets done in this session"
+  },
+  "output": {
+    "stdout": {
+      "additional_context": "proof — how work gets done in this session"
+    }
+  }
+}

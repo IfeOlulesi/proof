@@ -1,0 +1,24 @@
+{
+  "source": "https://code.claude.com/docs/en/hooks (read 2026-11-03): common fields session_id, prompt_id, cwd, hook_event_name; Stop adds stop_hook_active, last_assistant_message; PreToolUse adds tool_name, tool_input",
+  "kind": "beforeTool",
+  "input": {
+    "session_id": "s1",
+    "transcript_path": "/h/.claude/projects/p/s1.jsonl",
+    "cwd": "/repo",
+    "permission_mode": "default",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "mcp__claude-in-chrome__navigate",
+    "tool_input": {
+      "url": "http://localhost:3000"
+    }
+  },
+  "event": {
+    "tool": {
+      "name": "other",
+      "raw": "mcp__claude-in-chrome__navigate",
+      "input": {
+        "url": "http://localhost:3000"
+      }
+    }
+  }
+}

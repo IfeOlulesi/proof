@@ -1,0 +1,20 @@
+{
+  "source": "https://learn.chatgpt.com/docs/hooks (read 2026-11-03): common fields session_id, transcript_path, cwd, hook_event_name, model, permission_mode; turn-scoped events add turn_id; Stop: exit 0 with no output continues",
+  "kind": "turnEnd",
+  "input": {
+    "session_id": "c1",
+    "transcript_path": null,
+    "cwd": "/repo",
+    "model": "gpt-5.5-codex",
+    "permission_mode": "default",
+    "hook_event_name": "Stop",
+    "turn_id": "t1",
+    "stop_hook_active": false,
+    "last_assistant_message": "Done."
+  },
+  "event": {
+    "continuation": false
+  },
+  "result": {},
+  "output": {}
+}

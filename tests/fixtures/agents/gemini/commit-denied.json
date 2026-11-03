@@ -1,0 +1,37 @@
+{
+  "source": "https://geminicli.com/docs/hooks/reference (read 2026-11-03): base fields session_id, transcript_path, cwd, hook_event_name, timestamp; BeforeTool adds tool_name, tool_input; shell tool run_shell_command (https://geminicli.com/docs/tools/shell); decision \"deny\" + reason",
+  "kind": "beforeTool",
+  "input": {
+    "session_id": "g1",
+    "transcript_path": "/h/.gemini/tmp/chats/g1.json",
+    "cwd": "/repo",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hook_event_name": "BeforeTool",
+    "tool_name": "run_shell_command",
+    "tool_input": {
+      "command": "git commit -m x",
+      "description": "Commit"
+    }
+  },
+  "event": {
+    "tool": {
+      "name": "shell",
+      "raw": "run_shell_command",
+      "input": {
+        "command": "git commit -m x",
+        "description": "Commit"
+      }
+    }
+  },
+  "result": {
+    "block": {
+      "reason": "proof: commit blocked — unit failing"
+    }
+  },
+  "output": {
+    "stdout": {
+      "decision": "deny",
+      "reason": "proof: commit blocked — unit failing"
+    }
+  }
+}

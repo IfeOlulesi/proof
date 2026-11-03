@@ -13,7 +13,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gitRoot, loadConfig, readStdin } from './lib.mjs';
+import { hookInput } from './agents/index.mjs';
+import { gitRoot, loadConfig } from './lib.mjs';
 import { planRun } from './fit.mjs';
 import { MACHINE, admit, advice, dataDir, gb, hold, liveRuns, machineConfig, recentEvents, snapshot } from './mem.mjs';
 
@@ -61,15 +62,16 @@ export function kindOf(cmd) {
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) await main();
 
 async function main() {
-  const input = readStdin();
-  const ti = input.tool_input || {};
-  const cmd = ti.command;
-  if ((input.tool_name && input.tool_name !== 'Bash') || typeof cmd !== 'string') return;
-  const notes = [relay(input.session_id)].filter(Boolean);
+  const { ev, reply, adapter } = hookInput('beforeTool');
+  const cmd = ev.tool?.input.command;
+  if ((ev.tool?.raw && ev.tool.name !== 'shell') || typeof cmd !== 'string') return;
+  // Quick mode, turned on from a skill in an agent that can't put its session id in the command: add it here.
+  if (ev.session && /gate\.mjs["']?\s+--quick\s*$/.test(cmd.trim())) return reply({ updatedCommand: `${cmd.trim()} ${shq(ev.session)}` });
+  const notes = [relay(ev.session, adapter.label)].filter(Boolean);
   const kind = kindOf(cmd);
-  if (!kind) return notes.length ? emit({ additionalContext: notes.join('\n') }) : undefined;
+  if (!kind) return notes.length ? reply({ context: notes.join('\n') }) : undefined;
 
-  const cwd = input.cwd || process.cwd();
+  const cwd = ev.cwd || process.cwd();
   const root = gitRoot(cwd) || cwd;
   const { config } = loadConfig(root);
   const ramMB = os.totalmem() / 2 ** 20;
@@ -105,23 +107,23 @@ async function main() {
     if (!a.ok) {
       const least = plan.least();
       const adv = advice(snapshot({ env: true }), need);
-      process.stderr.write([
+      reply({ block: { reason: [
         `proof memory: not starting this ${kind === 'e2e' ? 'end-to-end' : kind} run. The ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}) and this run needs about ${gb(need)}${least ? ` (${gb(least.need)} even capped at one worker)` : ''}, ${a.critical ? `under proof's ${a.system.ceilingPct}% ceiling, but macOS reports critical memory pressure.` : `which would take it past proof's ${a.system.ceilingPct}% ceiling.`}${waited > 2 ? ` Waited ${waited}s for other runs to free room.` : ''}`,
         adv.text,
         'Free room first: stop your own processes you no longer need, or run a narrower command (one test file or spec). If the user\'s apps hold the memory, tell them what closing them would free and end your message with a line starting NEEDS-INPUT:.',
-      ].join('\n'));
-      process.exit(2);
+      ].join('\n') } });
+      process.exit(process.exitCode);
     }
     if (waited > 2) notes.push(...[cappedNote].filter(Boolean), `proof memory: this run waited ${waited}s for memory to free up (the ${MACHINE} is at ${a.system.pct.toFixed(0)}%).`);
-    else if ((cappedNote || a.warn) && warnDue(input.session_id)) notes.push(...[cappedNote].filter(Boolean), ...(a.warn ? [`proof memory: the ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}); proof keeps it under ${a.system.ceilingPct}%.${a.system.strain ? ` ${a.system.strain}` : ''} Run heavy jobs one at a time and stop dev servers, simulators and browsers you no longer need. \`node "${join(dirname(GUARD), 'mem.mjs')}"\` shows what is using it.`] : []));
+    else if ((cappedNote || a.warn) && warnDue(ev.session)) notes.push(...[cappedNote].filter(Boolean), ...(a.warn ? [`proof memory: the ${MACHINE} is at ${a.system.pct.toFixed(0)}% (${gb(a.system.usedMB)} of ${gb(a.system.totalMB)}); proof keeps it under ${a.system.ceilingPct}%.${a.system.strain ? ` ${a.system.strain}` : ''} Run heavy jobs one at a time and stop dev servers, simulators and browsers you no longer need. \`node "${join(dirname(GUARD), 'mem.mjs')}"\` shows what is using it.`] : []));
   }
 
   const command = `${shq(process.execPath)} ${shq(GUARD)} --timeout ${timeout} --mem ${memLimit} --proc-mem ${procLimit} --kind ${kind}${kind !== 'wait' ? ` --need ${Math.round(need)} --hold ${hold(need)}` : ''} --data ${shq(dataDir())} -- ${shq(run)}`;
-  emit({ updatedInput: { ...ti, command }, additionalContext: notes.join('\n') || undefined });
+  reply({ updatedCommand: command, context: notes.join('\n') || undefined });
 }
 
 // Memory stops since this session last heard about them.
-function relay(sessionId) {
+function relay(sessionId, who = 'Claude') {
   if (!sessionId) return null;
   const file = join(dataDir(), 'sessions', `relay-${String(sessionId).replace(/[^\w.-]/g, '_')}.txt`);
   let since = 0;
@@ -129,7 +131,7 @@ function relay(sessionId) {
   const evs = recentEvents(since).filter(e => e.kind === 'memoryStop');
   try { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, String(Date.now())); } catch {}
   if (!evs.length) return null;
-  return evs.map(e => `proof memory: the ${MACHINE} reached ${e.pct}% of its memory, so proof stopped ${e.guarded ? 'the newest guarded run' : 'a process Claude started'}: ${String(e.command || '').slice(0, 120)} (${e.mb} MB${e.cwd ? `, in ${String(e.cwd).split('/').pop()}` : ''}). If you still need it, restart it once there's room.`).join('\n');
+  return evs.map(e => `proof memory: the ${MACHINE} reached ${e.pct}% of its memory, so proof stopped ${e.guarded ? 'the newest guarded run' : `a process ${who} started`}: ${String(e.command || '').slice(0, 120)} (${e.mb} MB${e.cwd ? `, in ${String(e.cwd).split('/').pop()}` : ''}). If you still need it, restart it once there's room.`).join('\n');
 }
 
 // Memory warnings at most every 10 minutes per session.
@@ -140,12 +142,6 @@ function warnDue(sessionId) {
   if (Date.now() - last < 10 * 60e3) return false;
   try { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, String(Date.now())); } catch {}
   return true;
-}
-
-function emit(out) {
-  const h = { hookEventName: 'PreToolUse', ...out };
-  if (!h.additionalContext) delete h.additionalContext;
-  process.stdout.write(JSON.stringify({ hookSpecificOutput: h }));
 }
 
 function shq(s) { return `'${String(s).replace(/'/g, `'\\''`)}'`; }

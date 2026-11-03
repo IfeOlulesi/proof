@@ -1,0 +1,40 @@
+{
+  "source": "https://docs.x.ai/build/features/hooks and the grok 1.0.70 user guide 10-hooks.md (read 2026-11-03): common fields hookEventName, sessionId, cwd, workspaceRoot, timestamp, permissionMode, promptId, plus Claude's snake_case aliases; Stop adds reason, stopHookActive, lastAssistantMessage, promptId; {\"decision\":\"block\",\"reason\"} keeps the agent working in the same turn",
+  "kind": "turnEnd",
+  "input": {
+    "sessionId": "x1",
+    "session_id": "x1",
+    "cwd": "/repo",
+    "workspaceRoot": "/repo",
+    "permissionMode": "default",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hookEventName": "stop",
+    "hook_event_name": "Stop",
+    "promptId": "p1",
+    "reason": "end_turn",
+    "stopHookActive": true,
+    "stop_hook_active": true,
+    "lastAssistantMessage": "Done.",
+    "backgroundTasks": [],
+    "sessionCrons": []
+  },
+  "event": {
+    "kind": "turnEnd",
+    "turn": "p1",
+    "continuation": true,
+    "lastMessage": "Done."
+  },
+  "result": {
+    "block": {
+      "reason": "proof gate: 1 of 2 check(s) failing"
+    },
+    "message": "proof: unit failing — sent back to Grok Build (round 2/5)"
+  },
+  "output": {
+    "stdout": {
+      "decision": "block",
+      "reason": "proof gate: 1 of 2 check(s) failing",
+      "systemMessage": "proof: unit failing — sent back to Grok Build (round 2/5)"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "source": "https://geminicli.com/docs/hooks/reference (read 2026-11-03): base fields session_id, transcript_path, cwd, hook_event_name, timestamp; AfterAgent adds prompt, prompt_response, stop_hook_active; decision \"deny\" + reason forces a retry with the reason as a new prompt",
+  "kind": "turnEnd",
+  "input": {
+    "session_id": "g1",
+    "transcript_path": "/h/.gemini/tmp/chats/g1.json",
+    "cwd": "/repo",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hook_event_name": "AfterAgent",
+    "prompt": "fix the bug",
+    "prompt_response": "Done.",
+    "stop_hook_active": false
+  },
+  "event": {
+    "kind": "turnEnd",
+    "continuation": false,
+    "lastMessage": "Done."
+  },
+  "result": {
+    "block": {
+      "reason": "proof gate: 1 of 2 check(s) failing"
+    },
+    "message": "proof: unit failing — sent back to Gemini CLI (round 1/5)"
+  },
+  "output": {
+    "stdout": {
+      "decision": "deny",
+      "reason": "proof gate: 1 of 2 check(s) failing",
+      "systemMessage": "proof: unit failing — sent back to Gemini CLI (round 1/5)"
+    }
+  }
+}

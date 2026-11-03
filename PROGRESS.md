@@ -126,3 +126,51 @@ Spec: `SPEC.md`, units in `features.json`. Branch `multi-agent`.
 - Not verified: the receipt as Claude Code renders it in a live session (only the hook's JSON output is tested).
 - Not done: weekly recap view on the dashboard (needs a mockup; the dashboard design is locked).
 - Next: F1, the normalised hook event and the Claude adapter.
+
+## F1. Normalised hook event and the Claude adapter (done)
+
+- `scripts/agents/index.mjs` (`hookInput(kind)` → `{ ev, reply }`; agent from `--agent`, `PROOF_AGENT`, else Claude;
+  an unknown name falls back to Claude with a note) and `scripts/agents/claude.mjs` (parse + render). The event and
+  result are documented in `plugins/proof/docs/agents.md`.
+- gate, wrap, admit and session-start read through `hookInput` and answer with `reply()`; hooks.json is unchanged.
+- Red: `tests/agents.sh` "gate.mjs reads its input through hookInput, not readStdin" (×4) and "the event is
+  documented" failed before the change; "an unknown PROOF_AGENT falls back to Claude" failed (exit 1) before the fix.
+- Checks: `bash tests/agents.sh` 8 passed; `bash tests/run.sh` all passed, no existing test edited. Verifier: PASS,
+  every output path matches HEAD byte for byte.
+
+## F2. Spike (opencode done, Gemini waiting)
+
+- opencode 1.18.18: system prompt, command rewrite and continue-after-idle all work live (continue only when opencode
+  runs as a server, as the TUI does; not under one-shot `opencode run`). Details in SPEC.md's decision log.
+- Gemini CLI 0.36.0: not signed in here; needs the user to log in, or it gets built from docs.
+
+## F3–F9, F12, F14–F19. Every agent: adapters, installer, event log, dashboard data (done, not committed)
+
+- Round counting (F3): the gate remembers it sent the agent back (`sentBack`) when the agent doesn't say, and
+  `gate.mjs --prompt` (each agent's prompt hook) resets it; a prompt that is proof's own follow-up (Cursor) or the
+  same one reported again (Antigravity) is skipped. Red: `tests/rounds.sh` case 1 sent turn end 2 as round 1.
+- Adapters (`scripts/agents/`): opencode (plugin file), gemini, codex, cursor, grok, antigravity, each with its
+  `caps`, `fixtureCaps`, `words` and `install()`; 46 new fixtures, each citing the docs page read 2026-11-03 (research
+  notes in the session scratchpad). Shared bits in `agents/shared.mjs`; rules and skill wording in `agents/words.mjs`
+  (rules.md now has placeholders; Claude's render is byte-identical to the old file, `tests/fixtures/rules-claude.md`).
+- Installer (`scripts/install.mjs`): merges into existing configs, records a manifest in `<data>/installs/`, uninstall
+  restores byte for byte; skills shared through `.agents/skills` stay while any agent uses them. Red: the shared-skills
+  case left empty folders behind until ownership was handed over.
+- Event log (`agents/events.mjs`) and `EventSession` in timeline.mjs; the monitor reads `<data>/events/*/*.jsonl`;
+  views carry `agent` and `agentLabel`. Gate messages name the agent ("sent back to Cursor").
+- Live: opencode 1.18.18, all six SPEC steps (features.json F12). It showed blocked commits had no tool-start event
+  (the plugin ran the commit gate before wrap.mjs); fixed and re-run live: all six steps pass again, and the blocked
+  commit is now a step in the log.
+- Verifier: FAIL with 9 findings, all fixed with a test each (written after the fix, not red first): Cursor gated
+  aborted turns; Cursor had no loop backstop (loop_limit now 20); labels hardcoded in timeline.mjs; browser memory
+  note unwired for other agents; the printed undo command did nothing (install records now in ~/.config/proof/installs);
+  Grok lost the update notice; a killed gate wasn't shown as timed out; the quick-mode message named proof:build;
+  F14/F15 criteria contradicted the build. opencode subagent sessions are no longer gated (the follow-up would land
+  in the subagent). F17's "only its own files" criterion is recorded as not met.
+- Checks after the fixes: tests/agents.sh 128, tests/dashboard.sh 20, tests/rounds.sh 20 passed.
+- Checks: `bash tests/agents.sh` 120 passed, `bash tests/rounds.sh` 20 passed, `bash tests/dashboard.sh` 19 passed.
+- Not verified: Gemini CLI, Codex, Cursor, Grok Build and Antigravity live (built from docs, labelled so).
+- Spec changes (decision log): Codex via `.codex/hooks.json` rather than a plugin; the rewrite is guard + worker limit
+  (no fail-fast flag, same as Claude); Grok's rules in a rules file.
+- Next: F10 (agent label + recap card mockup on the v2 dashboard) awaits the user's approval; F11 builds it after
+  this branch merges `main` (v2 dashboard, 0.7.0).

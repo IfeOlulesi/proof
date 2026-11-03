@@ -1,0 +1,16 @@
+{
+  "source": "proof's opencode plugin (agents/opencode.mjs pluginSource), opencode plugin API https://opencode.ai/docs/plugins/ — hook arguments captured live from opencode 1.18.18 (F2 spike: tool.execute.before input.tool/sessionID/callID, output.args; session.idle properties.sessionID)",
+  "kind": "userPrompt",
+  "input": {
+    "sessionID": "ses_1",
+    "cwd": "/repo",
+    "hook": "userPrompt",
+    "prompt": "fix the bug"
+  },
+  "event": {
+    "kind": "userPrompt",
+    "prompt": "fix the bug"
+  },
+  "result": {},
+  "output": {}
+}

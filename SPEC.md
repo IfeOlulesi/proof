@@ -37,8 +37,8 @@ with the agent's name.
    out and the agent is told to ask the user, the turn ends.
 4. Commit: the agent runs `git commit` → the adapter runs the full gate → a failing check denies the command with
    the reason.
-5. Memory: the agent runs a test command → the adapter rewrites it with the worker limit and fail-fast flag, as
-   `wrap.mjs` does for Claude. The agent starts a subagent or a browser → the adapter adds proof's memory note, as
+5. Memory: the agent runs a test command → the adapter rewrites it to run under proof's guard (time and memory
+   limits) with the worker limit, as `wrap.mjs` does for Claude. The agent starts a subagent or a browser → the adapter adds proof's memory note, as
    `admit.mjs` does.
 6. Dashboard: any agent's session works → its hooks append events to proof's event log in the shared data
    folder → the user opens the dashboard from the agent (proof's watch skill) or by hand
@@ -60,7 +60,8 @@ with the agent's name.
   `tests/agents.sh` runs each adapter against fixtures and compares the translated output with the expected output.
 - [ ] proof counts gate rounds itself for every agent, from the normalised turn id and continuation flag, and is the
   only round limit that decides: after `maxRounds` failing rounds the turn ends with the "ask the user" message.
-  Where the agent has its own loop cap (Cursor's `loop_limit`), the installer sets it above `maxRounds`.
+  Where the agent has its own loop cap (Cursor's `loop_limit`), the installer sets it above `maxRounds` (20) as a
+  backstop.
   verify: `tests/agents.sh` drives `maxRounds + 1` failing turn ends through each adapter and checks rounds
   1..maxRounds continue and the next one stops; a fresh user prompt resets the count.
 - [ ] Claude Code behaves exactly as before: same hook outputs for the same inputs. verify: `bash tests/run.sh`
@@ -131,21 +132,21 @@ with the agent's name.
   whose test command is `npx vitest run` — 1) `install.mjs opencode`; 2) start opencode and ask "what does proof's
   rule 4 say?", confirm it quotes it; 3) ask for a file change, confirm it receives the gate failure and keeps
   working, and stops after `maxRounds`; 4) ask it to commit, confirm the commit is denied; 5) ask it to run the
-  tests, confirm the event log shows the command with the worker limit and fail-fast flag; 6) open the dashboard,
+  tests, confirm the command that ran had proof's guard and worker limit; 6) open the dashboard,
   confirm the session is listed as opencode with its steps. Plus `tests/agents.sh` fixtures captured from that run.
 - [ ] Gemini CLI: the same behaviours through its hooks in `.gemini/settings.json` (SessionStart, AfterAgent,
   BeforeTool). verify: the same six manual steps with `gemini`, plus fixtures captured from that run.
 
 **Agents built from their docs, not tested live (not installed here)**
-- [ ] Codex: proof ships as a Codex plugin (`.codex-plugin/plugin.json` plus `hooks/hooks.json`): SessionStart adds
-  the rules, Stop `decision: block` keeps the turn going on a failing gate, PreToolUse denies a failing commit and
-  rewrites test commands with `updatedInput`, and the subagent note uses SubagentStart where it fits. verify:
+- [ ] Codex: proof's hooks in `.codex/hooks.json` (or `~/.codex/hooks.json`): SessionStart adds the rules, Stop
+  `decision: block` keeps the turn going on a failing gate, PreToolUse denies a failing commit and rewrites test
+  commands with `updatedInput`, and the subagent note comes from PreToolUse on `spawn_agent`. verify:
   `tests/agents.sh` fixtures from the Codex hooks docs for each of those behaviours.
 - [ ] Cursor: `.cursor/hooks.json` with `sessionStart.additional_context` for the rules, `stop.followup_message`
   for the gate, `beforeShellExecution` deny for commits, `preToolUse.updated_input` for test commands,
-  `subagentStart` for the memory note. verify: `tests/agents.sh` fixtures from the Cursor hooks docs for each.
-- [ ] Grok Build: hook files in `.grok/hooks/` that add the rules at session start, block the end of a turn on a
-  failing gate (Stop), deny a failing commit and rewrite test commands (PreToolUse), with "unknown" in the
+  `subagentStart` for the memory check (it can refuse a subagent but, per Cursor's docs, not add a note). verify: `tests/agents.sh` fixtures from the Cursor hooks docs for each.
+- [ ] Grok Build: hook files in `.grok/hooks/` (rules in `.grok/rules/proof.md`, since Grok's SessionStart can't add
+  model context), that block the end of a turn on a failing gate (Stop), deny a failing commit and rewrite test commands (PreToolUse), with "unknown" in the
   capability table for any of those the docs don't confirm. verify: `tests/agents.sh` fixtures from xAI's Grok
   Build docs for each behaviour marked "yes".
 - [ ] Antigravity (`agy` CLI): `.agents/hooks.json` that adds the rules, blocks the end of a turn on a failing gate,
@@ -217,7 +218,26 @@ with the agent's name.
   (confirmed by the user).
 - 2026-11-03 — proof's own round count decides when the gate gives up, for every agent, so behaviour is the same
   everywhere.
+- 2026-11-03 — F2 spike, opencode 1.18.18 (model opencode/big-pickle, scratch project, plugin in `.opencode/plugins/`):
+  `experimental.chat.system.transform` adds to the system prompt (the model answered with the planted word);
+  `tool.execute.before` rewrites a bash command through `output.args.command` (the model then noticed and reran it
+  another way, so a rewrite must keep the command's meaning); on `session.idle`, `client.session.prompt` makes the
+  agent keep working **when opencode runs as a server (the TUI, `opencode serve`)** — it ran the follow-up command —
+  but not under one-shot `opencode run`, which exits at the first idle. The plugin knows which prompt it sent, so a
+  fix round can be told from a new user prompt. Gemini CLI: not signed in on this machine, so not tested yet.
 - 2026-11-03 — Work happens on branch `multi-agent` in `.claude/worktrees/multi-agent`, cut from local `main` (0.6.0).
+- 2026-11-03 — Codex gets proof as hooks in `.codex/hooks.json`, not as a Codex plugin: Codex's plugin docs say
+  plugin hooks work only for plugins installed by hand in the desktop app, while `hooks.json` is read by the CLI too.
+  The installer writes it like every other agent's config. Revisit if plugin hooks are confirmed in the CLI.
+- 2026-11-03 — The test-command rewrite is proof's guard plus the worker limit, the same as Claude's: `wrap.mjs`
+  never added a fail-fast flag (the rules tell the agent to use one). The spec said otherwise; corrected.
+- 2026-11-03 — From the agents' docs (research saved with the fixtures' sources): Grok Build's SessionStart reads only
+  a message for the user, so Grok's rules go in `.grok/rules/proof.md`; Antigravity has no prompt-submit hook, so
+  proof counts a `lastUserInput` it hasn't seen (sent before each model call) as a new prompt; Cursor sends proof's
+  follow-up as a user message, so the prompt hook skips text that matches it; Cursor's subagent hook can't add a note
+  ("no" in the table). Gemini CLI is built from its docs like the others until it's signed in on this machine.
+- 2026-11-03 — `main` moved to the v2 "Pulse" dashboard (0.7.0) while this branch was open. The agent label and the
+  recap card are designed on v2; this branch merges `main` before they're built, as part of the final commit.
 
 ## Open questions
 - Antigravity: only the `agy` CLI is in scope, because hooks are documented for the CLI and the desktop IDE's

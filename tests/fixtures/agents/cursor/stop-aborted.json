@@ -1,0 +1,22 @@
+{
+  "source": "https://cursor.com/docs/hooks (read 2026-11-03): stop status is completed | aborted | error",
+  "kind": "turnEnd",
+  "input": {
+    "conversation_id": "k1",
+    "generation_id": "g3",
+    "model": "auto",
+    "hook_event_name": "stop",
+    "cursor_version": "2.4.0",
+    "workspace_roots": [
+      "/repo"
+    ],
+    "user_email": null,
+    "transcript_path": null,
+    "status": "aborted",
+    "loop_count": 0
+  },
+  "event": {
+    "kind": "turnEnd",
+    "skip": true
+  }
+}

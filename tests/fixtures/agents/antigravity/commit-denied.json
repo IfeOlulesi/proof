@@ -1,0 +1,45 @@
+{
+  "source": "https://antigravity.google/docs/hooks (read 2026-11-03): camelCase fields conversationId, workspacePaths, transcriptPath, artifactDirectoryPath, modelName; PreToolUse: toolCall { name: run_command, args { CommandLine, Cwd, WaitMsBeforeAsync } }, stepIdx; {\"decision\":\"deny\",\"reason\"}",
+  "kind": "beforeTool",
+  "input": {
+    "conversationId": "ec33",
+    "workspacePaths": [
+      "/repo"
+    ],
+    "transcriptPath": "~/.gemini/antigravity-cli/brain/ec33/.system_generated/logs/transcript.jsonl",
+    "artifactDirectoryPath": "~/.gemini/antigravity-cli/brain/ec33",
+    "modelName": "gemini-3.6-flash-medium",
+    "toolCall": {
+      "name": "run_command",
+      "args": {
+        "CommandLine": "git commit -m x",
+        "Cwd": "/repo",
+        "WaitMsBeforeAsync": 5000
+      }
+    },
+    "stepIdx": 19
+  },
+  "event": {
+    "tool": {
+      "name": "shell",
+      "raw": "run_command",
+      "input": {
+        "CommandLine": "git commit -m x",
+        "Cwd": "/repo",
+        "WaitMsBeforeAsync": 5000,
+        "command": "git commit -m x"
+      }
+    }
+  },
+  "result": {
+    "block": {
+      "reason": "proof: commit blocked — unit failing"
+    }
+  },
+  "output": {
+    "stdout": {
+      "decision": "deny",
+      "reason": "proof: commit blocked — unit failing"
+    }
+  }
+}

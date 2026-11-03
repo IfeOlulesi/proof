@@ -1,0 +1,32 @@
+{
+  "source": "https://docs.x.ai/build/features/hooks and the grok 1.0.70 user guide 10-hooks.md (read 2026-11-03): common fields hookEventName, sessionId, cwd, workspaceRoot, timestamp, permissionMode, promptId, plus Claude's snake_case aliases; PostToolUse adds tool fields and toolResponse",
+  "kind": "afterTool",
+  "input": {
+    "sessionId": "x1",
+    "session_id": "x1",
+    "cwd": "/repo",
+    "workspaceRoot": "/repo",
+    "permissionMode": "default",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hookEventName": "post_tool_use",
+    "hook_event_name": "PostToolUse",
+    "toolName": "run_terminal_command",
+    "toolInput": {
+      "command": "ls"
+    },
+    "toolUseId": "u4"
+  },
+  "event": {
+    "kind": "afterTool",
+    "tool": {
+      "name": "shell",
+      "raw": "run_terminal_command",
+      "input": {
+        "command": "ls"
+      },
+      "id": "u4"
+    }
+  },
+  "result": {},
+  "output": {}
+}

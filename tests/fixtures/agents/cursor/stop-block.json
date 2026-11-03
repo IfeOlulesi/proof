@@ -1,0 +1,35 @@
+{
+  "source": "https://cursor.com/docs/hooks (read 2026-11-03): common fields conversation_id, generation_id, model, hook_event_name, cursor_version, workspace_roots, user_email, transcript_path; stop adds status, loop_count; output followup_message is sent as the next user message",
+  "kind": "turnEnd",
+  "input": {
+    "conversation_id": "k1",
+    "generation_id": "g1",
+    "model": "auto",
+    "cursor_version": "2.4.0",
+    "workspace_roots": [
+      "/repo"
+    ],
+    "user_email": null,
+    "transcript_path": null,
+    "hook_event_name": "stop",
+    "status": "completed",
+    "loop_count": 1
+  },
+  "event": {
+    "kind": "turnEnd",
+    "round": 1,
+    "continuation": null,
+    "turn": null
+  },
+  "result": {
+    "block": {
+      "reason": "proof gate: 1 of 2 check(s) failing"
+    },
+    "message": "proof: unit failing — sent back to Cursor (round 2/5)"
+  },
+  "output": {
+    "stdout": {
+      "followup_message": "proof gate: 1 of 2 check(s) failing"
+    }
+  }
+}

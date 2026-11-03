@@ -1,0 +1,23 @@
+{
+  "source": "https://docs.x.ai/build/features/hooks and the grok 1.0.70 user guide 10-hooks.md (read 2026-11-03): common fields hookEventName, sessionId, cwd, workspaceRoot, timestamp, permissionMode, promptId, plus Claude's snake_case aliases; UserPromptSubmit carries the prompt (field name prompt, from the user guide's field table)",
+  "kind": "userPrompt",
+  "input": {
+    "sessionId": "x1",
+    "session_id": "x1",
+    "cwd": "/repo",
+    "workspaceRoot": "/repo",
+    "permissionMode": "default",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hookEventName": "user_prompt_submit",
+    "hook_event_name": "UserPromptSubmit",
+    "promptId": "p1",
+    "prompt": "fix the bug"
+  },
+  "event": {
+    "kind": "userPrompt",
+    "turn": "p1",
+    "prompt": "fix the bug"
+  },
+  "result": {},
+  "output": {}
+}

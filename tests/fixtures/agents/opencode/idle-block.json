@@ -1,0 +1,28 @@
+{
+  "source": "proof's opencode plugin (agents/opencode.mjs pluginSource), opencode plugin API https://opencode.ai/docs/plugins/ — hook arguments captured live from opencode 1.18.18 (F2 spike: tool.execute.before input.tool/sessionID/callID, output.args; session.idle properties.sessionID)",
+  "kind": "turnEnd",
+  "input": {
+    "sessionID": "ses_1",
+    "cwd": "/repo",
+    "hook": "turnEnd",
+    "continuation": true
+  },
+  "event": {
+    "kind": "turnEnd",
+    "continuation": true
+  },
+  "result": {
+    "block": {
+      "reason": "proof gate: 1 of 2 check(s) failing"
+    },
+    "message": "proof: unit failing — sent back to opencode (round 2/5)"
+  },
+  "output": {
+    "stdout": {
+      "block": {
+        "reason": "proof gate: 1 of 2 check(s) failing"
+      },
+      "message": "proof: unit failing — sent back to opencode (round 2/5)"
+    }
+  }
+}

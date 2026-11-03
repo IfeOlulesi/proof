@@ -1,0 +1,30 @@
+{
+  "source": "https://geminicli.com/docs/hooks/reference (read 2026-11-03): base fields session_id, transcript_path, cwd, hook_event_name, timestamp; BeforeTool rewrite: hookSpecificOutput.tool_input merges over the model's arguments",
+  "kind": "beforeTool",
+  "input": {
+    "session_id": "g1",
+    "transcript_path": "/h/.gemini/tmp/chats/g1.json",
+    "cwd": "/repo",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hook_event_name": "BeforeTool",
+    "tool_name": "run_shell_command",
+    "tool_input": {
+      "command": "npx vitest run",
+      "description": "Run tests"
+    }
+  },
+  "result": {
+    "updatedCommand": "'node' 'guard.mjs' -- 'npx vitest run'"
+  },
+  "output": {
+    "stdout": {
+      "decision": "allow",
+      "hookSpecificOutput": {
+        "hookEventName": "BeforeTool",
+        "tool_input": {
+          "command": "'node' 'guard.mjs' -- 'npx vitest run'"
+        }
+      }
+    }
+  }
+}

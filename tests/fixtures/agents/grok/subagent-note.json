@@ -1,0 +1,46 @@
+{
+  "source": "https://docs.x.ai/build/features/hooks and the grok 1.0.70 user guide 10-hooks.md (read 2026-11-03): common fields hookEventName, sessionId, cwd, workspaceRoot, timestamp, permissionMode, promptId, plus Claude's snake_case aliases; subagent tool spawn_subagent (matcher alias Task), toolInput prompt, description, subagent_type (16-subagents.md)",
+  "kind": "beforeTool",
+  "input": {
+    "sessionId": "x1",
+    "session_id": "x1",
+    "cwd": "/repo",
+    "workspaceRoot": "/repo",
+    "permissionMode": "default",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hookEventName": "pre_tool_use",
+    "hook_event_name": "PreToolUse",
+    "toolName": "spawn_subagent",
+    "toolInput": {
+      "prompt": "…",
+      "description": "Review auth",
+      "subagent_type": "proof-verifier",
+      "run_in_background": true
+    },
+    "toolUseId": "u3"
+  },
+  "event": {
+    "tool": {
+      "name": "subagent",
+      "raw": "spawn_subagent",
+      "input": {
+        "prompt": "…",
+        "description": "Review auth",
+        "subagent_type": "proof-verifier",
+        "run_in_background": true
+      },
+      "id": "u3"
+    }
+  },
+  "result": {
+    "context": "proof memory: the Mac is at 85%"
+  },
+  "output": {
+    "stdout": {
+      "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "additionalContext": "proof memory: the Mac is at 85%"
+      }
+    }
+  }
+}

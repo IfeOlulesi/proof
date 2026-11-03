@@ -1,0 +1,44 @@
+{
+  "source": "https://cursor.com/docs/hooks (read 2026-11-03): common fields conversation_id, generation_id, model, hook_event_name, cursor_version, workspace_roots, user_email, transcript_path; subagentStart adds subagent_id, subagent_type, task, tool_call_id; output permission (ask counts as deny), user_message",
+  "kind": "beforeTool",
+  "input": {
+    "conversation_id": "k1",
+    "generation_id": "g1",
+    "model": "auto",
+    "cursor_version": "2.4.0",
+    "workspace_roots": [
+      "/repo"
+    ],
+    "user_email": null,
+    "transcript_path": null,
+    "hook_event_name": "subagentStart",
+    "subagent_id": "sa1",
+    "subagent_type": "generalPurpose",
+    "task": "Explore the auth flow",
+    "parent_conversation_id": "k1",
+    "tool_call_id": "tc1",
+    "is_parallel_worker": false
+  },
+  "event": {
+    "tool": {
+      "name": "subagent",
+      "raw": "Task",
+      "input": {
+        "description": "Explore the auth flow",
+        "subagent_type": "generalPurpose"
+      },
+      "id": "tc1"
+    }
+  },
+  "result": {
+    "block": {
+      "reason": "proof memory: not able to start another agent now"
+    }
+  },
+  "output": {
+    "stdout": {
+      "permission": "deny",
+      "user_message": "proof memory: not able to start another agent now"
+    }
+  }
+}

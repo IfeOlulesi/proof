@@ -1,0 +1,32 @@
+{
+  "source": "https://antigravity.google/docs/hooks (read 2026-11-03): camelCase fields conversationId, workspacePaths, transcriptPath, artifactDirectoryPath, modelName; PostToolUse carries the toolCall",
+  "kind": "afterTool",
+  "input": {
+    "conversationId": "ec33",
+    "workspacePaths": [
+      "/repo"
+    ],
+    "transcriptPath": "~/.gemini/antigravity-cli/brain/ec33/.system_generated/logs/transcript.jsonl",
+    "artifactDirectoryPath": "~/.gemini/antigravity-cli/brain/ec33",
+    "modelName": "gemini-3.6-flash-medium",
+    "toolCall": {
+      "name": "write_to_file",
+      "args": {
+        "TargetFile": "/repo/a.ts"
+      }
+    },
+    "stepIdx": 21
+  },
+  "event": {
+    "kind": "afterTool",
+    "tool": {
+      "name": "edit",
+      "raw": "write_to_file",
+      "input": {
+        "TargetFile": "/repo/a.ts"
+      }
+    }
+  },
+  "result": {},
+  "output": {}
+}

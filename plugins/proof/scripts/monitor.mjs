@@ -142,10 +142,13 @@ function serve() {
           else for (const f of safeList(join(p, 'subagents'))) if (f.endsWith('.jsonl')) track(join(p, 'subagents', f), now);
         }
       }
+      // Other agents' sessions: the event logs proof's hooks write (agents/events.mjs).
+      const events = join(dataDir(), 'events');
+      for (const agent of safeList(events)) for (const f of safeList(join(events, agent))) if (f.endsWith('.jsonl')) track(join(events, agent, f), now);
     }
     for (const [file, t] of st.files) {
       const rows = t.reader.read();
-      if (t.reader.reset) { t.reader.reset = false; const fresh = newSession(file, null); t.s = fresh.s; }
+      if (t.reader.reset) { t.reader.reset = false; const fresh = newSession(file, null); fresh.s.gateRunning = t.s.gateRunning; t.s = fresh.s; }
       for (const r of rows) t.s.feed(r);
     }
     // Attach agents to their sessions; drop sessions idle for more than a day.
@@ -162,6 +165,7 @@ function serve() {
     try { mtime = statSync(file).mtimeMs; } catch { return; }
     if (now - mtime > DAY) return;
     const { s, parent } = newSession(file, st.seen);
+    s.gateRunning = () => !!liveGate(s.id);
     st.files.set(file, { reader: new LogReader(file), s, parentKey: parent ? sessionKey(file, parent) : null });
   };
 
@@ -235,6 +239,8 @@ function serve() {
       if (t.length) v.tasks = t;
       v.features = features(v.cwd);
       // The gate runs inside a hook, which writes nothing to the log until it finishes; its live file says what it's doing.
+      const k = killedGate(v.id);
+      if (k) v.events = [{ t: k.start, kind: 'error', text: `proof gate timed out: ${v.agentLabel || 'the agent'} stopped it before the checks finished` }, ...(v.events || [])];
       const g = liveGate(v.id);
       if (g) {
         const done = g.checks.filter(c => c.state === 'passed' || c.state === 'failed').length;
@@ -305,6 +311,14 @@ function loadJSON(name, d) { try { return JSON.parse(readFileSync(join(dataDir()
 function saveJSON(name, v) { try { mkdirSync(dataDir(), { recursive: true }); writeFileSync(join(dataDir(), name), JSON.stringify(v)); } catch {} }
 function loadAsleep() { return loadJSON('asleep.json', []).filter(([, b]) => Date.now() - b < 3 * DAY); }
 function saveAsleep(list) { saveJSON('asleep.json', list.filter(([, b]) => Date.now() - b < 3 * DAY)); }
+
+// A gate whose process is gone but whose live file is still there was killed (the agent's hook timeout): when it began.
+function killedGate(id) {
+  try {
+    const g = JSON.parse(readFileSync(join(dataDir(), 'live', `gate-${String(id).replace(/[^\w.-]/g, '_')}.json`), 'utf8'));
+    try { process.kill(g.pid, 0); return null; } catch { return g; }
+  } catch { return null; }
+}
 
 // The gate's live file for a session, if the gate is running now.
 function liveGate(id) {

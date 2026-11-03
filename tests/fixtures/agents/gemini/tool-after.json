@@ -1,0 +1,32 @@
+{
+  "source": "https://geminicli.com/docs/hooks/reference (read 2026-11-03): base fields session_id, transcript_path, cwd, hook_event_name, timestamp; AfterTool adds tool_name, tool_input, tool_response",
+  "kind": "afterTool",
+  "input": {
+    "session_id": "g1",
+    "transcript_path": "/h/.gemini/tmp/chats/g1.json",
+    "cwd": "/repo",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hook_event_name": "AfterTool",
+    "tool_name": "write_file",
+    "tool_input": {
+      "file_path": "/repo/a.ts",
+      "content": "x"
+    },
+    "tool_response": {
+      "llmContent": "ok"
+    }
+  },
+  "event": {
+    "kind": "afterTool",
+    "tool": {
+      "name": "edit",
+      "raw": "write_file",
+      "input": {
+        "file_path": "/repo/a.ts",
+        "content": "x"
+      }
+    }
+  },
+  "result": {},
+  "output": {}
+}

@@ -8,20 +8,22 @@ import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSyn
 import http from 'node:http';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dataDir, git, gitRoot, loadConfig, loadState, protectedSnapshot, pruneData, readStdin, saveState } from './lib.mjs';
+import { adapterFor, hookInput } from './agents/index.mjs';
+import { renderRules } from './agents/words.mjs';
+import { dataDir, git, gitRoot, loadConfig, loadState, protectedSnapshot, pruneData, saveState } from './lib.mjs';
 import { backfillDone, markerPath } from './backfill.mjs';
 import { gb, machineConfig, readSystemFast } from './mem.mjs';
 import { updateNotice } from './updates.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || resolve(here, '..');
-const input = readStdin();
-const cwd = input.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
+const { ev, reply } = hookInput('sessionStart');
+const cwd = ev.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
 const root = gitRoot(cwd);
 const base = root || cwd;
 
-if (input.session_id && !loadState(input.session_id, base)) {
-  saveState(input.session_id, base, {
+if (ev.session && !loadState(ev.session, base)) {
+  saveState(ev.session, base, {
     startHead: root ? git(['rev-parse', 'HEAD'], root) : null,
     startTime: Date.now(),
     protectedAtStart: protectedSnapshot(base),
@@ -80,15 +82,14 @@ if (process.env.PROOF_BACKFILL !== '0' && !backfillDone()) {
   } catch {}
 }
 
+let notice = null;
 if (mcfg.updateCheck) {
-  const notice = updateNotice(pluginRoot);
+  notice = updateNotice(pluginRoot, adapterFor().name);
   if (notice) lines.push(notice);
 }
 
-const rules = readFileSync(join(here, 'rules.md'), 'utf8').trim();
-process.stdout.write(JSON.stringify({
-  hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: `${rules}\n\n${lines.join('\n')}` },
-}));
+const rules = renderRules(readFileSync(join(here, 'rules.md'), 'utf8').trim(), adapterFor());
+reply({ context: `${rules}\n\n${lines.join('\n')}`, ...(notice ? { message: notice } : {}) });
 
 function readJSON(p) { try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; } }
 

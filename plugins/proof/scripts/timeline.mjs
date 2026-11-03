@@ -394,6 +394,120 @@ export class Session {
   }
 }
 
+// ---- other agents: proof's event log -------------------------------------------------------------------------------
+
+// Sessions of agents other than Claude Code come from the log proof's hooks write (agents/events.mjs):
+// <data folder>/events/<agent>/<session>.jsonl. They become the same session model as a Claude transcript, minus what
+// hooks can't see: token counts, the model's own text and thinking, and subagents' own steps. Model time is the time
+// between one thing the hooks saw and the next tool call or turn end.
+export const isEventLog = file => /[\\/]events[\\/][^\\/]+[\\/][^\\/]+\.jsonl$/.test(file);
+const { ADAPTERS } = await import('./agents/index.mjs');
+export const STALE_MS = 10 * 60e3;   // no event for this long, and no gate running: the session has stopped
+// Normalised tool kinds back to the tool names classifyTool() and describe() know.
+const CLAUDE_TOOL = { shell: 'Bash', edit: 'Edit', subagent: 'Agent' };
+const READ_TOOL = /^(read|read_file|read_many_files|glob|grep|search_file_content|list|list_directory|ls|Read|Grep|Glob|codebase_search|file_search)$/i;
+
+const toolName = tool => CLAUDE_TOOL[tool.name] || (READ_TOOL.test(tool.raw || '') ? 'Read' : tool.name === 'browser' ? `mcp__browser__${tool.raw}` : tool.raw || 'tool');
+
+export class EventSession extends Session {
+  constructor(file) {
+    super(file, { id: basename(file, '.jsonl') });
+    this.harness = basename(dirname(file));
+    this.harnessLabel = ADAPTERS[this.harness]?.label || this.harness;
+    this.sinceThink = null;   // when the model last got the floor (a prompt, a tool result, a gate send-back)
+  }
+
+  feed(r) {
+    if (!r || r.v !== 1 || typeof r.t !== 'number') return;
+    if (this.until && r.t > this.until) return;
+    const t = r.t;
+    if (r.cwd) this.cwd = r.cwd;
+    if (t < this.start) this.start = t;
+    if (t > this.end) this.end = t;
+    if (this.prevT != null && t - this.prevT > GAP_MS) this.gaps.push([this.prevT, t]);
+    this.prevT = Math.max(this.prevT ?? t, t);
+    const think = () => { if (this.sinceThink != null && t > this.sinceThink) this.requests.set(`m${this.requests.size}`, { start: this.sinceThink, end: t }); this.sinceThink = null; };
+    switch (r.kind) {
+      case 'sessionStart': this.lastKind = this.lastKind || 'endTurn'; this.turnEnd = this.turnEnd ?? t; break;
+      case 'userPrompt': {
+        const waiting = this.turnEnd != null && this.lastKind === 'endTurn';
+        const text = String(r.prompt || '').replace(/\s+/g, ' ').slice(0, 240);
+        this.prompts.push({ t, text, waitedMs: waiting ? Math.max(0, t - Math.max(this.turnEnd, this.lastT ?? 0)) : 0 });
+        if (!this.title && text) this.title = text.slice(0, 80);
+        this.turnEnd = null; this.lastKind = 'prompt'; this.sinceThink = t;
+        break;
+      }
+      case 'toolStart': {
+        think();
+        const tool = r.tool || {};
+        const name = toolName(tool);
+        const input = tool.name === 'shell' ? { command: tool.summary } : tool.name === 'subagent' ? { description: tool.summary } : { file_path: tool.summary, description: tool.summary };
+        const id = tool.id || `e${this.tools.length}`;
+        if (this.byId.has(id)) break;
+        const rec = { id, name, cat: classifyTool(name, input), desc: describe(name, input), start: t, end: null, ok: null };
+        if (name === 'Bash') rec.cmd = String(tool.summary || '').slice(0, 400);
+        if (typeof tool.summary === 'string' && tool.summary.startsWith('/') && tool.name !== 'shell') rec.file = tool.summary;
+        if (name === 'Agent') { rec.agentType = 'subagent'; rec.agentDesc = tool.summary || ''; this.counts.agentsLaunched++; }
+        if (name !== 'Bash' && name !== 'Agent' && name !== 'Edit' && name !== 'Read') rec.desc = `${tool.raw || 'tool'} ${tool.summary || ''}`.trim().slice(0, 120);
+        this.open.set(id, rec); this.byId.set(id, rec); this.tools.push(rec);
+        this.counts.toolCalls++;
+        if (rec.cat === 'edit') this.counts.edits++;
+        if (rec.cat === 'test') this.counts.testRuns++;
+        this.lastKind = 'assistant';
+        break;
+      }
+      case 'toolEnd': {
+        const id = r.tool?.id;
+        // Without call ids, a tool end closes the oldest open call of the same tool.
+        const rec = (id && this.open.get(id)) || [...this.open.values()].find(x => x.name === toolName(r.tool || {}));
+        if (rec) { rec.end = t; rec.ok = r.ok ?? null; this.open.delete(rec.id); if (r.ok === false) this.counts.toolErrors++; }
+        this.lastKind = 'result'; this.sinceThink = t;
+        break;
+      }
+      case 'gate': {
+        const checks = Array.isArray(r.checks) ? r.checks : [];
+        const failed = checks.filter(c => c && c.ok === false).map(c => c.name);
+        const ms = Number(r.ms) || 0;
+        if (ms > 0) this.hooks.push({ start: t - ms, end: t, cat: 'gate' });
+        if (r.mode === 'commit') {
+          if (r.outcome === 'commitBlocked') { this.counts.commitBlocks++; this.event(t, 'commitBlocked', `proof: commit blocked — ${failed.join(', ')} failing`); }
+          break;
+        }
+        if (r.outcome === 'block') { this.counts.gateRounds++; this.gate.push({ t, ok: false, text: `proof gate: ${failed.join(', ')} failing (round ${r.round || '?'})` }); this.sinceThink = t; this.lastKind = 'hook'; }
+        else if (r.outcome === 'pass') this.gate.push({ t, ok: true, text: `proof ✓ ${checks.length} check${checks.length === 1 ? '' : 's'} passed` });
+        else if (r.outcome === 'gaveUp') { this.gate.push({ t, ok: false, text: `proof ✗ ${failed.join(', ')} still failing` }); this.event(t, 'gaveUp', `${failed.join(', ')} still failing — ${this.harnessLabel} was allowed to stop`); }
+        else if (r.outcome === 'askedUser') { this.gate.push({ t, ok: false, text: `proof: ${failed.join(', ')} still failing` }); this.event(t, 'needsInput', `${this.harnessLabel} stopped to ask you something`); }
+        break;
+      }
+      case 'turnEnd': {
+        think();
+        for (const rec of this.open.values()) if (rec.end == null) rec.end = t;   // nothing outlives the turn it ran in
+        this.open.clear();
+        this.turnEnd = t; this.lastKind = 'endTurn';
+        break;
+      }
+      case 'waiting': this.event(t, 'needsInput', `${this.harnessLabel} is waiting for you`); break;
+      default: return;
+    }
+    this.lastT = Math.max(this.lastT ?? t, t);
+  }
+
+  // A turn-end gate that's still running holds the session open (the turn-end event comes before the gate's result,
+  // and nothing more until it's done); otherwise ten quiet minutes mean the agent stopped, even without a turn end.
+  status(now = Date.now()) {
+    const quiet = now - (this.lastT ?? now);
+    if (quiet > STALE_MS && !this.gateRunning?.()) {
+      for (const rec of this.open.values()) if (rec.end == null) rec.end = this.lastT;
+      this.open.clear();
+      if (this.lastKind !== 'endTurn') { this.lastKind = 'endTurn'; this.turnEnd = this.lastT; }
+      return { state: 'waiting', since: this.lastT, label: `No activity from ${this.harnessLabel} for ${Math.round(quiet / 60e3)} minutes` };
+    }
+    const st = super.status(now);
+    if (st.label) st.label = st.label.replace(/^Claude\b/, this.harnessLabel);
+    return st;
+  }
+}
+
 function firstLine(text, re) { const m = String(text).match(re); return (m ? m[0] : String(text).split('\n')[0]).slice(0, 240); }
 
 // ---- loading -------------------------------------------------------------------------------------------------------
@@ -419,6 +533,7 @@ export function subagentInfo(file) {
 }
 
 export function newSession(file, seen, until) {
+  if (isEventLog(file)) { const s = new EventSession(file); s.until = until || null; return { s, parent: null }; }
   const sub = subagentInfo(file);
   const s = new Session(file, sub ? { id: sub.id, agent: { agentType: sub.meta.agentType || 'subagent', description: sub.meta.description || '', toolUseId: sub.meta.toolUseId, depth: sub.meta.spawnDepth || 1 } } : {});
   s.seen = seen || null;

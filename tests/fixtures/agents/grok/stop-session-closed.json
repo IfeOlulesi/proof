@@ -1,0 +1,20 @@
+{
+  "source": "https://docs.x.ai/build/features/hooks and the grok 1.0.70 user guide 10-hooks.md (read 2026-11-03): common fields hookEventName, sessionId, cwd, workspaceRoot, timestamp, permissionMode, promptId, plus Claude's snake_case aliases; a separate Stop fires at session end with reason channel_closed or shutdown, and its decision is ignored",
+  "kind": "turnEnd",
+  "input": {
+    "sessionId": "x1",
+    "session_id": "x1",
+    "cwd": "/repo",
+    "workspaceRoot": "/repo",
+    "permissionMode": "default",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hookEventName": "stop",
+    "hook_event_name": "Stop",
+    "reason": "shutdown",
+    "stopHookActive": false
+  },
+  "event": {
+    "kind": "turnEnd",
+    "skip": true
+  }
+}

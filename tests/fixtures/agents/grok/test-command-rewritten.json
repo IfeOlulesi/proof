@@ -1,0 +1,35 @@
+{
+  "source": "https://docs.x.ai/build/features/hooks and the grok 1.0.70 user guide 10-hooks.md (read 2026-11-03): common fields hookEventName, sessionId, cwd, workspaceRoot, timestamp, permissionMode, promptId, plus Claude's snake_case aliases; rewrite: hookSpecificOutput.updatedInput replaces the whole input",
+  "kind": "beforeTool",
+  "input": {
+    "sessionId": "x1",
+    "session_id": "x1",
+    "cwd": "/repo",
+    "workspaceRoot": "/repo",
+    "permissionMode": "default",
+    "timestamp": "2026-11-03T10:00:00Z",
+    "hookEventName": "pre_tool_use",
+    "hook_event_name": "PreToolUse",
+    "toolName": "run_terminal_command",
+    "toolInput": {
+      "command": "npx vitest run",
+      "cwd": "/repo"
+    },
+    "toolUseId": "u2",
+    "toolInputTruncated": false
+  },
+  "result": {
+    "updatedCommand": "'node' 'guard.mjs' -- 'npx vitest run'"
+  },
+  "output": {
+    "stdout": {
+      "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "updatedInput": {
+          "command": "'node' 'guard.mjs' -- 'npx vitest run'",
+          "cwd": "/repo"
+        }
+      }
+    }
+  }
+}

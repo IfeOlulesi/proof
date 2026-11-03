@@ -1,0 +1,38 @@
+{
+  "source": "https://code.claude.com/docs/en/hooks (read 2026-11-03): common fields session_id, prompt_id, cwd, hook_event_name; Stop adds stop_hook_active, last_assistant_message; PreToolUse adds tool_name, tool_input",
+  "kind": "beforeTool",
+  "input": {
+    "session_id": "s1",
+    "transcript_path": "/h/.claude/projects/p/s1.jsonl",
+    "cwd": "/repo",
+    "permission_mode": "default",
+    "hook_event_name": "PreToolUse",
+    "prompt_id": "p1",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git commit -m x",
+      "description": "Commit"
+    },
+    "tool_use_id": "t1"
+  },
+  "event": {
+    "kind": "beforeTool",
+    "tool": {
+      "name": "shell",
+      "raw": "Bash",
+      "input": {
+        "command": "git commit -m x",
+        "description": "Commit"
+      }
+    }
+  },
+  "result": {
+    "block": {
+      "reason": "proof: commit blocked — 1 of 2 full check(s) failing."
+    }
+  },
+  "output": {
+    "stderr": "proof: commit blocked — 1 of 2 full check(s) failing.",
+    "code": 2
+  }
+}

@@ -6,6 +6,8 @@
 //   --run [dir] [--no-cache]  By hand: run every check in full and print the results.
 //   --quick <session-id>      Quick mode for this session (the proof:quick skill turns it on): small, clear fixes skip
 //                             the full process; if the change grows past the limits, the gate switches back.
+//   --prompt (user prompt)    For agents whose turn end doesn't say whether it's a fix round: a new prompt from the
+//                             user, so the next turn end starts a fresh count. Claude Code doesn't need it.
 // A pass is cached against the exact content of the code, so identical code is never checked twice.
 // A session that loosens the checks themselves (removes or rewrites a check, edits the fidelity kit) has to ask the user.
 // Every check runs under the proof guard (guard.mjs): a time limit and memory ceilings that keep working even if
@@ -17,32 +19,40 @@ import os from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  cacheGet, cachePut, dataDir, git, gitRoot, loadConfig, loadState, protectedSnapshot, readStdin, saveState, sha, treeFingerprint,
+  cacheGet, cachePut, dataDir, git, gitRoot, loadConfig, loadState, protectedSnapshot, saveState, sha, treeFingerprint,
 } from './lib.mjs';
+import { hookInput } from './agents/index.mjs';
+import { fromHook, logEvent } from './agents/events.mjs';
+import { wordsFor } from './agents/words.mjs';
 import { planRun } from './fit.mjs';
 import { admit, hold, liveRuns } from './mem.mjs';
 import { checkOf, duration, readLedger, record, tally } from './ledger.mjs';
 
 // Checks may reference $CLAUDE_PLUGIN_ROOT; make sure it is set even when run by hand.
 process.env.CLAUDE_PLUGIN_ROOT ||= resolve(dirname(fileURLToPath(import.meta.url)), '..');
+process.env.PROOF_ROOT ||= process.env.CLAUDE_PLUGIN_ROOT;   // the same folder, as other agents' skills name it
 
 const argv = process.argv.slice(2);
-const MODE = argv.includes('--commit') ? 'commit' : argv.includes('--run') ? 'manual' : argv.includes('--quick') ? 'quick' : 'stop';
+const MODE = argv.includes('--commit') ? 'commit' : argv.includes('--run') ? 'manual' : argv.includes('--quick') ? 'quick' : argv.includes('--prompt') ? 'prompt' : 'stop';
 const NO_CACHE = argv.includes('--no-cache');
 const TTL = 12 * 3600e3;
 const GUARD = join(dirname(fileURLToPath(import.meta.url)), 'guard.mjs');
 const RAM_MB = os.totalmem() / 2 ** 20;
 // The hooks get 900s from Claude Code. Finish well inside that, or Claude Code cancels the gate and moves on.
 const DEADLINE = MODE === 'manual' ? Infinity : Date.now() + (Number(process.env.PROOF_GATE_BUDGET) || 840) * 1000;
-const input = MODE === 'manual' || MODE === 'quick' ? {} : readStdin();
+// The agent's hook input as proof's event (agents/index.mjs), and the reply in that agent's terms.
+const { ev, reply, adapter } = MODE === 'manual' || MODE === 'quick' ? { ev: {}, reply: () => {} } : hookInput({ commit: 'beforeTool', prompt: 'userPrompt' }[MODE] || 'turnEnd', { log: MODE === 'stop' });   // a commit is logged as its tool call; a prompt only when it's new
+const WHO = adapter?.label || wordsFor(adapter).agent;   // the agent's name, in messages to the user
 const QUICK_TTL = 3 * 3600e3;
 const SENSITIVE = /(^|\/)\(?(auth|security|payments?|billing|checkout|migrations?|policies|rls)\)?(\/|\.|_|-|$)|\.sql$|(^|\/)\.claude\/|(^|\/)\.github\/workflows\//i;
 
 if (MODE === 'quick') { quickOn(argv[argv.indexOf('--quick') + 1]); process.exit(0); }
+if (MODE === 'prompt') { userPrompt(); process.exit(0); }
+if (ev.skip) process.exit(0);   // the agent fired its turn-end hook for something else (the session closing, an error)
 
 // The PreToolUse hook sees every git command; anything that isn't a commit passes straight through.
 if (MODE === 'commit') {
-  const cmd = input.tool_input?.command;
+  const cmd = ev.tool?.input.command;
   const at = commitIndex(cmd);
   if (at < 0) process.exit(0);
   // This hook runs before the command does, so it can't see files the same command writes before committing.
@@ -50,12 +60,12 @@ if (MODE === 'commit') {
   const before = cmd.slice(0, at).split(/&&|\|\||[;|\n]/).map(s => s.trim()).filter(Boolean)
     .filter(s => !/^(?:[A-Za-z_]\w*=\S*\s*)+$/.test(s) && !/^(?:[A-Za-z_]\w*=\S*\s+)*(?:cd|pushd|git|true|:)(?:\s|$)/.test(s));
   if (before.length) {
-    process.stderr.write(`proof: commit refused — this command runs \`${short(before[0])}\` before committing. The commit gate checks files before the command runs, so it can't see what the same command changes. Make the file changes first, in their own step, then run \`git add … && git commit …\` on its own.`);
-    process.exit(2);
+    reply({ block: { reason: `proof: commit refused — this command runs \`${short(before[0])}\` before committing. The commit gate checks files before the command runs, so it can't see what the same command changes. Make the file changes first, in their own step, then run \`git add … && git commit …\` on its own.` } });
+    process.exit(process.exitCode);
   }
 }
 
-const cwd = (MODE === 'manual' && argv.find(a => !a.startsWith('--'))) || input.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
+const cwd = (MODE === 'manual' && argv.find(a => !a.startsWith('--'))) || ev.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
 const root = gitRoot(cwd);
 const base = root || cwd;
 
@@ -70,7 +80,10 @@ await main();
 
 async function main() {
   const { config, error } = loadConfig(base);
-  const st = MODE === 'manual' ? {} : loadState(input.session_id, base) || {};
+  const st = MODE === 'manual' ? {} : loadState(ev.session, base) || {};
+  // Is this turn end a fix round proof asked for? The agent says so (Claude: stop_hook_active), or else proof
+  // remembers sending it back; a new user prompt (--prompt) forgets that.
+  const continuation = ev.continuation ?? st.sentBack === true;
 
   let changed = [];
   if (MODE !== 'manual') {
@@ -87,9 +100,9 @@ async function main() {
     // Back to the committed code with a check still failing: the failure went away without being fixed, so it can't
     // count as a catch later.
     if (MODE === 'stop' && st.lastFailing) {
-      record({ session: input.session_id || null, prompt: input.prompt_id || null, mode: MODE, outcome: 'clean', root: base, checks: [] });
+      record({ session: ev.session || null, prompt: ev.turn || null, mode: MODE, outcome: 'clean', root: base, checks: [] });
       st.lastFailing = null;
-      saveState(input.session_id, base, st);
+      saveState(ev.session, base, st);
     }
     return;
   }
@@ -97,9 +110,9 @@ async function main() {
   // A new prompt whose reply left the code exactly as the last check saw it (a question, a chat) has nothing new to
   // check, even while the session has uncommitted work. Fix rounds within a prompt still re-run, and so does the commit.
   const snap = MODE === 'stop' ? treeFingerprint(base) : null;
-  const newPrompt = input.prompt_id ? input.prompt_id !== st.promptId : input.stop_hook_active !== true;
+  const newPrompt = ev.turn ? ev.turn !== st.promptId : continuation !== true;
   if (snap && newPrompt && !tamper && snap === st.lastTree) {
-    if (st.lastFailing) emit({ systemMessage: `proof: no file changes since the last check (${st.lastFailing} still failing).` });
+    if (st.lastFailing) reply({ message: `proof: no file changes since the last check (${st.lastFailing} still failing).` });
     return;
   }
 
@@ -142,7 +155,7 @@ async function main() {
   if (MODE === 'commit') return commitDecision(results, failed);
   const stillFailing = failed.filter(r => r !== tamper?.result);   // changed checks are asked about once, not repeated
   Object.assign(st, { lastTree: snap, lastFailing: stillFailing.length ? names(stillFailing) : null });
-  return stopDecision(st, results, failed, tamper, Number(config?.maxRounds) || 5);
+  return stopDecision(st, results, failed, tamper, Number(config?.maxRounds) || 5, continuation);
 }
 
 // ---- decisions --------------------------------------------------------------------------------------------------
@@ -160,20 +173,19 @@ function report(results, failed) {
 
 function commitDecision(results, failed) {
   if (!failed.length) {
-    const st = loadState(input.session_id, base);
-    if (st?.quick) { delete st.quick; saveState(input.session_id, base, st); }   // the quick fix is done
+    const st = loadState(ev.session, base);
+    if (st?.quick) { delete st.quick; saveState(ev.session, base, st); }   // the quick fix is done
     logRun('commitAllowed', results);
-    return emit({ systemMessage: `proof ✓ full checks passed — commit allowed: ${summary(results)}` });
+    return reply({ message: `proof ✓ full checks passed — commit allowed: ${summary(results)}` });
   }
   logRun('commitBlocked', results);
   const each = Math.max(600, Math.floor(7000 / failed.length));
-  process.stderr.write([
+  reply({ block: { reason: [
     `proof: commit blocked — ${failed.length} of ${results.length} full check(s) failing. Every relevant check must pass in full before a commit.`,
     ...killedNote(failed),
     ...failed.map(r => `✗ ${r.name} — ${outcome(r)}\n${tail(r.out, 60).slice(-each)}`),
     'Fix the cause, then commit again. If a failure is not caused by your change, say so and end your message with a line starting NEEDS-INPUT:.',
-  ].join('\n\n').slice(0, 9500));
-  process.exitCode = 2;
+  ].join('\n\n').slice(0, 9500) } });
 }
 
 // A check the guard stopped is a loop, a leak or a hang. Say so, so Claude doesn't spend rounds re-running it.
@@ -190,24 +202,25 @@ function outcome(r) {
   return `\`${short(r.run)}\` ${r.timedOut ? 'timed out' : `exited ${r.code}`}`;
 }
 
-function stopDecision(st, results, failed, tamper, max) {
+function stopDecision(st, results, failed, tamper, max, continuation) {
   // A new user prompt starts a fresh count of fix rounds.
-  const newTurn = input.prompt_id ? input.prompt_id !== st.promptId : input.stop_hook_active !== true;
-  if (newTurn) Object.assign(st, { promptId: input.prompt_id ?? null, rounds: 0, lastWeight: null, stall: 0 });
+  const newTurn = ev.turn ? ev.turn !== st.promptId : continuation !== true;
+  if (newTurn) Object.assign(st, { promptId: ev.turn ?? null, rounds: 0, lastWeight: null, stall: 0 });
+  st.sentBack = false;                       // set again below only if this turn end is sent back
 
   if (!failed.length) {
     Object.assign(st, { rounds: 0, lastWeight: null, stall: 0 });
-    saveState(input.session_id, base, st);
+    saveState(ev.session, base, st);
     logRun('pass', results);
     const fast = results.some(r => r.kind === 'fast');
-    return emit({ systemMessage: `proof ✓ ${summary(results)}${fast ? ' · full checks run before each commit' : ''}${receipt()}` });
+    return reply({ message: `proof ✓ ${summary(results)}${fast ? ' · full checks run before each commit' : ''}${receipt()}` });
   }
 
-  if (/^\s*NEEDS-INPUT:/m.test(input.last_assistant_message || '')) {
+  if (/^\s*NEEDS-INPUT:/m.test(ev.lastMessage || '')) {
     if (tamper) st.ackedProtected = tamper.sig;   // the user has now been asked about the changed checks
-    saveState(input.session_id, base, st);
+    saveState(ev.session, base, st);
     logRun('askedUser', results);
-    return emit({ systemMessage: `proof: ${names(failed)} still failing — Claude stopped to ask you something.` });
+    return reply({ message: `proof: ${names(failed)} still failing — ${WHO} stopped to ask you something.` });
   }
 
   const weight = failed.reduce((n, r) => n + r.weight, 0);
@@ -216,16 +229,18 @@ function stopDecision(st, results, failed, tamper, max) {
   st.lastWeight = weight;
   if (st.rounds > max || st.stall >= 2) {
     if (tamper) st.ackedProtected = tamper.sig;
-    saveState(input.session_id, base, st);
+    saveState(ev.session, base, st);
     logRun('gaveUp', results, st.rounds - 1);
-    return emit({ systemMessage: `proof ✗ ${names(failed)} still failing after ${st.rounds - 1} fix round(s). Claude was allowed to stop — this is not done.` });
+    return reply({ message: `proof ✗ ${names(failed)} still failing after ${st.rounds - 1} fix round(s). ${WHO} was allowed to stop — this is not done.` });
   }
-  saveState(input.session_id, base, st);
+  const reason = stopReason(failed, results.length, st.rounds, max);
+  st.sentBack = true;
+  st.sentBackText = reason;   // agents that send it as a user message (Cursor) mustn't have it count as a new prompt
+  saveState(ev.session, base, st);
   logRun('block', results, st.rounds);
-  emit({
-    decision: 'block',
-    reason: stopReason(failed, results.length, st.rounds, max),
-    systemMessage: `proof: ${names(failed)} failing — sent back to Claude (round ${st.rounds}/${max})`,
+  reply({
+    block: { reason },
+    message: `proof: ${names(failed)} failing — sent back to ${WHO} (round ${st.rounds}/${max})`,
   });
 }
 
@@ -242,24 +257,29 @@ function stopReason(failed, total, round, max) {
 // One line in the permanent ledger for this run (ledger.mjs): what ran, what it decided, on which code.
 function logRun(outcome, results, round) {
   record({
-    session: input.session_id || null, prompt: input.prompt_id || null, mode: MODE, outcome, root: base,
+    session: ev.session || null, prompt: ev.turn || null, mode: MODE, outcome, root: base,
     branch: root ? git(['rev-parse', '--abbrev-ref', 'HEAD'], root) : null, head: root ? git(['rev-parse', 'HEAD'], root) : null,
     tree: runTree, ...(round ? { round } : {}), ms: Date.now() - START, checks: results.map(checkOf),
   });
+  // The dashboard's view of the same run, for agents that keep an event log (not Claude Code).
+  const agent = process.env.PROOF_AGENT;
+  logEvent(agent, ev.session, { kind: 'gate', cwd: base, mode: MODE, outcome, ...(round ? { round } : {}), ms: Date.now() - START,
+    checks: results.map(r => ({ name: checkOf(r).name, ok: checkOf(r).ok })) });
+  if (outcome === 'askedUser' || outcome === 'gaveUp') logEvent(agent, ev.session, { kind: 'waiting', cwd: base, reason: outcome });
 }
 
 // After a turn in which proof caught something: what it caught, and the session so far. Quiet otherwise.
 // The turn is this prompt's runs, or (without prompt ids) the runs since the last turn that ended.
 function receipt() {
-  if (!input.session_id) return '';
+  if (!ev.session) return '';
   try { return receiptText(); } catch { return ''; }   // the ledger is a nicety; it never costs the gate its message
 }
 
 function receiptText() {
-  const mine = readLedger({ tailBytes: 4 << 20 }).filter(e => e.session === input.session_id);
+  const mine = readLedger({ tailBytes: 4 << 20 }).filter(e => e.session === ev.session);
   const ended = ['pass', 'gaveUp', 'askedUser'];
   let from = 0;
-  if (input.prompt_id) from = mine.find(e => e.prompt === input.prompt_id)?.t ?? Infinity;
+  if (ev.turn) from = mine.find(e => e.prompt === ev.turn)?.t ?? Infinity;
   else for (let i = mine.length - 2; i >= 0; i--) if (mine[i].mode === 'stop' && ended.includes(mine[i].outcome)) { from = mine[i].t + 1; break; }
   const turn = tally(mine, { from });
   if (!turn.caught) return '';
@@ -414,7 +434,7 @@ async function room(job) {
 
 // What the gate is doing right now, for the dashboard: <data>/live/gate-<session>.json while it runs.
 function liveStatus(jobs) {
-  const file = MODE === 'manual' ? null : join(dataDir(), 'live', `gate-${String(input.session_id || 'none').replace(/[^\w.-]/g, '_')}.json`);
+  const file = MODE === 'manual' ? null : join(dataDir(), 'live', `gate-${String(ev.session || 'none').replace(/[^\w.-]/g, '_')}.json`);
   const state = jobs.map(j => ({ name: j.name, kind: j.kind, state: 'queued' }));
   const write = () => { if (file) try { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, JSON.stringify({ pid: process.pid, mode: MODE, root: base, start: START, checks: state })); } catch {} };
   write();
@@ -467,6 +487,23 @@ function killGroup(pid, sig) {
   try { process.kill(-pid, sig); } catch { try { process.kill(pid, sig); } catch {} }
 }
 
+// ---- user prompts -----------------------------------------------------------------------------------------------
+
+// A new prompt from the user: the next turn end isn't a fix round, whatever proof sent back before.
+// Agents that send proof's follow-up as a user message (Cursor), or report the last prompt before every model call
+// (Antigravity), call this for prompts that aren't new: those are skipped.
+function userPrompt() {
+  const base = gitRoot(ev.cwd || process.cwd()) || ev.cwd || process.cwd();
+  const st = loadState(ev.session, base) || {};
+  const text = ev.prompt == null ? null : String(ev.prompt).trim();
+  if (text != null && st.sentBackText && text === st.sentBackText.trim()) return;   // proof's own follow-up
+  if (text != null && text === st.lastPromptText) return;                          // the same prompt, reported again
+  logEvent(process.env.PROOF_AGENT, ev.session, fromHook(ev));
+  if (text != null) st.lastPromptText = text;
+  st.sentBack = false;
+  if (ev.session) saveState(ev.session, base, st);
+}
+
 // ---- quick mode -------------------------------------------------------------------------------------------------
 
 // Turned on by the proof:quick skill for one session. It ends with the next commit, after 3 hours, or when the
@@ -493,7 +530,7 @@ function quickLimits(config) {
 
 // Has the change outgrown a quick fix? If so, switch the session back to the full process (once) and say why.
 function quickTripped(st, changed) {
-  if (Date.now() - st.quick.since > QUICK_TTL) { delete st.quick; saveState(input.session_id, base, st); return false; }
+  if (Date.now() - st.quick.since > QUICK_TTL) { delete st.quick; saveState(ev.session, base, st); return false; }
   const { config } = loadConfig(base);
   const lim = quickLimits(config);
   const head = st.quick.head && git(['cat-file', '-e', `${st.quick.head}^{commit}`], root) !== null ? st.quick.head : 'HEAD';
@@ -518,11 +555,10 @@ function quickTripped(st, changed) {
   if (sensitive.length) why.push(`touches ${sensitive.slice(0, 3).join(', ')}`);
   if (!why.length) return false;
   delete st.quick;
-  saveState(input.session_id, base, st);
-  emit({
-    decision: 'block',
-    reason: `proof: this is no longer a quick fix: ${why.join('; ')}. Switch to the full build process now (skill proof:build): write or extend the test for the behaviour you changed and record its failing run, have the proof:verifier agent review the change before you commit, and add a PROGRESS.md entry. Then finish again.`,
-    systemMessage: `proof: quick mode ended — ${why.join('; ')}. Back to the full process.`,
+  saveState(ev.session, base, st);
+  reply({
+    block: { reason: `proof: this is no longer a quick fix: ${why.join('; ')}. Switch to the full build process now (${wordsFor(adapter).skill('build')}): write or extend the test for the behaviour you changed and record its failing run, have ${wordsFor(adapter).verifier} review the change before you commit, and add a PROGRESS.md entry. Then finish again.` },
+    message: `proof: quick mode ended — ${why.join('; ')}. Back to the full process.`,
   });
   return true;
 }
@@ -561,4 +597,3 @@ function short(cmd) { return cmd.length > 160 ? `${cmd.slice(0, 157)}…` : cmd;
 function shq(s) { return `'${s.replace(/'/g, `'\\''`)}'`; }
 function tail(s, n) { return String(s || '').trim().split('\n').slice(-n).join('\n'); }
 function indent(s) { return s.split('\n').map(l => `    ${l}`).join('\n'); }
-function emit(obj) { process.stdout.write(JSON.stringify(obj)); }
