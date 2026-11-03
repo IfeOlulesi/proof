@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ifeolulesi.github.io/proof/sitemap.xml
