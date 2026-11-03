@@ -4,11 +4,12 @@
 // after compaction), and records where the session started: the commit, the time, and the check definitions, so the
 // gate can tell what this session changed.
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import http from 'node:http';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dataDir, git, gitRoot, loadConfig, loadState, protectedSnapshot, pruneData, readStdin, saveState } from './lib.mjs';
+import { backfillDone, markerPath } from './backfill.mjs';
 import { gb, machineConfig, readSystemFast } from './mem.mjs';
 import { updateNotice } from './updates.mjs';
 
@@ -65,6 +66,19 @@ if (process.env.PROOF_MONITOR !== '0' && !(await monitorUp())) {
   try { spawn(process.execPath, [join(here, 'monitor.mjs'), '--daemon'], { detached: true, stdio: 'ignore', env: { ...process.env, PROOF_DATA_DIR: dataDir() } }).unref(); } catch {}
 }
 lines.push(`Live dashboard of every session: http://127.0.0.1:${mcfg.port}/ (the proof:watch skill opens it). For work you expect to take more than an hour, open it at the start and keep your task list current, one item per unit, so it shows progress.`);
+
+// Once per machine: add the gate runs already in Claude's session logs to the ledger, in the background. The lock is
+// taken before starting it, so two sessions starting together can't both run it; a lock left by a backfill that died
+// (10 minutes old, no marker) is taken over. A rerun is safe: sessions already backfilled are skipped.
+if (process.env.PROOF_BACKFILL !== '0' && !backfillDone()) {
+  try {
+    const lock = `${markerPath()}.lock`;
+    mkdirSync(dirname(lock), { recursive: true });
+    try { if (Date.now() - statSync(lock).mtimeMs > 600e3) unlinkSync(lock); } catch {}
+    writeFileSync(lock, String(Date.now()), { flag: 'wx' });
+    spawn(process.execPath, [join(here, 'backfill.mjs'), '--quiet'], { detached: true, stdio: 'ignore' }).unref();
+  } catch {}
+}
 
 if (mcfg.updateCheck) {
   const notice = updateNotice(pluginRoot);

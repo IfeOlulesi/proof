@@ -21,6 +21,7 @@ import {
 } from './lib.mjs';
 import { planRun } from './fit.mjs';
 import { admit, hold, liveRuns } from './mem.mjs';
+import { checkOf, duration, readLedger, record, tally } from './ledger.mjs';
 
 // Checks may reference $CLAUDE_PLUGIN_ROOT; make sure it is set even when run by hand.
 process.env.CLAUDE_PLUGIN_ROOT ||= resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -62,6 +63,7 @@ const base = root || cwd;
 const running = new Set();
 const START = Date.now();
 let inflight = 0;
+let runTree = null;                       // the code fingerprint the checks ran on, for the ledger
 process.on('SIGTERM', () => { for (const pid of running) killGroup(pid, 'SIGTERM'); process.exit(1); });
 
 await main();
@@ -81,7 +83,16 @@ async function main() {
     if (MODE === 'manual') console.log(`No .claude/proof.json in ${base} — nothing to run.`);
     return;
   }
-  if (MODE !== 'manual' && !changed.length && !tamper) return;   // chats and brainstorms pass straight through
+  if (MODE !== 'manual' && !changed.length && !tamper) {         // chats and brainstorms pass straight through
+    // Back to the committed code with a check still failing: the failure went away without being fixed, so it can't
+    // count as a catch later.
+    if (MODE === 'stop' && st.lastFailing) {
+      record({ session: input.session_id || null, prompt: input.prompt_id || null, mode: MODE, outcome: 'clean', root: base, checks: [] });
+      st.lastFailing = null;
+      saveState(input.session_id, base, st);
+    }
+    return;
+  }
 
   // A new prompt whose reply left the code exactly as the last check saw it (a question, a chat) has nothing new to
   // check, even while the session has uncommitted work. Fix rounds within a prompt still re-run, and so does the commit.
@@ -125,6 +136,7 @@ async function main() {
   for (const j of jobs) results.push(j.cached ? { ...j, ok: true, weight: 0 } : j.result);
   if (!results.length) return;
   const failed = results.filter(r => !r.ok);
+  runTree = tree ?? snap ?? (root ? treeFingerprint(base) : null);
 
   if (MODE === 'manual') return report(results, failed);
   if (MODE === 'commit') return commitDecision(results, failed);
@@ -142,6 +154,7 @@ function report(results, failed) {
     console.log(`${r.ok ? '✓' : '✗'} ${r.name}${how}${why}${r.ok ? '' : `\n${indent(tail(r.out, 40))}`}`);
   }
   console.log(failed.length ? `\n${failed.length} of ${results.length} checks failing.` : `\nAll ${results.length} checks passed.`);
+  logRun(failed.length ? 'fail' : 'pass', results);
   process.exitCode = failed.length ? 1 : 0;
 }
 
@@ -149,8 +162,10 @@ function commitDecision(results, failed) {
   if (!failed.length) {
     const st = loadState(input.session_id, base);
     if (st?.quick) { delete st.quick; saveState(input.session_id, base, st); }   // the quick fix is done
+    logRun('commitAllowed', results);
     return emit({ systemMessage: `proof ✓ full checks passed — commit allowed: ${summary(results)}` });
   }
+  logRun('commitBlocked', results);
   const each = Math.max(600, Math.floor(7000 / failed.length));
   process.stderr.write([
     `proof: commit blocked — ${failed.length} of ${results.length} full check(s) failing. Every relevant check must pass in full before a commit.`,
@@ -183,13 +198,15 @@ function stopDecision(st, results, failed, tamper, max) {
   if (!failed.length) {
     Object.assign(st, { rounds: 0, lastWeight: null, stall: 0 });
     saveState(input.session_id, base, st);
+    logRun('pass', results);
     const fast = results.some(r => r.kind === 'fast');
-    return emit({ systemMessage: `proof ✓ ${summary(results)}${fast ? ' · full checks run before each commit' : ''}` });
+    return emit({ systemMessage: `proof ✓ ${summary(results)}${fast ? ' · full checks run before each commit' : ''}${receipt()}` });
   }
 
   if (/^\s*NEEDS-INPUT:/m.test(input.last_assistant_message || '')) {
     if (tamper) st.ackedProtected = tamper.sig;   // the user has now been asked about the changed checks
     saveState(input.session_id, base, st);
+    logRun('askedUser', results);
     return emit({ systemMessage: `proof: ${names(failed)} still failing — Claude stopped to ask you something.` });
   }
 
@@ -200,9 +217,11 @@ function stopDecision(st, results, failed, tamper, max) {
   if (st.rounds > max || st.stall >= 2) {
     if (tamper) st.ackedProtected = tamper.sig;
     saveState(input.session_id, base, st);
+    logRun('gaveUp', results, st.rounds - 1);
     return emit({ systemMessage: `proof ✗ ${names(failed)} still failing after ${st.rounds - 1} fix round(s). Claude was allowed to stop — this is not done.` });
   }
   saveState(input.session_id, base, st);
+  logRun('block', results, st.rounds);
   emit({
     decision: 'block',
     reason: stopReason(failed, results.length, st.rounds, max),
@@ -218,6 +237,36 @@ function stopReason(failed, total, round, max) {
     ...failed.map(r => `✗ ${r.name} — ${outcome(r)}\n${tail(r.out, 60).slice(-each)}`),
     'Do not edit tests, specs, inventories or .claude/proof.json to get past this. If a check is wrong, or you need the user, explain why and end your message with a line starting NEEDS-INPUT:.',
   ].join('\n\n').slice(0, 9500);
+}
+
+// One line in the permanent ledger for this run (ledger.mjs): what ran, what it decided, on which code.
+function logRun(outcome, results, round) {
+  record({
+    session: input.session_id || null, prompt: input.prompt_id || null, mode: MODE, outcome, root: base,
+    branch: root ? git(['rev-parse', '--abbrev-ref', 'HEAD'], root) : null, head: root ? git(['rev-parse', 'HEAD'], root) : null,
+    tree: runTree, ...(round ? { round } : {}), ms: Date.now() - START, checks: results.map(checkOf),
+  });
+}
+
+// After a turn in which proof caught something: what it caught, and the session so far. Quiet otherwise.
+// The turn is this prompt's runs, or (without prompt ids) the runs since the last turn that ended.
+function receipt() {
+  if (!input.session_id) return '';
+  try { return receiptText(); } catch { return ''; }   // the ledger is a nicety; it never costs the gate its message
+}
+
+function receiptText() {
+  const mine = readLedger({ tailBytes: 4 << 20 }).filter(e => e.session === input.session_id);
+  const ended = ['pass', 'gaveUp', 'askedUser'];
+  let from = 0;
+  if (input.prompt_id) from = mine.find(e => e.prompt === input.prompt_id)?.t ?? Infinity;
+  else for (let i = mine.length - 2; i >= 0; i--) if (mine[i].mode === 'stop' && ended.includes(mine[i].outcome)) { from = mine[i].t + 1; break; }
+  const turn = tally(mine, { from });
+  if (!turn.caught) return '';
+  const s = tally(mine);
+  const what = Object.keys(turn.caughtChecks).join(', ');
+  const blocked = s.commitsBlocked ? `, ${s.commitsBlocked} commit${s.commitsBlocked > 1 ? 's' : ''} blocked` : '';
+  return ` · caught ${turn.caught} failure${turn.caught > 1 ? 's' : ''} this turn before you saw ${turn.caught > 1 ? 'them' : 'it'} (${what}) · this session: ${s.caught} caught${blocked}, ${duration(s.checkMs)} in checks`;
 }
 
 // ---- what to run ------------------------------------------------------------------------------------------------

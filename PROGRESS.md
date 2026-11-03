@@ -100,3 +100,29 @@ Approved design unchanged; only sample copy and times. Re-tagged `contract` afte
 - All 32 mockup frames: ALL PASS. `bash tests/run.sh`: all passed (5 suites). Interaction test: 24 passed.
 - Not verified: motion timings against interactions.json beyond reduced motion; Linux and other browsers.
 - Before merging to main: drop `fidelity/refs` (14 MB) from the merge (squash), keep the inventories.
+
+# proof for every coding agent: progress
+
+Spec: `SPEC.md`, units in `features.json`. Branch `multi-agent`.
+
+## F20–F22. Ledger of gate runs, turn receipt, backfill (done)
+
+- `scripts/ledger.mjs`: every gate run that ran or reused a check appends one line to `~/.config/proof/ledger.jsonl`
+  (or `PROOF_LEDGER`); no check output. `tally()` counts catches (fail, then pass on different code, same session and
+  repo), flaky (fail, then pass on the same code), blocked commits, handed back, time in the gate. A failure the user was
+  shown (gave up / asked) or reverted to the committed code (a `clean` line) is never counted as caught later; checks
+  stopped for low machine memory are skipped.
+- `gate.mjs`: logs each run; after a turn that caught something, the passing message adds a receipt
+  ("caught 1 failure this turn before you saw it (unit) · this session: …"). Clean turns keep today's message.
+- `scripts/recap.mjs`: totals for 7 days, `--since`, `--session`, `--json`, `--backfill`.
+- `scripts/backfill.mjs`: reads past gate runs from Claude's session logs once (session start, in the background, with
+  a lock that a dead run's successor takes over), de-duplicated across resumed/forked session files by record uuid.
+  Transcripts have no fingerprint, so a file edit (or subagent call) between failure and pass stands in for it.
+- Red runs: `tests/ledger.sh` "ledger file created under ~/.config/proof" failed before ledger.mjs existed; each
+  verifier finding got a failing case first (asked-user, revert, odd lines, resumed copies, space in path, stale lock).
+- Checks: `bash tests/ledger.sh` 45 passed (3 runs); `bash tests/run.sh` all passed. Two verifier passes; all findings fixed.
+- Measured on this machine (scratch ledger): 929 gate runs from 64 sessions in 3.8 s; 16 caught, 11 commits blocked,
+  51 handed back, 24 flaky, 4h 5m in checks.
+- Not verified: the receipt as Claude Code renders it in a live session (only the hook's JSON output is tested).
+- Not done: weekly recap view on the dashboard (needs a mockup; the dashboard design is locked).
+- Next: F1, the normalised hook event and the Claude adapter.

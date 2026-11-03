@@ -225,8 +225,8 @@
         "A catch is fail then pass on different code in the same session; same code is flaky"
       ],
       "verify": "bash tests/ledger.sh",
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "bash tests/ledger.sh: 45 passed (ledger lines, catch/flaky/revert/asked-user/machine-memory cases); bash tests/run.sh all passed"
     },
     {
       "id": "F21",
@@ -237,8 +237,8 @@
         "recap.mjs prints totals for 7 days, --since, --session, --json"
       ],
       "verify": "bash tests/ledger.sh receipt and recap cases",
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "bash tests/ledger.sh: receipt cases (with and without prompt ids, clean pass, already-shown failure) and recap --since/--session/--json pass"
     },
     {
       "id": "F22",
@@ -249,8 +249,8 @@
         "Session start runs it once in the background"
       ],
       "verify": "bash tests/ledger.sh backfill cases; a manual run over this machine’s transcripts",
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "bash tests/ledger.sh backfill cases (resumed-session copies once, subagent edits, /dev/null writes, stale lock, path with a space) pass; manual: recap.mjs --backfill on this machine: 929 runs from 64 sessions in 3.8s"
     }
   ]
 }
