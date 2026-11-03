@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 (2026-11-03)
+
+- **Update notices.** Claude Code doesn't auto-update plugins from third-party marketplaces unless you turn it on, so proof now tells Claude at the start of a session when a newer version is out, and Claude offers to update. It reads the released version from GitHub at most once a day, in the background; nothing is sent. Turn it off with `"updateCheck": false` in `~/.config/proof/machine.json`.
+- **Auto-update at install.** The install prompt turns on auto-update for the proof marketplace.
+- **No temp-file cleanup.** Claude leaves its temporary files in the scratch folder instead of deleting them with `rm -f`, which asked you to confirm every time.
+
 ## 0.5.0 (2026-10-30)
 
 - **Test runs fit the memory there is.** When a test suite doesn't fit under the memory ceiling, proof runs it with fewer workers instead of refusing it: the same tests, in smaller batches, slower but never skipped. This works for Jest, Vitest, Playwright, `node --test`, `go test` and Gradle, called directly or through a `package.json` script, both for Claude's own runs and for the gate's checks. A run is refused only when not even one worker fits.
