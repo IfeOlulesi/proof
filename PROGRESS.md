@@ -1,3 +1,31 @@
+# Dashboard v2 build ("Pulse"): progress
+
+Design: `mockup/app.html` (tag `design-v2`; v1 "Calm" is at `design-v1`), interactions in `mockup/interactions.json`.
+Look: shadcn/ui base (zinc tokens, Geist and Geist Mono, card, badge, tabs, command, table, alert) with Tremor data
+pieces (progress rings, tracker, category bar, bar list, spark area, stacked bar chart). 1440×900, light and dark.
+Contract: 32 inventories in `fidelity/inventory/` (16 screens × 2 themes; the status--all spec sheet isn't an app
+screen), checked with `fidelity/verify-screen.mjs <screen>` against `http://127.0.0.1:47400` as in v1.
+Colour rules: green while Claude works; coral only for a session that needs you now; amber only for memory;
+"waiting on you" is neutral grey in charts. Activity hues validated for colour-blind separation in stack order
+thinking → reading/editing → commands → checks.
+
+| # | Unit | Screens | State |
+|---|---|---|---|
+| 0 | Contract: mockup, inventories, routes, tags | - | done |
+| 1 | Foundation: tokens, Geist fonts embedded, top bar, footer bar, card/badge/tabs/kbd | - | |
+| 2 | Home, working: rings, agent graph, KPI cards, activity chart | home--working (+ dark) | |
+| 3 | Needs you, finished, stalled | 3 × 2 | |
+| 4 | Memory banner and memory view | 2 × 2 | |
+| 5 | Agent drill-down | job (+ dark) | |
+| 6 | Drawers as a bottom sheet: timeline, time, log | 3 × 2 | |
+| 7 | Switcher (command palette), hidden needs-you | 3 × 2 | |
+| 8 | Loading, offline, empty | 3 × 2 | |
+| 9 | Interactions | every entry in mockup/interactions.json | |
+
+Fixtures: the v2 mockup's sample data is generated in its script (seeded, "now" 14:34 on 17 Oct 2026); the fixture
+feeds in `tests/fixtures/dashboard/` must produce the same numbers. Port the generator to `make.mjs` in unit 1/2.
+Playwright: `npm i --no-save --no-package-lock playwright@1.56.1` (matches the cached headless shell 1194).
+
 # Dashboard v1 build: progress
 
 Design: `mockup/app.html` (tag `design-v1`), interactions in `mockup/interactions.json`.
