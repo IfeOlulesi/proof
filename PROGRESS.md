@@ -17,10 +17,10 @@ thinking → reading/editing → commands → checks.
 | 3 | Needs you, finished, stalled | 3 × 2 | done (1 copy item for sign-off) |
 | 4 | Memory banner and memory view | 2 × 2 | done (1 copy item for sign-off) |
 | 5 | Agent drill-down | job (+ dark) | done |
-| 6 | Drawers as a bottom sheet: timeline, time, log | 3 × 2 | |
-| 7 | Switcher (command palette), hidden needs-you | 3 × 2 | |
-| 8 | Loading, offline, empty | 3 × 2 | |
-| 9 | Interactions | every entry in mockup/interactions.json | |
+| 6 | Drawers as a bottom sheet: timeline, time, log | 3 × 2 | done (2 copy items for sign-off) |
+| 7 | Switcher (command palette), hidden needs-you | 3 × 2 | done (1 contract item for sign-off) |
+| 8 | Loading, offline, empty | 3 × 2 | done |
+| 9 | Interactions | every entry in mockup/interactions.json | done |
 
 Fixtures: the v2 mockup's sample data is generated in its script (seeded, "now" 14:34 on 17 Oct 2026); the fixture
 feeds in `tests/fixtures/dashboard/` must produce the same numbers. Port the generator to `make.mjs` in unit 1/2.
@@ -140,6 +140,73 @@ Playwright: `npm i --no-save --no-package-lock playwright@1.56.1` (matches the c
 - Checks: verify-screen ALL PASS for job and job--dark; home--working still ALL PASS. Playwright: show earlier (6 → 40
   rows), main-thread drill-down ("Waiting on 3 agents"), a finished agent, a review agent with no unit; no errors.
 - Not run for this unit: the verifier and the screen judge (skipped to save time).
+
+## v2 unit 6. Drawers as a bottom sheet
+
+- Page: `Sheet` over the session's home (scrim, grab bar, T/W/L tabs, Close; scrim click, Esc or the current tab
+  closes it). Timeline: one lane per worktree from `rows` (blocks by activity, commits on the main lane, gate
+  failures on the failing agent's lane, a now line, 1h/2h/6h/24h window), lane cards (busy, commits, state), and the
+  pinned tooltip for `?pin=wf-tip`. Where the time went: on the clock, work done in parallel, biggest drag, the split
+  (session or last 6 h), working time by kind with the e2e breakdown, what slowed it down. Log: events (plus running
+  calls), gate, commits, problems, every tool call; 10 rows, then 40 more per click.
+- Fixture: the checkout session's commits after 14:12 are the five the mockup's log draws (sha, message, who); the
+  generator's 14:29 commit and 14:22 gate pass, which that log doesn't show, sit earlier. Still 14 commits and 8 rounds.
+- Checks: verify-screen ALL PASS for drawer--time (light and dark); drawer--timeline and drawer--log pass every item
+  except the copy below. Playwright: every log tab, show earlier, sheet tab switching, block tooltip, window range,
+  last-6h split, close by tab, scrim and Esc, a needs-you session's log; no page errors.
+- Contract copy for sign-off: 4. timeline `lane-reviews-state` "verifier reading cart.tsx" shortens the agent's step
+  label ("Reading cart.tsx and its acceptance criteria"); the page shows the label (the card ellipsizes it).
+  5. log `log-count` "Showing 10 of 21" and `log-more` "Show 11 earlier": with the mockup's own 14 commits and 8 gate
+  rounds the events tab holds 26, so the page says "of 26" and "Show 16 earlier".
+- Not run for this unit: the verifier and the screen judge.
+
+## v2 unit 7. Switcher and hidden needs-you
+
+- Page: `Palette` (Ctrl/Cmd+K or "+N more"): needs-you first, then projects (a project with a session that needs you
+  first, then feed order) with their session counts; when-labels (open now, asked 49h ago, thinking, working, no
+  activity for 18m, finished 41m ago); search over titles and projects with the match marked; arrows, Enter, Esc
+  (clears the query, then closes); scrim click closes. Tabs no longer pin a session that needs you: tabs are the first
+  four in feed order plus the selected one, and a hidden needs-you shows on "+4 more · 1 needs you".
+- Fixture: switcher--hidden-needs-you puts the needs-you session fifth (tabs: checkout, dashboard, release, docs).
+- Checks: verify-screen ALL PASS for switcher--menu-search and switcher--hidden-needs-you (light and dark); home
+  screens still pass. Playwright: open with focus, filter, arrows + Enter (the session takes the last tab slot), no
+  match, Esc twice, the hidden needs-you first in the menu; no page errors.
+- Contract item for sign-off: 6. switcher--menu lists 9 sessions (with "API docs refresh" in shop-app) while the same
+  frame's top bar says "+4 more" (8 sessions). The fixture keeps 8, so the menu has no "API docs refresh" row and
+  items 5–9 shift.
+- Not run for this unit: the verifier and the screen judge.
+
+## v2 unit 8. Loading, offline, empty
+
+- Page: `Loading2` (top bar without tabs, skeletons, "Reading session logs…"), `OfflineAlert` over the dimmed last
+  update (grey "Last update 14:34" badge, "Last update 3m ago" in the footer, Copy /proof:watch), `Empty2` (6 h / 24 h).
+- Checks: verify-screen ALL PASS for loading, offline and empty (light and dark).
+
+## v2 unit 9. Interactions and clean-up
+
+- Every view is on v2, so the v1 views, the v1 styles scoped to `.v1` and their helpers are gone; the v2 styles sit in
+  `@scope (.app)`. The replay banner is a grey alert.
+- `node tests/dashboard-page.mjs` rewritten for v2 (still outside tests/run.sh, which has no browser): tabs and 1–4,
+  the palette (Ctrl+K focus, filter, arrows + Enter, Esc, hidden needs-you), range tabs, tooltips, the sheet (W, T,
+  block tooltip, log filters, close by tab, Esc and scrim), drill-down (show earlier, Backspace, main thread, back),
+  memory pill, copy path, Open in full, theme toggle remembered, live polling every 2 s, ticking timers, rings drawing
+  in live, Not live on a failed poll and recovery, reduced motion. 35 passed.
+- Found by it and fixed: a copy button threw an unhandled rejection when the clipboard was denied.
+- Not verified: motion timings against interactions.json beyond reduced motion and the ring animation; Linux and
+  other browsers.
+
+## State at the end of the v2 build (2026-11-03)
+
+- All 32 frames checked with verify-screen: 20 ALL PASS. The other 12 are the six contract-copy items below, each in
+  light and dark; every other item in them passes.
+- Contract items for sign-off (mockup and inventories unchanged; each needs the user's OK to re-extract or re-tag):
+  1. finished `kpi-errors-value` "a CI wait timed out once" (the feed doesn't describe tool errors).
+  2. event clock labels on needs-you, finished, stalled kept from v1's clock (3 minutes off their waits).
+  3. memory `meta` "Real memory · sample history and runs" (describes the fixture, not the feed).
+  4. timeline `lane-reviews-state` "verifier reading cart.tsx" (a shortened step label).
+  5. log "Showing 10 of 21" / "Show 11 earlier" (the mockup's own commits and gate rounds make 26).
+  6. switcher--menu lists 9 sessions while its top bar says "+4 more" (8).
+- Verifier and screen judge ran for units 1–3; units 4–9 were checked with verify-screen and Playwright only.
 
 # Dashboard v1 build: progress
 

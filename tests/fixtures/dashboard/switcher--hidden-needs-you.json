@@ -1511,100 +1511,94 @@
    "commits": [
     {
      "t": 1792243980000,
-     "sha": "a92f0d0",
-     "msg": "order API types",
-     "who": "Lane C unit 14: order API"
-    },
-    {
-     "t": 1792243740000,
-     "sha": "a88f0c0",
-     "msg": "order summary component",
+     "sha": "9d2c41e",
+     "msg": "merge lane-a: cart screen",
      "who": "Main thread"
     },
     {
      "t": 1792243530000,
-     "sha": "a7ef0b0",
-     "msg": "payment form validation",
-     "who": "Lane B unit 13: payment screen"
+     "sha": "a10f000",
+     "msg": "wire payment route",
+     "who": "Main thread"
     },
     {
-     "t": 1792243500000,
-     "sha": "a74f0a0",
+     "t": 1792243510000,
+     "sha": "4be91a0",
      "msg": "payment form",
      "who": "Lane B unit 13: payment screen"
     },
     {
      "t": 1792243140000,
-     "sha": "a6af090",
-     "msg": "design tokens for payment",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792242780000,
-     "sha": "a60f080",
-     "msg": "api client for orders",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792242540000,
-     "sha": "a56f070",
-     "msg": "mock server for e2e",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792242120000,
-     "sha": "a4cf060",
-     "msg": "wire payment route",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792241700000,
-     "sha": "a42f050",
+     "sha": "a11f010",
      "msg": "checkout state machine",
      "who": "Main thread"
     },
     {
+     "t": 1792242780000,
+     "sha": "a12f020",
+     "msg": "merge lane-a: cart screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242540000,
+     "sha": "a14b090",
+     "msg": "product detail tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242360000,
+     "sha": "a13af80",
+     "msg": "order summary component",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242120000,
+     "sha": "a129e70",
+     "msg": "mock server for e2e",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241700000,
+     "sha": "a118d60",
+     "msg": "api client for orders",
+     "who": "Main thread"
+    },
+    {
      "t": 1792241220000,
-     "sha": "a38f040",
-     "msg": "merge lane-a: cart screen",
+     "sha": "a107c50",
+     "msg": "design tokens for payment",
      "who": "Main thread"
     },
     {
      "t": 1792240800000,
-     "sha": "a2ef030",
+     "sha": "a0f6b40",
+     "msg": "plan for the checkout flow",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240560000,
+     "sha": "a0e5a30",
      "msg": "cart totals and empty state",
      "who": "Lane A unit 12: cart screen"
     },
     {
-     "t": 1792240560000,
-     "sha": "a24f020",
+     "t": 1792240140000,
+     "sha": "a0d4f20",
      "msg": "cart screen tests",
      "who": "Lane A unit 12: cart screen"
     },
     {
-     "t": 1792240140000,
-     "sha": "a1af010",
+     "t": 1792239840000,
+     "sha": "a0c3e10",
      "msg": "cart screen",
      "who": "Lane A unit 12: cart screen"
-    },
-    {
-     "t": 1792239840000,
-     "sha": "a10f000",
-     "msg": "plan for the checkout flow",
-     "who": "Main thread"
     }
    ],
    "events": [
     {
      "t": 1792243980000,
      "kind": "commit",
-     "text": "a92f0d0 order API types",
-     "who": "Lane C unit 14: order API"
-    },
-    {
-     "t": 1792243740000,
-     "kind": "commit",
-     "text": "a88f0c0 order summary component",
+     "text": "9d2c41e merge lane-a: cart screen",
      "who": "Main thread"
     },
     {
@@ -1614,28 +1608,22 @@
      "who": "Lane B unit 13: payment screen"
     },
     {
+     "t": 1792243550000,
+     "kind": "gatePass",
+     "text": "6 checks in 2m 40s",
+     "who": "proof gate"
+    },
+    {
      "t": 1792243530000,
      "kind": "commit",
-     "text": "a7ef0b0 payment form validation",
-     "who": "Lane B unit 13: payment screen"
+     "text": "a10f000 wire payment route",
+     "who": "Main thread"
     },
     {
-     "t": 1792243500000,
-     "kind": "gatePass",
-     "text": "6 checks in 2m 40s",
-     "who": "proof gate"
-    },
-    {
-     "t": 1792243500000,
+     "t": 1792243510000,
      "kind": "commit",
-     "text": "a74f0a0 payment form",
+     "text": "4be91a0 payment form",
      "who": "Lane B unit 13: payment screen"
-    },
-    {
-     "t": 1792243320000,
-     "kind": "gatePass",
-     "text": "6 checks in 2m 40s",
-     "who": "proof gate"
     },
     {
      "t": 1792243320000,
@@ -1646,13 +1634,13 @@
     {
      "t": 1792243140000,
      "kind": "commit",
-     "text": "a6af090 design tokens for payment",
+     "text": "a11f010 checkout state machine",
      "who": "Main thread"
     },
     {
      "t": 1792242780000,
      "kind": "commit",
-     "text": "a60f080 api client for orders",
+     "text": "a12f020 merge lane-a: cart screen tests",
      "who": "Main thread"
     },
     {
@@ -1664,7 +1652,13 @@
     {
      "t": 1792242540000,
      "kind": "commit",
-     "text": "a56f070 mock server for e2e",
+     "text": "a14b090 product detail tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242360000,
+     "kind": "commit",
+     "text": "a13af80 order summary component",
      "who": "Main thread"
     },
     {
@@ -1676,13 +1670,19 @@
     {
      "t": 1792242120000,
      "kind": "commit",
-     "text": "a4cf060 wire payment route",
+     "text": "a129e70 mock server for e2e",
      "who": "Main thread"
+    },
+    {
+     "t": 1792241880000,
+     "kind": "gatePass",
+     "text": "6 checks in 2m 40s",
+     "who": "proof gate"
     },
     {
      "t": 1792241700000,
      "kind": "commit",
-     "text": "a42f050 checkout state machine",
+     "text": "a118d60 api client for orders",
      "who": "Main thread"
     },
     {
@@ -1694,14 +1694,14 @@
     {
      "t": 1792241220000,
      "kind": "commit",
-     "text": "a38f040 merge lane-a: cart screen",
+     "text": "a107c50 design tokens for payment",
      "who": "Main thread"
     },
     {
      "t": 1792240800000,
      "kind": "commit",
-     "text": "a2ef030 cart totals and empty state",
-     "who": "Lane A unit 12: cart screen"
+     "text": "a0f6b40 plan for the checkout flow",
+     "who": "Main thread"
     },
     {
      "t": 1792240680000,
@@ -1718,7 +1718,7 @@
     {
      "t": 1792240560000,
      "kind": "commit",
-     "text": "a24f020 cart screen tests",
+     "text": "a0e5a30 cart totals and empty state",
      "who": "Lane A unit 12: cart screen"
     },
     {
@@ -1730,14 +1730,14 @@
     {
      "t": 1792240140000,
      "kind": "commit",
-     "text": "a1af010 cart screen",
+     "text": "a0d4f20 cart screen tests",
      "who": "Lane A unit 12: cart screen"
     },
     {
      "t": 1792239840000,
      "kind": "commit",
-     "text": "a10f000 plan for the checkout flow",
-     "who": "Main thread"
+     "text": "a0c3e10 cart screen",
+     "who": "Lane A unit 12: cart screen"
     },
     {
      "t": 1792239120000,
@@ -2170,313 +2170,6 @@
    }
   },
   {
-   "id": "admin",
-   "title": "Admin access on production",
-   "cwd": "/Users/you/code/eap_multi_agent_backend",
-   "project": "eap_multi_agent_backend",
-   "branch": "feat/langfuse-tracing",
-   "model": null,
-   "start": 1792060260000,
-   "last": 1792244040000,
-   "to": 1792244040000,
-   "from": 1792060260000,
-   "status": {
-    "state": "needsInput",
-    "since": 1792065540000,
-    "label": "Claude asked you something"
-   },
-   "now": [
-    {
-     "who": "Main thread",
-     "type": "main",
-     "state": "needsInput",
-     "since": 1792065540000,
-     "label": "Claude asked you something"
-    }
-   ],
-   "rows": [
-    {
-     "key": "main",
-     "label": "Main thread",
-     "sub": "orchestrates, talks to you",
-     "lane": [
-      [
-       1792062420000,
-       1792062446244.3281,
-       "model"
-      ],
-      [
-       1792062446244.3281,
-       1792062493638.375,
-       "shell"
-      ],
-      [
-       1792062493638.375,
-       1792062556442.4028,
-       "shell"
-      ],
-      [
-       1792062556442.4028,
-       1792062605552.004,
-       "edit"
-      ],
-      [
-       1792062605552.004,
-       1792062749343.1306,
-       "test"
-      ],
-      [
-       1792062770718.023,
-       1792062914411.187,
-       "test"
-      ],
-      [
-       1792062927673.5151,
-       1792062972660.7163,
-       "edit"
-      ],
-      [
-       1792062979834.2205,
-       1792063107427.5076,
-       "model"
-      ],
-      [
-       1792063122586.1472,
-       1792063257307.346,
-       "edit"
-      ],
-      [
-       1792063257307.346,
-       1792063397339.0962,
-       "model"
-      ],
-      [
-       1792063402055.7666,
-       1792063479544.2312,
-       "shell"
-      ],
-      [
-       1792063479544.2312,
-       1792063558737.928,
-       "edit"
-      ],
-      [
-       1792063558737.928,
-       1792063677297.4272,
-       "model"
-      ],
-      [
-       1792063694715.5308,
-       1792063731683.51,
-       "model"
-      ],
-      [
-       1792063731683.51,
-       1792063822472.0571,
-       "model"
-      ],
-      [
-       1792063822472.0571,
-       1792063970771.2979,
-       "edit"
-      ],
-      [
-       1792063970771.2979,
-       1792064104749.798,
-       "edit"
-      ],
-      [
-       1792064104749.798,
-       1792064234466.8662,
-       "edit"
-      ],
-      [
-       1792064234466.8662,
-       1792064303367.2234,
-       "model"
-      ],
-      [
-       1792064303367.2234,
-       1792064338084.7896,
-       "model"
-      ],
-      [
-       1792064346734.0652,
-       1792064470743.7737,
-       "model"
-      ],
-      [
-       1792064470743.7737,
-       1792064532286.5938,
-       "edit"
-      ],
-      [
-       1792064537922.624,
-       1792064558605.9443,
-       "test"
-      ],
-      [
-       1792064558605.9443,
-       1792064610735.6304,
-       "edit"
-      ],
-      [
-       1792064610735.6304,
-       1792064662985.0676,
-       "edit"
-      ],
-      [
-       1792064662985.0676,
-       1792064701598.608,
-       "shell"
-      ],
-      [
-       1792064701598.608,
-       1792064820000,
-       "edit"
-      ],
-      [
-       1792064820000,
-       1792064952173.2397,
-       "test"
-      ],
-      [
-       1792064952173.2397,
-       1792065069683.7517,
-       "test"
-      ],
-      [
-       1792065069683.7517,
-       1792065219013.4614,
-       "test"
-      ],
-      [
-       1792065219013.4614,
-       1792065284451.918,
-       "model"
-      ],
-      [
-       1792065284451.918,
-       1792065419243.3564,
-       "test"
-      ],
-      [
-       1792065419243.3564,
-       1792065420000,
-       "test"
-      ],
-      [
-       1792065420000,
-       1792065540000,
-       "test"
-      ],
-      [
-       1792065540000,
-       1792066020000,
-       "waitUser"
-      ]
-     ]
-    }
-   ],
-   "asleep": [],
-   "share": {
-    "model": 1200000,
-    "edit": 1080000,
-    "test": 720000,
-    "shell": 480000,
-    "waitUser": 178500000
-   },
-   "busyMs": 0,
-   "parallel": 1,
-   "windowShare": {
-    "model": 1200000,
-    "edit": 1080000,
-    "test": 720000,
-    "shell": 480000,
-    "waitUser": 178500000
-   },
-   "tasks": [],
-   "units": [],
-   "unitsDone": 0,
-   "features": null,
-   "commits": [],
-   "events": [
-    {
-     "t": 1792065740000,
-     "kind": "needsInput",
-     "text": "Claude stopped to ask you something",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792065730000,
-     "kind": "gateFail",
-     "text": "proof: test still failing — Claude stopped to ask you something.",
-     "who": "proof gate"
-    },
-    {
-     "t": 1792065680000,
-     "kind": "memory",
-     "text": "proof memory: didn't start this test run. The Mac is at 85% and the run needs about 1.5 GB",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792064700000,
-     "kind": "gatePass",
-     "text": "proof ✓ types, lint, test",
-     "who": "proof gate"
-    },
-    {
-     "t": 1792064040000,
-     "kind": "gatePass",
-     "text": "proof ✓ types, lint, test",
-     "who": "proof gate"
-    },
-    {
-     "t": 1792063140000,
-     "kind": "gatePass",
-     "text": "proof ✓ types, lint",
-     "who": "proof gate"
-    }
-   ],
-   "feed": [],
-   "prompts": [],
-   "away": null,
-   "agents": {
-    "total": 0,
-    "active": 0,
-    "byType": {}
-   },
-   "counts": {
-    "toolCalls": 0,
-    "edits": 0,
-    "testRuns": 0,
-    "gateRounds": 0,
-    "commitBlocks": 0,
-    "guardStops": 0,
-    "memoryStops": 0,
-    "compactions": 0,
-    "apiErrors": 0,
-    "interrupts": 0,
-    "approvals": 0,
-    "toolErrors": 0,
-    "agentsLaunched": 0
-   },
-   "stuck": 0,
-   "findings": {
-    "asleepMs": 0,
-    "asleepN": 0,
-    "waitMs": 0,
-    "ceilingN": 0,
-    "ceilingMs": 0,
-    "pollN": 0,
-    "pollMs": 0,
-    "e2eN": 0,
-    "e2eMs": 0,
-    "topSpec": null,
-    "longest": []
-   }
-  },
-  {
    "id": "dash",
    "title": "Dashboard UI redesign",
    "cwd": "/Users/you/code/proof",
@@ -2871,6 +2564,593 @@
    }
   },
   {
+   "id": "docs",
+   "title": "API docs refresh",
+   "cwd": "/Users/you/code/shop-app",
+   "project": "shop-app",
+   "branch": "docs/api",
+   "model": null,
+   "start": 1792240920000,
+   "last": 1792244040000,
+   "to": 1792244040000,
+   "from": 1792240920000,
+   "status": {
+    "state": "stalled",
+    "since": 1792242956000,
+    "label": "No activity for a while"
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "stalled",
+     "since": 1792242956000,
+     "label": "No activity for a while"
+    }
+   ],
+   "rows": [
+    {
+     "key": "main",
+     "label": "Main thread",
+     "sub": "orchestrates, talks to you",
+     "lane": [
+      [
+       1792240920000,
+       1792240939345.566,
+       "shell"
+      ],
+      [
+       1792240939345.566,
+       1792241005208.4258,
+       "edit"
+      ],
+      [
+       1792241005208.4258,
+       1792241072949.5488,
+       "edit"
+      ],
+      [
+       1792241072949.5488,
+       1792241114641.6084,
+       "edit"
+      ],
+      [
+       1792241114641.6084,
+       1792241145274.37,
+       "model"
+      ],
+      [
+       1792241145274.37,
+       1792241255704.7195,
+       "edit"
+      ],
+      [
+       1792241275120.9988,
+       1792241417271.7297,
+       "model"
+      ],
+      [
+       1792241417271.7297,
+       1792241451261.3403,
+       "edit"
+      ],
+      [
+       1792241472022.041,
+       1792241538278.8108,
+       "shell"
+      ],
+      [
+       1792241538278.8108,
+       1792241632599.5369,
+       "edit"
+      ],
+      [
+       1792241632599.5369,
+       1792241734096.992,
+       "edit"
+      ],
+      [
+       1792241734096.992,
+       1792241766670.8347,
+       "model"
+      ],
+      [
+       1792241766670.8347,
+       1792241798982.088,
+       "model"
+      ],
+      [
+       1792241798982.088,
+       1792241814314.215,
+       "edit"
+      ],
+      [
+       1792241814314.215,
+       1792241911560.2644,
+       "shell"
+      ],
+      [
+       1792241928673.1296,
+       1792241982299.653,
+       "edit"
+      ],
+      [
+       1792241982299.653,
+       1792242004421.583,
+       "model"
+      ],
+      [
+       1792242004421.583,
+       1792242121855.1755,
+       "edit"
+      ],
+      [
+       1792242121855.1755,
+       1792242194669.0173,
+       "shell"
+      ],
+      [
+       1792242194669.0173,
+       1792242267775.736,
+       "edit"
+      ],
+      [
+       1792242267775.736,
+       1792242369517.377,
+       "model"
+      ],
+      [
+       1792242369517.377,
+       1792242502360.5308,
+       "shell"
+      ],
+      [
+       1792242502360.5308,
+       1792242610244.9124,
+       "shell"
+      ],
+      [
+       1792242610244.9124,
+       1792242688055.0466,
+       "edit"
+      ],
+      [
+       1792242688055.0466,
+       1792242784481.7056,
+       "edit"
+      ],
+      [
+       1792242784481.7056,
+       1792242836000,
+       "model"
+      ],
+      [
+       1792242836000,
+       1792242956000,
+       "shell"
+      ],
+      [
+       1792242956000,
+       1792244040000,
+       "idle"
+      ]
+     ]
+    }
+   ],
+   "asleep": [],
+   "share": {
+    "model": 720000,
+    "edit": 1140000,
+    "shell": 180000,
+    "idle": 1080000
+   },
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {
+    "model": 720000,
+    "edit": 1140000,
+    "shell": 180000,
+    "idle": 1080000
+   },
+   "tasks": [
+    {
+     "id": "1",
+     "subject": "Audit endpoints against code",
+     "status": "completed"
+    },
+    {
+     "id": "2",
+     "subject": "Rewrite order endpoints",
+     "status": "completed"
+    },
+    {
+     "id": "3",
+     "subject": "Rewrite payment endpoints",
+     "status": "pending"
+    }
+   ],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [
+    {
+     "t": 1792242785000,
+     "sha": "7c1e0b29",
+     "msg": "docs: order endpoints",
+     "who": "Main thread"
+    }
+   ],
+   "events": [
+    {
+     "t": 1792242785000,
+     "kind": "commit",
+     "text": "7c1e0b2 docs: order endpoints",
+     "who": "Main thread"
+    }
+   ],
+   "feed": [
+    {
+     "t": 1792242960000,
+     "end": 1792242960000,
+     "cat": "build",
+     "desc": "pnpm docs:build",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242930000,
+     "end": 1792242931000,
+     "cat": "edit",
+     "desc": "Edit docs/api/orders.md",
+     "ok": true,
+     "who": "Main thread"
+    }
+   ],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  },
+  {
+   "id": "admin",
+   "title": "Admin access on production",
+   "cwd": "/Users/you/code/eap_multi_agent_backend",
+   "project": "eap_multi_agent_backend",
+   "branch": "feat/langfuse-tracing",
+   "model": null,
+   "start": 1792060260000,
+   "last": 1792244040000,
+   "to": 1792244040000,
+   "from": 1792060260000,
+   "status": {
+    "state": "needsInput",
+    "since": 1792065540000,
+    "label": "Claude asked you something"
+   },
+   "now": [
+    {
+     "who": "Main thread",
+     "type": "main",
+     "state": "needsInput",
+     "since": 1792065540000,
+     "label": "Claude asked you something"
+    }
+   ],
+   "rows": [
+    {
+     "key": "main",
+     "label": "Main thread",
+     "sub": "orchestrates, talks to you",
+     "lane": [
+      [
+       1792062420000,
+       1792062446244.3281,
+       "model"
+      ],
+      [
+       1792062446244.3281,
+       1792062493638.375,
+       "shell"
+      ],
+      [
+       1792062493638.375,
+       1792062556442.4028,
+       "shell"
+      ],
+      [
+       1792062556442.4028,
+       1792062605552.004,
+       "edit"
+      ],
+      [
+       1792062605552.004,
+       1792062749343.1306,
+       "test"
+      ],
+      [
+       1792062770718.023,
+       1792062914411.187,
+       "test"
+      ],
+      [
+       1792062927673.5151,
+       1792062972660.7163,
+       "edit"
+      ],
+      [
+       1792062979834.2205,
+       1792063107427.5076,
+       "model"
+      ],
+      [
+       1792063122586.1472,
+       1792063257307.346,
+       "edit"
+      ],
+      [
+       1792063257307.346,
+       1792063397339.0962,
+       "model"
+      ],
+      [
+       1792063402055.7666,
+       1792063479544.2312,
+       "shell"
+      ],
+      [
+       1792063479544.2312,
+       1792063558737.928,
+       "edit"
+      ],
+      [
+       1792063558737.928,
+       1792063677297.4272,
+       "model"
+      ],
+      [
+       1792063694715.5308,
+       1792063731683.51,
+       "model"
+      ],
+      [
+       1792063731683.51,
+       1792063822472.0571,
+       "model"
+      ],
+      [
+       1792063822472.0571,
+       1792063970771.2979,
+       "edit"
+      ],
+      [
+       1792063970771.2979,
+       1792064104749.798,
+       "edit"
+      ],
+      [
+       1792064104749.798,
+       1792064234466.8662,
+       "edit"
+      ],
+      [
+       1792064234466.8662,
+       1792064303367.2234,
+       "model"
+      ],
+      [
+       1792064303367.2234,
+       1792064338084.7896,
+       "model"
+      ],
+      [
+       1792064346734.0652,
+       1792064470743.7737,
+       "model"
+      ],
+      [
+       1792064470743.7737,
+       1792064532286.5938,
+       "edit"
+      ],
+      [
+       1792064537922.624,
+       1792064558605.9443,
+       "test"
+      ],
+      [
+       1792064558605.9443,
+       1792064610735.6304,
+       "edit"
+      ],
+      [
+       1792064610735.6304,
+       1792064662985.0676,
+       "edit"
+      ],
+      [
+       1792064662985.0676,
+       1792064701598.608,
+       "shell"
+      ],
+      [
+       1792064701598.608,
+       1792064820000,
+       "edit"
+      ],
+      [
+       1792064820000,
+       1792064952173.2397,
+       "test"
+      ],
+      [
+       1792064952173.2397,
+       1792065069683.7517,
+       "test"
+      ],
+      [
+       1792065069683.7517,
+       1792065219013.4614,
+       "test"
+      ],
+      [
+       1792065219013.4614,
+       1792065284451.918,
+       "model"
+      ],
+      [
+       1792065284451.918,
+       1792065419243.3564,
+       "test"
+      ],
+      [
+       1792065419243.3564,
+       1792065420000,
+       "test"
+      ],
+      [
+       1792065420000,
+       1792065540000,
+       "test"
+      ],
+      [
+       1792065540000,
+       1792066020000,
+       "waitUser"
+      ]
+     ]
+    }
+   ],
+   "asleep": [],
+   "share": {
+    "model": 1200000,
+    "edit": 1080000,
+    "test": 720000,
+    "shell": 480000,
+    "waitUser": 178500000
+   },
+   "busyMs": 0,
+   "parallel": 1,
+   "windowShare": {
+    "model": 1200000,
+    "edit": 1080000,
+    "test": 720000,
+    "shell": 480000,
+    "waitUser": 178500000
+   },
+   "tasks": [],
+   "units": [],
+   "unitsDone": 0,
+   "features": null,
+   "commits": [],
+   "events": [
+    {
+     "t": 1792065740000,
+     "kind": "needsInput",
+     "text": "Claude stopped to ask you something",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792065730000,
+     "kind": "gateFail",
+     "text": "proof: test still failing — Claude stopped to ask you something.",
+     "who": "proof gate"
+    },
+    {
+     "t": 1792065680000,
+     "kind": "memory",
+     "text": "proof memory: didn't start this test run. The Mac is at 85% and the run needs about 1.5 GB",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792064700000,
+     "kind": "gatePass",
+     "text": "proof ✓ types, lint, test",
+     "who": "proof gate"
+    },
+    {
+     "t": 1792064040000,
+     "kind": "gatePass",
+     "text": "proof ✓ types, lint, test",
+     "who": "proof gate"
+    },
+    {
+     "t": 1792063140000,
+     "kind": "gatePass",
+     "text": "proof ✓ types, lint",
+     "who": "proof gate"
+    }
+   ],
+   "feed": [],
+   "prompts": [],
+   "away": null,
+   "agents": {
+    "total": 0,
+    "active": 0,
+    "byType": {}
+   },
+   "counts": {
+    "toolCalls": 0,
+    "edits": 0,
+    "testRuns": 0,
+    "gateRounds": 0,
+    "commitBlocks": 0,
+    "guardStops": 0,
+    "memoryStops": 0,
+    "compactions": 0,
+    "apiErrors": 0,
+    "interrupts": 0,
+    "approvals": 0,
+    "toolErrors": 0,
+    "agentsLaunched": 0
+   },
+   "stuck": 0,
+   "findings": {
+    "asleepMs": 0,
+    "asleepN": 0,
+    "waitMs": 0,
+    "ceilingN": 0,
+    "ceilingMs": 0,
+    "pollN": 0,
+    "pollMs": 0,
+    "e2eN": 0,
+    "e2eMs": 0,
+    "topSpec": null,
+    "longest": []
+   }
+  },
+  {
    "id": "readme",
    "title": "Proof README and description improvement",
    "cwd": "/Users/you/code/proof",
@@ -2957,9 +3237,9 @@
    "to": 1792244040000,
    "from": 1792237740000,
    "status": {
-    "state": "approval",
-    "since": 1792243860000,
-    "label": "git push"
+    "state": "waiting",
+    "since": 1792239540000,
+    "label": ""
    },
    "now": [
     {
@@ -3064,81 +3344,6 @@
      "who": "Main thread"
     }
    ],
-   "feed": [],
-   "prompts": [],
-   "away": null,
-   "agents": {
-    "total": 0,
-    "active": 0,
-    "byType": {}
-   },
-   "counts": {
-    "toolCalls": 0,
-    "edits": 0,
-    "testRuns": 0,
-    "gateRounds": 0,
-    "commitBlocks": 0,
-    "guardStops": 0,
-    "memoryStops": 0,
-    "compactions": 0,
-    "apiErrors": 0,
-    "interrupts": 0,
-    "approvals": 0,
-    "toolErrors": 0,
-    "agentsLaunched": 0
-   },
-   "stuck": 0,
-   "findings": {
-    "asleepMs": 0,
-    "asleepN": 0,
-    "waitMs": 0,
-    "ceilingN": 0,
-    "ceilingMs": 0,
-    "pollN": 0,
-    "pollMs": 0,
-    "e2eN": 0,
-    "e2eMs": 0,
-    "topSpec": null,
-    "longest": []
-   }
-  },
-  {
-   "id": "logs",
-   "title": "Multi-agent API logs analysis",
-   "cwd": "/Users/you/code/eap_multi_agent_backend",
-   "project": "eap_multi_agent_backend",
-   "branch": "main",
-   "model": null,
-   "start": 1792191840000,
-   "last": 1792244040000,
-   "to": 1792244040000,
-   "from": 1792191840000,
-   "status": {
-    "state": "waiting",
-    "since": 1792193640000,
-    "label": ""
-   },
-   "now": [
-    {
-     "who": "Main thread",
-     "type": "main",
-     "state": "waiting",
-     "since": 1792193640000,
-     "label": ""
-    }
-   ],
-   "rows": [],
-   "asleep": [],
-   "share": {},
-   "busyMs": 0,
-   "parallel": 1,
-   "windowShare": {},
-   "tasks": [],
-   "units": [],
-   "unitsDone": 0,
-   "features": null,
-   "commits": [],
-   "events": [],
    "feed": [],
    "prompts": [],
    "away": null,

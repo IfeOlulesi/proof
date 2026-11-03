@@ -94,12 +94,18 @@ const lanes = () => [
 ];
 
 const checkout = () => {
-  // The mockup's 14 commit times, oldest first, with who made each.
-  const LA = 'Lane A unit 12: cart screen', LB = 'Lane B unit 13: payment screen', LC = 'Lane C unit 14: order API', MT = 'Main thread';
-  const made = [[MT, 'plan for the checkout flow'], [LA, 'cart screen'], [LA, 'cart screen tests'], [LA, 'cart totals and empty state'], [MT, 'merge lane-a: cart screen'],
-    [MT, 'checkout state machine'], [MT, 'wire payment route'], [MT, 'mock server for e2e'], [MT, 'api client for orders'], [MT, 'design tokens for payment'],
-    [LB, 'payment form'], [LB, 'payment form validation'], [MT, 'order summary component'], [LC, 'order API types']];
-  const commits = CK.commits.map((t, i) => ({ t, sha: (0xa10f00 + i * 40961).toString(16).slice(0, 7) + '0', msg: made[i][1], who: made[i][0] }));
+  // 14 commits. The five after 14:12 are the ones the mockup's log draws (sha, message, who); the mockup's generator
+  // also has one at 14:29 that its log doesn't show, so that one sits at 14:06 here.
+  const LA = 'Lane A unit 12: cart screen', LB = 'Lane B unit 13: payment screen', MT = 'Main thread';
+  const made = [[at(13, 24), LA, 'a0c3e10', 'cart screen'], [at(13, 29), LA, 'a0d4f20', 'cart screen tests'], [at(13, 36), LA, 'a0e5a30', 'cart totals and empty state'],
+    [at(13, 40), MT, 'a0f6b40', 'plan for the checkout flow'], [at(13, 47), MT, 'a107c50', 'design tokens for payment'], [at(13, 55), MT, 'a118d60', 'api client for orders'],
+    [at(14, 2), MT, 'a129e70', 'mock server for e2e'], [at(14, 6), MT, 'a13af80', 'order summary component'], [at(14, 9), MT, 'a14b090', 'product detail tests'],
+    [at(14, 13), MT, 'a12f020', 'merge lane-a: cart screen tests'], [at(14, 19), MT, 'a11f010', 'checkout state machine'],
+    [at(14, 25, 10), LB, '4be91a0', 'payment form'], [at(14, 25, 30), MT, 'a10f000', 'wire payment route'], [at(14, 33), MT, '9d2c41e', 'merge lane-a: cart screen']];
+  const commits = made.map(([t, who, sha, msg]) => ({ t, sha, msg, who }));
+  // The gate rounds: the mockup's 8, with its 14:22 pass at 13:58 (its log shows no pass at 14:22) and 14:25 just after
+  // the commits it gated.
+  const gates = CK.gates.map(([t, ok, text]) => [t === at(14, 22) ? at(13, 58) : t === at(14, 25) ? at(14, 25, 50) : t, ok, text]);
   commits.sort((a, b) => b.t - a.t);
   const done = ['Set up proof gate', 'Product list screen', 'Product detail screen', 'Cart screen'].map((subject, i) => ({ id: String(i + 1), subject, status: 'completed' }));
   return session({
@@ -139,7 +145,7 @@ const checkout = () => {
     },
     commits,
     events: [
-      ...CK.gates.map(([t, ok, text]) => (ok ? { t, kind: 'gatePass', text, who: 'proof gate' } : { t, kind: 'gateFail', text, who: LB })),
+      ...gates.map(([t, ok, text]) => (ok ? { t, kind: 'gatePass', text, who: 'proof gate' } : { t, kind: 'gateFail', text, who: LB })),
       { t: at(13, 38), kind: 'agentDone', text: 'Agent finished: Lane A unit 12: cart screen', who: 'Lane A unit 12: cart screen' },
       { t: at(14, 22), kind: 'memory', text: 'proof memory: held back the verifier for 40s, the Mac was at 86%', who: 'Main thread' },
       { t: at(14, 12), kind: 'compact', text: 'Compacted context', who: 'Main thread' },
@@ -246,7 +252,8 @@ const feed = (sessions, pct) => ({ version: '0.5.0', now: NOW, windowMs: 2 * 360
 const fixtures = {
   'home--working': () => feed([checkout(), ...others()]),
   'home--memory-warning': () => ({ ...feed([checkout(), ...others()]), machine: busyMachine() }),
-  'switcher--hidden-needs-you': () => { const o = others(); o[4] = { ...o[4], status: { state: 'approval', since: NOW - min(3), label: 'git push' } }; return feed([checkout(), ...o]); },
+  // The tabs hold the first four sessions; the one that needs you is fifth, so it shows on "+4 more".
+  'switcher--hidden-needs-you': () => { const [adm, dash, rel, ...rest] = others(); return feed([checkout(), dash, rel, docs(), adm, ...rest.slice(0, 3)]); },
   'empty': () => feed([]),
   'home--stalled': () => { const o = others(); o.splice(1, 1, docs()); return feed([checkout(), o[0], o[1], ...o.slice(2)]); },
 };

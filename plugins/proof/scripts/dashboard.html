@@ -86,8 +86,8 @@ body { margin: 0; background: var(--background); color: var(--foreground); font-
 @keyframes ring-in { from { stroke-dasharray: 0 1000; } }
 @keyframes skp { 50% { opacity: .55; } }
 
-/* Everything inside the page, except the views still on design v1 (.v1, below) until their units port them. */
-@scope (.app) to (.v1) {
+/* The page's styles, scoped to it. */
+@scope (.app) {
 /* the page's own additions to the mockup's styles: on the live page, rings draw in from 0 once (interactions.json,
    rings). A frozen page (fixture, replay) draws them at their value, so captures of it are stable. */
 :scope.animate .ring { animation: ring-in var(--dur-slow) var(--ease) both; }
@@ -290,356 +290,6 @@ svg text { font-family: var(--font); }
 .pinned-tip code { color: #e4e4e7; }
 }
 </style>
-<style>
-/* Design v1 styles for the views not yet on v2, scoped to .v1. Each unit deletes what it ports; the last deletes this. */
-/* =====================================================================
-   proof dashboard — design v1 ("Calm": Raycast clarity, Arc softness)
-   Rules: colour only ever means state. Green = live / running / Claude working.
-   Coral = needs you. Amber = warning (timer past 5 min, memory past warn line).
-   Red = failed. Everything else is neutral ink on neutral surfaces.
-   ===================================================================== */
-
-/* ---------- tokens: light (default) ---------- */
-.v1 {
-  color-scheme: light;
-  /* surfaces */
-  --bg: #f7f7f5; --surface: #ffffff; --surface-2: #fbfbfa; --hl: #f1f1ee; --track: #ebeae6;
-  --line: #e7e6e2; --line-strong: #d9d8d3; --wire: #d9d8d3;
-  /* ink */
-  --ink: #0E1116; --ink-2: #2b3038; --muted: #545a64; --faint: #686d76;
-  /* state */
-  --brand: #16A34A; --run: #16A34A; --ok: #16A34A; --ok-soft: #e8f6ed;
-  --you: #ea5a24; --you-strong: #c2410c; --you-ink: #a8360b; --you-soft: #fff3ec; --you-line: #f6cdb9; --on-you: #ffffff;
-  --warn: #d97706; --warn-ink: #8f4f00; --warn-soft: #fff6e5; --warn-line: #f3d49a;
-  --bad: #dc3d43; --bad-ink: #b4232a; --bad-soft: #fdecec;
-  /* top glow (the only background colour) */
-  --glow: rgba(22,163,74,.07); --glow-you: rgba(234,90,36,.10); --glow-warn: rgba(217,119,6,.09);
-  /* tooltip */
-  --tip-bg: #0E1116; --tip-ink: #F5F5F4; --tip-muted: #b9bcc2;
-  --shadow-1: 0 1px 2px rgba(14,17,22,.04); --shadow-2: 0 10px 30px rgba(14,17,22,.14);
-}
-/* ---------- tokens: dark ---------- */
-:root[data-theme="dark"] .v1 {
-  color-scheme: dark;
-  --bg: #0e0f11; --surface: #151619; --surface-2: #18191d; --hl: #1f2125; --track: #26282d;
-  --line: #24262a; --line-strong: #303237; --wire: #34363b;
-  --ink: #F5F5F4; --ink-2: #d6d6d3; --muted: #a8abb1; --faint: #8d9199;
-  --brand: #22C55E; --run: #22C55E; --ok: #22C55E; --ok-soft: #14261b;
-  --you: #ff7a45; --you-strong: #ff7a45; --you-ink: #ff9d73; --you-soft: #24170f; --you-line: #5a3220; --on-you: #1a0b04;
-  --warn: #fbbf24; --warn-ink: #fbbf24; --warn-soft: #251d0b; --warn-line: #5a4512;
-  --bad: #f87171; --bad-ink: #fca5a5; --bad-soft: #2a1617;
-  --glow: rgba(34,197,94,.07); --glow-you: rgba(255,122,69,.10); --glow-warn: rgba(251,191,36,.08);
-  --tip-bg: #2a2c31; --tip-ink: #F5F5F4; --tip-muted: #b9bcc2;
-  --shadow-1: 0 1px 0 rgba(255,255,255,.035) inset; --shadow-2: 0 12px 34px rgba(0,0,0,.5);
-}
-/* the real app follows the system, with a toggle that wins both ways */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .v1 {
-  color-scheme: dark;
-  --bg: #0e0f11; --surface: #151619; --surface-2: #18191d; --hl: #1f2125; --track: #26282d;
-  --line: #24262a; --line-strong: #303237; --wire: #34363b;
-  --ink: #F5F5F4; --ink-2: #d6d6d3; --muted: #a8abb1; --faint: #8d9199;
-  --brand: #22C55E; --run: #22C55E; --ok: #22C55E; --ok-soft: #14261b;
-  --you: #ff7a45; --you-strong: #ff7a45; --you-ink: #ff9d73; --you-soft: #24170f; --you-line: #5a3220; --on-you: #1a0b04;
-  --warn: #fbbf24; --warn-ink: #fbbf24; --warn-soft: #251d0b; --warn-line: #5a4512;
-  --bad: #f87171; --bad-ink: #fca5a5; --bad-soft: #2a1617;
-  --glow: rgba(34,197,94,.07); --glow-you: rgba(255,122,69,.10); --glow-warn: rgba(251,191,36,.08);
-  --tip-bg: #2a2c31; --tip-ink: #F5F5F4; --tip-muted: #b9bcc2;
-  --shadow-1: 0 1px 0 rgba(255,255,255,.035) inset; --shadow-2: 0 12px 34px rgba(0,0,0,.5);
-  }
-}
-
-.v1 {
-  /* type */
-  --font: "Geist", ui-sans-serif, system-ui, sans-serif;
-  --mono: "Geist Mono", ui-monospace, monospace;
-  --fs-xs: 11px; --fs-sm: 12.5px; --fs: 14px; --fs-md: 15px; --fs-lg: 17px; --fs-xl: 22px; --fs-2xl: 23px; --fs-3xl: 26px;
-  /* space */
-  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s7: 28px;
-  /* radius */
-  --r-lg: 16px; --r-md: 12px; --r-sm: 9px; --r-xs: 5px; --r-pill: 999px;
-  /* motion */
-  --dur-fast: 120ms; --dur: 200ms; --dur-slow: 320ms; --ease: cubic-bezier(0.2, 0, 0, 1);
-  --pulse: 1800ms; --halo: 2000ms;
-}
-
-@keyframes pulse { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(2.2); opacity: 0; } }
-@keyframes halo { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(2.4); opacity: 0; } }
-@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
-.v1 {
-  flex: 1; min-height: 0; display: flex; flex-direction: column; margin: -20px -24px 0;
-  font-family: var(--font); font-size: var(--fs); line-height: 1.45; color: var(--ink);
-  &, * { box-sizing: border-box; }
-/* ---------- page ---------- */
-/* ---------- app shell ---------- */
-.num { font-variant-numeric: tabular-nums; }
-code, .mono { font-family: var(--mono); font-size: .88em; }
-button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
-button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
-
-/* switcher */
-.bar { height: 60px; display: flex; align-items: center; gap: 4px; padding: 0 18px; flex-shrink: 0; border-bottom: 1px solid var(--line); position: relative; z-index: 3; background: var(--bg); }
-.brand { display: flex; align-items: center; margin-right: 14px; color: var(--ink); }
-.brand svg { height: 22px; width: auto; overflow: visible; display: block; }
-.brand .live, .brand .halo { fill: var(--brand); transform-box: fill-box; transform-origin: center; }
-.brand .halo { animation: halo var(--halo) var(--ease) infinite; }
-.brand.off .live { fill: var(--faint); } .brand.off .halo { display: none; }
-.tab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: var(--r-pill); border: 1px solid transparent; color: var(--muted); white-space: nowrap; transition: background var(--dur-fast) var(--ease); }
-.tab:hover { background: var(--hl); }
-.tab .nm { overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
-.tab.on { background: var(--surface); border-color: var(--line-strong); color: var(--ink); font-weight: 600; box-shadow: var(--shadow-1); }
-.badge { font-size: var(--fs-xs); font-weight: 700; padding: 2px 8px; border-radius: var(--r-pill); background: var(--you-strong); color: var(--on-you); }
-.more { height: 34px; padding: 0 12px; border-radius: var(--r-pill); color: var(--muted); display: flex; align-items: center; gap: 6px; }
-.more:hover, .more.on { background: var(--hl); color: var(--ink); }
-.more .badge { padding: 1px 7px; }
-.spacer { flex: 1; }
-.bar { overflow: hidden; }
-.bar .tab { min-width: 0; flex-shrink: 1; }
-.bar .more, .bar .mem, .bar .theme, .bar .brand { flex-shrink: 0; white-space: nowrap; }
-.bar.stale .tab .ic, .bar.stale .mem .track i { filter: grayscale(1); opacity: .55; }
-.bar.stale .tab .ic.pulse::after { animation: none; }
-.mem { display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); }
-.mem b { color: var(--ink); font-weight: 600; }
-.mem.on { background: var(--surface); border-color: var(--line-strong); }
-.mem .track { width: 96px; height: 6px; border-radius: 3px; background: var(--track); position: relative; }
-.mem .track i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--warn); }
-.mem .track b { position: absolute; top: -3px; width: 2px; height: 12px; border-radius: 1px; background: var(--muted); }
-.mem.ok .track i { background: var(--faint); }
-.theme { width: 34px; height: 34px; border-radius: var(--r-pill); display: flex; align-items: center; justify-content: center; color: var(--muted); margin-left: 6px; }
-.theme:hover { background: var(--hl); }
-.theme svg { width: 17px; height: 17px; }
-
-/* body */
-.body { flex: 1; display: flex; flex-direction: column; gap: var(--s4); padding: 22px 28px 0; min-height: 0; position: relative; z-index: 1; }
-.head { display: flex; align-items: baseline; gap: 14px; }
-.head h1 { margin: 0; font-size: var(--fs-xl); font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
-.head .meta { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.crumb { display: flex; align-items: center; gap: 10px; color: var(--muted); }
-.back { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 8px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-weight: 600; font-size: var(--fs-sm); }
-.back svg { width: 15px; height: 15px; }
-
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-1); }
-.status { display: flex; align-items: center; gap: 18px; padding: 22px 24px; }
-.status .big { font-size: var(--fs-2xl); font-weight: 600; letter-spacing: -.015em; }
-.status > div[style] { min-width: 0; }
-.status .big, .status .sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.status .sub { color: var(--muted); margin-top: 2px; }
-.status .timer { font-size: var(--fs-2xl); color: var(--muted); font-weight: 500; }
-.status.you { background: var(--you-soft); border-color: var(--you-line); }
-.status.you .big { color: var(--ink); }
-.status.compact { padding: 12px 20px; }
-.status.compact .big { font-size: var(--fs-md); }
-.where { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; color: var(--muted); font-size: var(--fs-sm); text-align: right; }
-.where code { color: var(--ink-2); background: var(--surface); border: 1px solid var(--you-line); padding: 3px 8px; border-radius: var(--r-xs); }
-.prog { width: 300px; color: var(--muted); font-size: var(--fs-sm); }
-.prog .row { display: flex; justify-content: space-between; margin-bottom: 7px; }
-.prog .row b { color: var(--ink); font-weight: 600; }
-.seg { display: flex; gap: 3px; height: 6px; }
-.seg i { flex: 1; border-radius: 3px; background: var(--track); }
-.seg i.d { background: var(--ok); }
-.seg i.c { background: var(--run); opacity: .35; }
-
-.grid { display: grid; grid-template-columns: 1fr 380px; gap: var(--s4); flex: 1; min-height: 0; }
-.panel { padding: 16px 18px; min-height: 0; overflow: hidden; }
-.ph { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font-size: 13.5px; font-weight: 700; }
-.ph .r { margin-left: auto; font-weight: 400; color: var(--muted); }
-
-/* run graph */
-.graph { display: grid; grid-template-columns: 230px 36px 1fr; align-items: start; }
-.node { display: block; width: 100%; padding: 11px 13px; border-radius: var(--r-md); background: var(--surface-2); border: 1px solid var(--line); transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
-.node:hover { border-color: var(--line-strong); box-shadow: var(--shadow-2); }
-.node .t { display: flex; align-items: center; gap: 9px; font-weight: 600; }
-.node .t .open { margin-left: auto; font-weight: 500; color: var(--muted); font-size: var(--fs-sm); }
-.node .d { color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.node .d code { color: var(--ink-2); }
-.node .f { display: flex; gap: 12px; color: var(--muted); margin-top: 7px; font-size: var(--fs-sm); }
-.node .f .warn { color: var(--warn-ink); font-weight: 600; }
-.node.run { background: var(--surface); border-color: var(--line-strong); }
-.node.done { background: transparent; }
-.node.done .t { font-weight: 500; color: var(--muted); }
-.node.done .t .rt { margin-left: auto; font-weight: 400; font-size: var(--fs-sm); }
-.wire { position: relative; height: 100%; }
-.wire::before { content: ""; position: absolute; left: 0; right: 50%; top: 30px; border-top: 1px solid var(--wire); }
-.wire::after { content: ""; position: absolute; left: 50%; top: 30px; bottom: 24px; border-left: 1px solid var(--wire); }
-.jobs { display: flex; flex-direction: column; gap: 8px; }
-.jobs .node { position: relative; }
-.jobs .node::before { content: ""; position: absolute; left: -19px; top: 21px; width: 18px; border-top: 1px solid var(--wire); }
-.glabel { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 4px 0 -2px; }
-.tbar { height: 3px; border-radius: 2px; background: var(--track); margin-top: 9px; position: relative; overflow: hidden; }
-.tbar i { position: absolute; inset: 0 auto 0 0; background: var(--run); border-radius: 2px; }
-.tbar.warn i { background: var(--warn); }
-
-/* plan */
-.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-.steps li { display: flex; align-items: center; gap: 10px; padding: 7px 9px; border-radius: var(--r-sm); }
-.steps li.d { color: var(--muted); }
-.steps li.c { background: var(--hl); font-weight: 600; }
-.steps .who { margin-left: auto; font-size: var(--fs-sm); font-weight: 500; color: var(--muted); }
-
-/* drawer bar */
-.drawer { flex-shrink: 0; display: flex; align-items: center; gap: 4px; height: 52px; margin: 0 -28px; padding: 0 28px; border-top: 1px solid var(--line); background: var(--bg); }
-.dtab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: var(--r-sm); color: var(--muted); }
-.dtab:hover { background: var(--hl); color: var(--ink); }
-.dtab.on { background: var(--hl); color: var(--ink); font-weight: 600; }
-.k { font-family: var(--mono); font-size: var(--fs-xs); padding: 1px 6px; border-radius: var(--r-xs); background: var(--surface); color: var(--muted); border: 1px solid var(--line-strong); font-weight: 500; }
-.cnt { font-size: var(--fs-xs); font-weight: 700; padding: 1px 7px; border-radius: var(--r-pill); background: var(--bad-soft); color: var(--bad-ink); }
-.drawer .hint { margin-left: auto; color: var(--muted); font-size: var(--fs-sm); }
-.close { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; border-radius: var(--r-sm); color: var(--muted); font-size: var(--fs-sm); margin-left: auto; }
-.close:hover { background: var(--hl); }
-.drawer.top { margin: 0 -28px; border-top: 0; border-bottom: 1px solid var(--line); }
-
-/* events / feeds */
-.ev { display: grid; grid-template-columns: 52px 20px 1fr auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
-.ev:last-child { border-bottom: 0; }
-.ev .tm { color: var(--muted); font-family: var(--mono); font-size: var(--fs-sm); }
-.ev .tag { font-size: var(--fs-sm); color: var(--muted); font-family: var(--mono); }
-.ev .tx { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ev .tx em { font-style: normal; color: var(--muted); }
-.ev.fail .tx { color: var(--bad-ink); font-weight: 600; }
-
-/* banners */
-.banner { display: flex; align-items: center; gap: 14px; padding: 12px 28px; flex-shrink: 0; border-bottom: 1px solid var(--warn-line); background: var(--warn-soft); position: relative; z-index: 2; }
-.banner .bt { flex: 1; }
-.banner .bt b { font-weight: 700; }
-.banner .bt .bs { color: var(--muted); }
-.banner.off { border-color: var(--line-strong); background: var(--hl); }
-.btn { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 16px; border-radius: var(--r-pill); font-weight: 600; white-space: nowrap; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
-.btn:hover { border-color: var(--muted); }
-
-/* icons */
-.ic { width: 16px; height: 16px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; position: relative; }
-.ic svg { width: 100%; height: 100%; display: block; }
-.ic.lg { width: 22px; height: 22px; }
-.pulse::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: currentColor; animation: pulse var(--pulse) var(--ease) infinite; }
-@media (prefers-reduced-motion: reduce) { .pulse::after, .brand .halo, .sk { animation: none !important; } .brand .halo { opacity: 0; } }
-
-/* where the time went */
-.tw { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; }
-.tw .split { padding: 14px 22px; } .tw .split .lead { margin-bottom: 10px; } .tw .find { padding: 7px 0; } .tw .brow { padding: 4px 8px; }
-.split { padding: 18px 22px; }
-.split .lead { display: flex; align-items: center; gap: 28px; margin-bottom: 14px; }
-.stat .v { font-size: var(--fs-3xl); font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
-.stat .v small { font-size: var(--fs-md); font-weight: 600; color: var(--muted); margin-left: 6px; }
-.stat .l { color: var(--muted); font-size: var(--fs-sm); }
-.headline { margin-left: auto; max-width: 430px; color: var(--muted); text-align: right; }
-.headline b { color: var(--ink); font-weight: 600; }
-.scope { display: inline-flex; padding: 3px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); }
-.scope button { height: 28px; padding: 0 12px; border-radius: var(--r-pill); color: var(--muted); font-size: var(--fs-sm); }
-.scope button.on { background: var(--hl); color: var(--ink); font-weight: 600; }
-.sbar { display: flex; gap: 2px; height: 14px; }
-.sbar i { border-radius: 4px; min-width: 4px; }
-.sbar i.w { background: var(--run); }
-.sbar i.y { background: var(--you); }
-.sbar i.s { background: repeating-linear-gradient(135deg, var(--faint) 0 2px, transparent 2px 6px), var(--track); }
-.legend { display: flex; gap: 22px; margin-top: 10px; color: var(--muted); }
-.legend span { display: flex; align-items: center; gap: 8px; }
-.legend b { color: var(--ink); font-weight: 600; }
-.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
-.sw.w { background: var(--run); } .sw.y { background: var(--you); } .sw.s { background: repeating-linear-gradient(135deg, var(--faint) 0 2px, var(--track) 2px 5px); }
-.sw.z { background: repeating-linear-gradient(135deg, var(--ink-2) 0 2px, var(--track) 2px 5px); }
-.tw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); flex: 1; min-height: 0; }
-.brow { display: grid; grid-template-columns: 170px 1fr 64px 40px; align-items: center; gap: 12px; padding: 6px 8px; margin: 0 -8px; border-radius: var(--r-sm); position: relative; width: calc(100% + 16px); }
-.brow:hover, .brow.hov { background: var(--hl); }
-.brow .tr { height: 10px; position: relative; }
-.brow .tr i { position: absolute; inset: 0 auto 0 0; background: var(--run); border-radius: 0 4px 4px 0; }
-.brow .du { text-align: right; font-weight: 600; }
-.brow .pc { text-align: right; color: var(--muted); font-size: var(--fs-sm); }
-.tip { position: absolute; z-index: 5; width: 270px; padding: 12px 14px; border-radius: var(--r-md); background: var(--tip-bg); color: var(--tip-ink); box-shadow: var(--shadow-2); font-size: 13px; }
-.tip .h { font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 12px; }
-.tip .r { display: flex; justify-content: space-between; color: var(--tip-muted); padding: 2px 0; gap: 12px; }
-.find { display: grid; grid-template-columns: 104px 1fr; gap: 14px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.find .m { white-space: nowrap; font-size: 20px; font-weight: 700; letter-spacing: -.02em; display: flex; align-items: center; gap: 7px; }
-.find .m .sw { width: 8px; height: 8px; border-radius: 50%; }
-.find .t { font-weight: 600; }
-.find .x { color: var(--muted); }
-.find .fix { color: var(--muted); margin-top: 3px; font-size: var(--fs-sm); font-style: italic; }
-.subh { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 14px 0 4px; }
-.long { display: grid; grid-template-columns: 62px 1fr auto; gap: 10px; padding: 5px 0; color: var(--muted); }
-.long b { color: var(--ink); font-weight: 600; text-align: right; }
-.long .lt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
-.long em { font-style: normal; font-family: var(--mono); font-size: var(--fs-sm); }
-
-/* timeline */
-.lanes { display: flex; flex-direction: column; gap: 10px; position: relative; }
-.lane { display: grid; grid-template-columns: 190px 1fr; align-items: center; gap: 14px; border-radius: var(--r-sm); }
-.lane .ln { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lane .ln em { font-style: normal; color: var(--muted); font-family: var(--mono); font-size: var(--fs-sm); margin-left: 6px; }
-.lane .trk { height: 26px; background: var(--hl); border-radius: 6px; position: relative; }
-.lane .trk i { position: absolute; top: 4px; bottom: 4px; border-radius: 4px; }
-.lane .trk i.w { background: var(--run); } .lane .trk i.y { background: var(--you); }
-.lane .trk i.s { background: repeating-linear-gradient(135deg, var(--faint) 0 2px, transparent 2px 6px); }
-.lane .trk i.z { background: repeating-linear-gradient(135deg, var(--ink-2) 0 2px, transparent 2px 6px); }
-.lane .trk i.sel { outline: 2px solid var(--ink); outline-offset: 1px; }
-.lane .trk u { position: absolute; top: -4px; width: 2px; height: 34px; border-radius: 1px; background: var(--ink); text-decoration: none; }
-.lane .trk u.bad { background: var(--bad); }
-.lane .trk u::after { content: ""; position: absolute; top: -3px; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: inherit; }
-.axis { display: grid; grid-template-columns: 190px 1fr; gap: 14px; color: var(--muted); font-size: var(--fs-sm); margin-top: 8px; }
-.axis .ticks { display: flex; justify-content: space-between; }
-.nowline { position: absolute; top: -6px; bottom: 0; right: 0; width: 0; border-right: 1px solid var(--run); }
-
-/* log */
-.filters { display: flex; gap: 6px; margin-bottom: 8px; }
-.chip { height: 30px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); display: inline-flex; align-items: center; gap: 6px; }
-.chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
-.chip:hover { border-color: var(--line-strong); }
-.linkbtn { color: var(--ink-2); font-weight: 600; font-size: var(--fs-sm); height: 30px; padding: 0 10px; border-radius: var(--r-sm); margin-top: 6px; }
-.linkbtn:hover { background: var(--hl); }
-
-/* memory */
-.gauge { position: relative; height: 12px; border-radius: 6px; background: var(--track); margin: 18px 0 30px; }
-.gauge i { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: var(--warn); }
-.gauge .mk { position: absolute; top: -6px; height: 24px; width: 2px; background: var(--muted); border-radius: 1px; }
-.gauge .mkl { position: absolute; top: 22px; font-size: var(--fs-sm); color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
-.chart { position: relative; }
-.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.chart .cl { position: absolute; right: 0; font-size: var(--fs-xs); color: var(--muted); transform: translateY(-120%); }
-.app-row { display: grid; grid-template-columns: 150px 1fr 70px; align-items: center; gap: 12px; padding: 6px 0; }
-.app-row .tr { height: 8px; background: transparent; position: relative; }
-.app-row .tr i { position: absolute; inset: 0 auto 0 0; background: var(--faint); border-radius: 0 4px 4px 0; }
-.app-row.claude .tr i { background: var(--run); }
-.app-row .v { text-align: right; font-weight: 600; }
-.app-row .nm { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.app-row .nm em { font-style: normal; font-size: var(--fs-xs); color: var(--muted); border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: 0 6px; }
-.advice { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-md); background: var(--warn-soft); border: 1px solid var(--warn-line); }
-.run-row { display: grid; grid-template-columns: 1fr 90px 80px 70px; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); align-items: center; }
-.run-row:last-child { border-bottom: 0; }
-.run-row code { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-.run-row .v { text-align: right; font-weight: 600; }
-.run-row .m { color: var(--muted); font-size: var(--fs-sm); }
-.run-row.h { color: var(--muted); font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding-top: 0; }
-
-/* menu */
-.menu { position: absolute; z-index: 10; top: 54px; width: 470px; padding: 8px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow-2); }
-.menu .mh { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 8px 10px 4px; }
-.mi { display: grid; grid-template-columns: 18px 1fr auto; gap: 10px; align-items: center; width: 100%; padding: 8px 10px; border-radius: var(--r-sm); }
-.mi:hover, .mi.hov { background: var(--hl); }
-.mi .mt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mi .mt em { font-style: normal; color: var(--muted); margin-left: 6px; font-size: var(--fs-sm); }
-.mi .ms { color: var(--muted); font-size: var(--fs-sm); white-space: nowrap; }
-.msearch { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 10px; margin-bottom: 6px; border-radius: var(--r-sm); background: var(--hl); border: 1px solid var(--line); }
-.msearch input { flex: 1; min-width: 0; height: 32px; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; }
-.msearch input::placeholder { color: var(--muted); }
-.msearch:focus-within { border-color: var(--run); }
-.mscroll { max-height: 520px; overflow: auto; }
-.mp { display: flex; align-items: center; gap: 8px; padding: 10px 10px 4px; font-weight: 700; font-size: var(--fs-sm); }
-.mp em { font-style: normal; font-weight: 400; color: var(--muted); margin-left: auto; }
-.mfoot { display: flex; align-items: center; gap: 6px; padding: 10px 10px 4px; margin-top: 6px; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); }
-.mfoot .k:nth-of-type(3), .mfoot .k:nth-of-type(4) { margin-left: 10px; }
-.scrim { position: absolute; inset: 60px 0 0 0; z-index: 4; }
-
-/* skeleton / empty */
-.sk { border-radius: var(--r-sm); background: linear-gradient(90deg, var(--hl) 0, var(--track) 50%, var(--hl) 100%); background-size: 800px 100%; animation: shimmer 1.4s linear infinite; }
-.empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding-bottom: 80px; }
-.empty .e1 { font-size: var(--fs-lg); font-weight: 700; }
-.empty .e2 { color: var(--muted); max-width: 460px; }
-.empty .glyph { width: 56px; height: 56px; border-radius: 16px; border: 1px solid var(--line-strong); display: flex; align-items: center; justify-content: center; background: var(--surface); color: var(--muted); margin-bottom: 6px; }
-.empty .glyph svg { width: 26px; height: 26px; }
-.dim { opacity: .45; filter: saturate(.2); pointer-events: none; }
-
-.kv { display: grid; grid-template-columns: 1fr auto; row-gap: 8px; color: var(--muted); }
-.kv b { color: var(--ink); font-weight: 600; text-align: right; }
-}
-</style>
 </head>
 <body>
 <div id="root"></div>
@@ -692,27 +342,6 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
   const modelName = m => { const x = String(m || '').match(/(opus|sonnet|haiku|fable)-(\d+)-(\d+)/i); return x ? `${x[1][0].toUpperCase()}${x[1].slice(1)} ${x[2]}.${x[3]}` : (m || ''); };
 
   // ---- icons ------------------------------------------------------------------------------------------------------
-  const SVG = {
-    check: html`<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="currentColor" opacity=".16"/><path d="M5 8.2l2 2 4-4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    cross: html`<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="var(--surface)" stroke-width="1.7" stroke-linecap="round"/></svg>`,
-    todo: html`<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.4 2.4"/></svg>`,
-    dot: html`<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.5" fill="currentColor"/></svg>`,
-    you: html`<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7.5" fill="currentColor"/><rect x="7.1" y="3.8" width="1.8" height="5.4" rx=".9" fill="var(--surface)"/><circle cx="8" cy="11.6" r="1.1" fill="var(--surface)"/></svg>`,
-    idle: html`<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/></svg>`,
-    stall: html`<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.8V8l2.2 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-    commit: html`<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M1.5 8H5M11 8h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`,
-    mem: html`<svg viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M5 7v2M8 7v2M11 7v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-    warn: html`<svg viewBox="0 0 16 16"><path d="M8 1.8l6.6 11.6H1.4z" fill="currentColor"/><rect x="7.2" y="5.6" width="1.6" height="4.2" rx=".8" fill="var(--surface)"/><circle cx="8" cy="11.5" r=".95" fill="var(--surface)"/></svg>`,
-    tool: html`<svg viewBox="0 0 16 16" fill="none"><path d="M4 5l3 3-3 3M8.5 11H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    moon: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
-    sun: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`,
-    left: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
-    plug: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5M9 8V2M15 8V2M18 8v5a6 6 0 0 1-12 0V8z"/></svg>`,
-    inbox: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`,
-    search: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`,
-    folder: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4l2 2.5h9A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/></svg>`,
-    chev: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m6 9 6 6 6-6"/></svg>`,
-  };
   // design v2 icons, as drawn in the mockup
   const I = {
     check: html`<svg width="9" height="9" viewBox="0 0 10 10"><path d="M2 5.2l2 2 4-4.4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -738,15 +367,10 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     inbox: html`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1Z"/></svg>`,
   };
 
-  const ICON = { run: 'dot', you: 'you', done: 'check', fail: 'cross', idle: 'idle', stall: 'stall', todo: 'todo', commit: 'commit', mem: 'mem', warn: 'warn', tool: 'tool' };
-  const ICOLOR = { run: 'var(--run)', you: 'var(--you)', done: 'var(--ok)', todo: 'var(--faint)', fail: 'var(--bad)', idle: 'var(--faint)', stall: 'var(--faint)', commit: 'var(--ink-2)', mem: 'var(--warn)', warn: 'var(--warn)', tool: 'var(--muted)' };
-  const Ic = ({ s, id, lg }) => html`<span class=${`ic ${lg ? 'lg' : ''} ${s === 'run' ? 'pulse' : ''}`} style=${`color:${ICOLOR[s]}`} data-testid=${id} aria-hidden="true">${SVG[ICON[s]]}</span>`;
-  const Logo = ({ live }) => html`<span class=${`brand ${live ? '' : 'off'}`} data-testid="brand" title=${live ? 'Live' : 'Not live'}><svg viewBox="0 10 332 122" role="img" aria-label=${`proof, ${live ? 'live' : 'not live'}`}><g fill="none" stroke="currentColor" stroke-width="14"><path d="M7 40V132"/><circle cx="30" cy="70" r="23"/><path d="M82 100V40M82 68C82 52 94 47 112 47"/><circle cx="148" cy="70" r="23"/><circle cx="214" cy="70" r="23"/><path d="M262 100V38C262 24 270 17 286 17M246 47H284"/></g><circle class="halo" cx="314" cy="83" r="17"/><circle class="live" cx="314" cy="83" r="17"/></svg></span>`;
 
   // ---- what a session's state means ----------------------------------------------------------------------------------
   const NEEDS = st => st === 'approval' || st === 'needsInput';
   const BUSY = st => st === 'working' || st === 'thinking' || st === 'agents';
-  const iconOf = v => (NEEDS(v.status.state) ? 'you' : BUSY(v.status.state) ? 'run' : v.status.state === 'stalled' ? 'stall' : 'idle');
   const runningJobs = v => v.now.filter(n => n.type !== 'main');
   const doneUnits = v => v.units.filter(u => !u.running);
   const unitFor = (v, who) => v.units.find(u => u.desc === who);
@@ -782,7 +406,7 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     }
     if (s.state === 'stalled') {
       const last = v.feed.find(f => f.end);
-      return last ? html`Nothing is running and Claude isn't waiting on you. The last step was ${rich(last.desc)}, which finished ${ago(now - last.end)}.` : "Nothing is running and Claude isn't waiting on you.";
+      return last ? html`Nothing is running and Claude isn't waiting on you. The last step was ${codey(last.desc)}, which finished ${ago(now - last.end)}.` : "Nothing is running and Claude isn't waiting on you.";
     }
     if (v.commits[0]) bits.push(`last commit ${ago(now - v.commits[0].t)}`);
     const g = lastEvent(v, 'gatePass');
@@ -792,10 +416,11 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
 
   // ---- the shell ------------------------------------------------------------------------------------------------------
   const TAB_MAX = 4;
-  // Up to 4 tabs in feed order. The selected session and the first session that needs you always get one.
+  // Up to 4 tabs in feed order; the selected session always gets one (it takes the last slot). A session that needs
+  // you and has no tab shows on "+N more" instead.
   function tabsFor(sessions, sel) {
     const tabs = sessions.slice(0, TAB_MAX);
-    const keep = [sel, sessions.find(x => NEEDS(x.status.state))].filter(Boolean);
+    const keep = [sel].filter(Boolean);
     for (const x of keep) {
       if (tabs.includes(x)) continue;
       for (let i = tabs.length - 1; i >= 0; i--) if (!keep.includes(tabs[i])) { tabs[i] = x; break; }
@@ -807,8 +432,8 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
   const dotOf = v => (NEEDS(v.status.state) ? 'you' : BUSY(v.status.state) ? 'live' : v.status.state === 'stalled' ? 'grey' : 'idle');
   const isDark = () => (document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
 
-  function Top({ st, set, data, sel, live }) {
-    const sessions = data ? data.sessions : [];
+  function Top({ st, set, data, sel, live, noTabs }) {
+    const sessions = data && !noTabs ? data.sessions : [];
     const tabs = tabsFor(sessions, sel);
     const hidden = sessions.filter(x => !tabs.includes(x));
     const hiddenNeeds = hidden.filter(x => NEEDS(x.status.state)).length;
@@ -846,126 +471,19 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     // Gate failures since the last pass. Not repeated when the status card already says the session needs you.
     const lastPass = v ? (v.events.find(e => e.kind === 'gatePass') || { t: 0 }).t : 0;
     const fails = !v || NEEDS(v.status.state) ? 0 : v.events.filter(e => e.kind === 'gateFail' && e.t > lastPass).length;
-    const b = (k, key, label) => html`<button class=${`btn ${st.d === k ? 'on' : ''}`} data-testid=${`drawer-${k}`} aria-pressed=${st.d === k} onClick=${() => set({ d: st.d === k ? null : k, v: null })}><span class="kbd">${key}</span>${label}</button>`;
+    // The open sheet shows which drawer is up; these stay plain under it, as drawn.
+    const b = (k, key, label) => html`<button class="btn" data-testid=${`drawer-${k}`} aria-pressed=${st.d === k} onClick=${() => set({ d: st.d === k ? null : k, v: null })}><span class="kbd">${key}</span>${label}</button>`;
     return html`<div class="foot-bar">
       ${b('timeline', 'T', 'Timeline')}${b('time', 'W', 'Where the time went')}${b('log', 'L', 'Log')}
       <div class="r">${fails ? html`<span class="badge bad" data-testid="foot-gate">${I.x} ${plural(fails, 'gate failure')}</span>` : null}<span data-testid="updated">${updated}</span></div>
     </div>`;
   }
 
-  // Views still on design v1 render inside this, which scopes the v1 styles to them. Each unit removes its view from it.
-  const V1 = ({ children, inline }) => html`<div class="v1" style=${inline ? 'display:contents' : ''}>${children}</div>`;
 
-  const Head = ({ v }) => html`<div class="head"><h1 data-testid="session-title">${v.title}</h1><span class="meta" data-testid="session-meta">${v.project}${v.branch ? html` · <code>${v.branch}</code>` : null} · started ${ago(NOW() - v.start)}${v.model ? ` · ${modelName(v.model)}` : ''}</span></div>`;
-
-  function Progress({ v }) {
-    const total = v.tasks.length;
-    if (!total && !v.features) return null;
-    const done = v.tasks.filter(t => t.status === 'completed').length, doing = v.tasks.filter(t => t.status === 'in_progress').length;
-    const segs = v.tasks.map((t, k) => html`<i class=${k < done ? 'd' : k < done + doing ? 'c' : ''}></i>`);
-    return html`<div class="prog" data-testid="progress">
-      ${total ? html`<div class="row"><span>Tasks</span><span><b class="num">${done} of ${total}</b> done</span></div><div class="seg">${segs}</div>` : null}
-      ${v.features ? html`<div class="row" style=${total ? 'margin:8px 0 0' : ''}><span>Features</span><span class="num"><b>${v.features.passing}</b> / ${v.features.total} passing</span></div>` : null}
-    </div>`;
-  }
-
-  function StatusCard({ v, compact }) {
-    const now = NOW(), s = v.status, needs = NEEDS(s.state);
-    const showTimer = !compact && !needs && s.state !== 'waiting' && s.since;
-    return html`<div class=${`card status ${compact ? 'compact' : ''} ${needs ? 'you' : ''}`}>
-      <${Ic} s=${iconOf(v)} id="status-icon" lg=${!compact} />
-      <div style="flex:1"><div class="big" data-testid="status-text">${statusText(v, now)}</div>${compact ? null : html`<div class="sub" data-testid="status-sub">${statusSub(v, now)}</div>`}</div>
-      ${showTimer ? html`<div class="timer num" data-testid="status-timer">${timer(now - s.since)}</div>` : null}
-      ${needs && !compact ? html`<div class="where" data-testid="status-where">Answer it in the terminal running this session<code>${shortPath(v.cwd)}</code></div>` : null}
-      ${needs || s.state === 'waiting' || s.state === 'stalled' ? null : html`<${Progress} v=${v} />`}
-    </div>`;
-  }
   // File paths, specs and commands in a label read as code: "Editing src/api/orders.ts", "Running e2e tests · checkout.spec.ts › …".
-  function rich(label) {
-    const s = String(label || ''), i = s.indexOf(' · ');
-    if (/^[a-z][\w.:-]*( |$)/.test(s) && !/[A-Z]/.test(s)) return html`<code>${s}</code>`;   // a command: pnpm docs:build
-    if (i > 0) return html`${s.slice(0, i)} · <code>${s.slice(i + 3)}</code>`;
-    return s.split(/(\S*[/.]\w+(?:\.\w+)*)/).map((part, k) => (k % 2 ? html`<code>${part}</code>` : part));
-  }
   const shortPath = p => { const parts = String(p || '').split('/').filter(Boolean); return parts.length > 1 ? `~/…/${parts[parts.length - 1]}` : p || ''; };
 
   // ---- session home: the run graph and the plan ------------------------------------------------------------------------
-  function Job({ v, n, k, now, compact }) {
-    const el = n.since ? now - n.since : 0, past = el >= 5 * 60e3, u = unitFor(v, n.who);
-    const testid = `job-${k}`;
-    return html`<button class="node run" data-testid=${testid} onClick=${() => SET({ v: 'job', j: n.who })}>
-      <div class="t"><${Ic} s="run" />${n.who}${PIN === testid ? html`<span class="open">Open ›</span>` : null}</div>
-      <div class="d">${rich(n.label)}</div>
-      ${past ? html`<div class="tbar warn"><i style=${`width:${Math.min(100, el / 6000).toFixed(0)}%`}></i></div>` : null}
-      ${compact ? null : html`<div class="f num">${past ? html`<span class="warn">${timer(el)} of 10:00 limit</span>` : html`<span>${timer(el)}</span>`}${n.where ? html`<span class="mono">${n.where}</span>` : null}${u && u.commits ? html`<span>${plural(u.commits, 'commit')}</span>` : null}</div>`}
-    </button>`;
-  }
-
-  function RunPanel({ v, folded }) {
-    const now = NOW(), running = runningJobs(v), done = doneUnits(v), main = v.now[0];
-    const mainCommits = v.commits.filter(c => c.who === 'Main thread').length;
-    const mainLine = v.status.state === 'agents' ? `Waiting on ${plural(running.length, 'agent')}` : v.status.label;
-    return html`<div class="card panel">
-      <div class="ph"><span data-testid="run-title">Run</span><span class="r" data-testid="run-count">${running.length || done.length ? `${running.length} running · ${done.length} done` : 'no agents yet'}</span></div>
-      <div class="graph">
-        <button class="node" data-testid="job-main" onClick=${() => SET({ v: 'job', j: 'main' })}><div class="t"><${Ic} s=${v.status.state === 'agents' ? 'idle' : iconOf(v)} />Main thread</div><div class="d">${mainLine}</div><div class="f num"><span>${dur(now - v.start)}</span><span>${plural(mainCommits, 'commit')}</span></div></button>
-        <div class="wire"></div>
-        <div class="jobs">
-          ${!running.length && !done.length ? html`<div class="glabel" data-testid="run-group-steps">Recent steps</div>${v.feed.slice(0, 8).map((f, k) => html`<div class="ev" data-testid=${`step-feed-${k + 1}`} style="grid-template-columns:52px 20px 1fr auto;padding:7px 0"><span class="tm">${clock(f.t)}</span><${Ic} s=${f.end == null ? 'run' : f.ok === false ? 'fail' : 'done'} /><span class="tx">${rich(f.desc)}</span><span class="tag num">${f.end == null ? timer(now - f.t) : durS(f.end - f.t)}</span></div>`)}` : null}
-          ${running.length ? html`<div class="glabel" data-testid="run-group-running">Running</div>` : null}
-          ${running.map((n, k) => html`<${Job} v=${v} n=${n} k=${k + 1} now=${now} />`)}
-          ${done.length && folded ? html`<div class="glabel" data-testid="run-group-done">Done · ${done.length} more, folded to fit</div>` : null}
-          ${done.length && !folded ? html`<div class="glabel" data-testid="run-group-done">Done</div>` : null}
-          ${folded ? null : done.map((u, k) => html`<button class="node done" data-testid=${`job-${running.length + k + 1}`} onClick=${() => SET({ v: 'job', j: u.desc })}><div class="t"><${Ic} s=${u.errors && !u.commits ? 'fail' : 'done'} />${u.desc}<span class="rt num">${dur((u.end || now) - u.start)}${u.commits ? ` · ${plural(u.commits, 'commit')}` : ''}</span></div></button>`)}
-        </div>
-      </div>
-    </div>`;
-  }
-
-  function PlanPanel({ v, folded }) {
-    const tasks = v.tasks, done = tasks.filter(t => t.status === 'completed').length;
-    const owner = t => t.owner || '';
-    if (!tasks.length) return html`<div class="card panel">
-      <div class="ph"><span data-testid="plan-title">Plan</span></div>
-      <div style="height:150px;border:1px dashed var(--line-strong);border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;padding:0 16px">
-        <span data-testid="plan-empty">No task list in this session</span>
-        <span data-testid="plan-empty-sub" style="color:var(--muted);font-size:var(--fs-sm)">Agents show here as work items when there are any</span>
-      </div>
-    </div>`;
-    const rows = [];
-    tasks.forEach((t, k) => {
-      const id = `step-${k + 1}`;
-      if (t.status === 'completed') {
-        if (folded && k < done - 1) return;
-        rows.push(html`<li class="d" data-testid=${id}><${Ic} s="done" />${t.subject}${folded && done > 1 ? html` <span class="who">and ${done - 1} earlier</span>` : null}</li>`);
-      } else if (t.status === 'in_progress') rows.push(html`<li class="c" data-testid=${id}><${Ic} s="run" />${t.subject}${owner(t) ? html`<span class="who">${owner(t)}</span>` : null}</li>`);
-      else {
-        const todo = tasks.filter(x => x.status !== 'completed' && x.status !== 'in_progress');
-        if (folded) { if (t === todo[0]) rows.push(html`<li data-testid=${id}><${Ic} s="todo" />${todo.length} more to do</li>`); return; }
-        rows.push(html`<li data-testid=${id}><${Ic} s="todo" />${t.subject}</li>`);
-      }
-    });
-    return html`<div class="card panel">
-      <div class="ph"><span data-testid="plan-title">Plan</span><span class="r num" data-testid="plan-count">${done} / ${tasks.length}</span></div>
-      <ul class="steps">${rows}</ul>
-    </div>`;
-  }
-
-  function EventRow({ e, id, now }) {
-    if (e.kind === 'step') return html`<div class=${`ev ${e.ok === false ? 'fail' : ''}`} data-testid=${id}><span class="tm">${clock(e.t)}</span><${Ic} s=${e.ok === false ? 'fail' : 'done'} /><span class="tx">${rich(e.text)}${e.ms != null ? html` <em>${durS(e.ms)}</em>` : null}</span><span class="tag">${e.cat || ''}</span></div>`;
-    const icon = { needsInput: 'you', gateFail: 'fail', commitBlocked: 'fail', memory: 'mem', guard: 'mem', commit: 'commit', gatePass: 'done', agentDone: 'done', compact: 'tool', interrupt: 'you', error: 'fail', gaveUp: 'fail' }[e.kind] || 'tool';
-    const tag = { gateFail: 'gate', gatePass: 'gate', commitBlocked: 'gate', memory: 'memory', guard: 'memory', commit: 'commit', compact: 'compact', agentDone: 'agent', error: 'error' }[e.kind] || '';
-    return html`<div class=${`ev ${icon === 'fail' ? 'fail' : ''}`} data-testid=${id}><span class="tm">${clock(e.t)}</span><${Ic} s=${icon} /><span class="tx">${eventText(e)}</span><span class="tag">${tag}</span></div>`;
-  }
-  function eventText(e) {
-    if (e.kind === 'commit') { const [sha, ...msg] = String(e.text).split(' '); return html`Commit ${sha} <em>${msg.join(' ')}</em>`; }
-    if (e.kind === 'needsInput') return 'Claude stopped to ask you something';
-    if (e.kind === 'gatePass') return `Gate passed: ${String(e.text).replace(/^proof:\s*/, '')}`;
-    if (e.kind === 'gateFail') return `Gate failed: ${String(e.text).replace(/^proof:\s*/, '').replace(/\s+—.*$/, '')}`;
-    if (e.kind === 'commitBlocked') return `Commit blocked: ${String(e.text).replace(/^proof:\s*commit refused\s*—\s*/, '')}`;
-    return String(e.text).replace(/^proof( memory)?:\s*/, m => (m.includes('memory') ? 'Memory: ' : ''));
-  }
-
   // ---- design v2: activity groups ------------------------------------------------------------------------------------
   // The feed's categories in the six groups the charts show, in stack order (colours validated for colour-blind
   // separation in this order). Mac asleep is left out of activity.
@@ -1131,13 +649,13 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
   const Head2 = ({ v, right }) => html`<div class="head"><h1 data-testid="title">${v.title}</h1><span class="meta" data-testid="meta">${v.project}${v.branch ? html` · <code>${v.branch}</code>` : null} · started ${ago(NOW() - v.start)}${v.model ? ` · ${modelName(v.model)}` : ''}</span><div class="r">${right}</div></div>`;
 
   // Home while Claude works: status rings, the run graph, KPI cards, activity.
-  function HomeWorking({ v, st, set, data, banner }) {
+  function HomeWorking({ v, st, set, data, banner, lastAt }) {
     const now = NOW(), sc = scopeOf(v, st, now), vals = ringVals(v, sc), n = runningJobs(v).length;
     const sub = [n ? `${plural(n, 'agent')} running` : shortStep(v.status.label) || (v.status.state === 'thinking' ? 'Thinking' : 'Working'), v.commits.length ? plural(v.commits.length, 'commit') : null].filter(Boolean).join(' · ');
     return html`<${Head2} v=${v} right=${html`<${RangeTabs} st=${st} set=${set} />`} />
       <div class="grid" style=${`grid-template-columns:420px 1fr;height:${banner ? 236 : 262}px`}>
         <div class="card status" data-testid="status-card"><${Rings} vals=${vals} size=${banner ? 150 : 170} />
-          <div><div class="ch"><span class="badge run" data-testid="status-badge"><span class="dot live" style="width:6px;height:6px"></span>Live</span>${v.status.since ? html`<span class="r timer num" data-testid="status-timer">${timer(now - v.status.since)}</span>` : null}</div>
+          <div><div class="ch">${lastAt ? html`<span class="badge" data-testid="status-badge"><span class="dot grey" style="width:6px;height:6px"></span>Last update ${clock(lastAt)}</span>` : html`<span class="badge run" data-testid="status-badge"><span class="dot live" style="width:6px;height:6px"></span>Live</span>`}${v.status.since ? html`<span class="r timer num" data-testid="status-timer">${timer(now - v.status.since)}</span>` : null}</div>
             <div class="big" data-testid="status-title">${v.status.state === 'thinking' ? 'Thinking' : 'Working'}</div><div class="desc" style="margin-top:4px" data-testid="status-sub">${sub}</div>
             <${RingLegend} vals=${vals} /></div></div>
         <div class="card pad col" data-testid="agents-card"><div class="ch"><h3 data-testid="agents-title">Agents</h3><span class="badge run" data-testid="agents-running">${n} running</span><span class="badge" data-testid="agents-done">${doneUnits(v).length} done</span><span class="r desc" data-testid="agents-hint">Select an agent to open it</span></div>
@@ -1212,7 +730,7 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     const now = NOW(), s = v.status, sc = scopeOf(v, st, now), vals = ringsOrNone(ringVals(v, sc));
     vals[1] = { ...vals[1], c: 'var(--you)' };
     const [copied, setCopied] = useState(false);
-    const copy = () => { try { navigator.clipboard.writeText(v.cwd); } catch {} setCopied(true); setTimeout(() => setCopied(false), 1500); };
+    const copy = () => { try { navigator.clipboard.writeText(v.cwd).catch(() => {}); } catch {} setCopied(true); setTimeout(() => setCopied(false), 1500); };
     const end = Math.min(now, s.since + 8 * 60e3);
     return html`<${Head2} v=${v} right=${html`<${RangeTabs} st=${st} set=${set} />`} />
       <div class="card status wide you" style="height:236px" data-testid="status-card"><${Rings} vals=${vals} size=${170} />
@@ -1347,6 +865,163 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       </div>`;
   }
 
+  // ---- design v2: loading, offline, empty ------------------------------------------------------------------------------
+  function Loading2({ data, st, set }) {
+    const sk = (style = '') => html`<div class="sk" style=${style}></div>`;
+    return html`<div class="app st-none"><${Top} st=${st} set=${set} data=${data} live=${false} noTabs=${true} />
+      <div class="main">
+        <div class="head">${sk('width:260px;height:24px')}${sk('width:340px;height:16px')}</div>
+        <div class="grid" style="grid-template-columns:420px 1fr;height:262px">${sk('border-radius:10px')}${sk('border-radius:10px')}</div>
+        <div class="grid" style="grid-template-columns:repeat(4,1fr);height:124px">${[1, 2, 3, 4].map(() => sk('border-radius:10px'))}</div>
+        ${sk('flex:1;border-radius:10px;margin-bottom:24px')}</div>
+      <div class="center"><div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-lg)" data-testid="loading-card"><span class="spin"></span><span data-testid="loading-text">Reading session logs…</span></div></div></div>`;
+  }
+  function Empty2({ st, set }) {
+    const h = Number(st.h) || 6;
+    return html`<div class="center"><div class="empty" data-testid="empty"><div class="eic" data-testid="empty-icon">${I.inbox}</div>
+      <h2 data-testid="empty-title">No Claude Code sessions in the last ${h} hours</h2>
+      <p class="desc" data-testid="empty-body">Start one in any project and it appears here within a couple of seconds. Sessions that ran earlier show up if you widen the window.</p>
+      <div class="tabs" style="margin-top:8px" data-testid="empty-range"><button class=${h === 6 ? 'on' : ''} data-testid="empty-range-1" onClick=${() => set({ h: null })}>6 hours</button><button class=${h === 24 ? 'on' : ''} data-testid="empty-range-2" onClick=${() => set({ h: '24' })}>24 hours</button></div></div></div>`;
+  }
+  function OfflineAlert({ quiet, lastAt }) {
+    const [copied, setCopied] = useState(false);
+    const copy = () => { try { navigator.clipboard.writeText('/proof:watch').catch(() => {}); } catch {} setCopied(true); setTimeout(() => setCopied(false), 1500); };
+    return html`<div class="alert grey" data-testid="offline-banner"><span data-testid="offline-icon">${I.plug}</span><div>
+      <div class="at" data-testid="offline-title">Not live. proof's monitor stopped responding ${plural(Math.max(1, Math.round(quiet / 60e3)), 'minute')} ago.</div>
+      <div class="ad" data-testid="offline-body">What's below is the last update, from ${clock(lastAt)}. Start it again with <code>/proof:watch</code> in any Claude Code session. The page reconnects by itself.</div></div>
+      <button class="btn out" data-testid="offline-copy" onClick=${copy}>${I.copy}${copied ? 'Copied' : 'Copy /proof:watch'}</button></div>`;
+  }
+
+  // ---- design v2: the session switcher, a command palette ----------------------------------------------------------------
+  function Palette({ data, sel, st, set }) {
+    const now = NOW(), q = String(st.q || '').toLowerCase();
+    const match = x => !q || x.title.toLowerCase().includes(q) || String(x.project).toLowerCase().includes(q);
+    const pinned = data.sessions.filter(x => NEEDS(x.status.state) && match(x));
+    // Projects with a session that needs you first, then in feed order; a matching project shows all its sessions.
+    const projects = [...new Set([...data.sessions.filter(x => NEEDS(x.status.state)), ...data.sessions].map(x => x.project))].map(p => [p, data.sessions.filter(x => x.project === p)])
+      .map(([p, all]) => [p, all, all.filter(x => !NEEDS(x.status.state) && (match(x) || (q && String(p).toLowerCase().includes(q))))]).filter(([, , rows]) => rows.length);
+    const order = [...pinned, ...projects.flatMap(([, , rows]) => rows)];
+    const [cur, setCur] = useState(0);
+    const open = x => set({ s: x.id, m: null, q: null, v: null, d: null });
+    const when = x => {
+      const ms = now - (x.status.since || x.last), s = x.status.state;
+      if (x === sel) return 'open now';
+      if (NEEDS(s)) return `asked ${coarse(ms)} ago`;
+      if (s === 'thinking') return 'thinking';
+      if (BUSY(s)) return 'working';
+      if (s === 'stalled') return `no activity for ${coarse(ms)}`;
+      return `finished ${coarse(ms)} ago`;
+    };
+    const hl = s => { const t = String(s); if (!q) return t; const i = t.toLowerCase().indexOf(q); return i < 0 ? t : html`${t.slice(0, i)}<mark>${t.slice(i, i + q.length)}</mark>${t.slice(i + q.length)}`; };
+    let n = 0;
+    const item = x => { const k = n++; return html`<button class=${`it ${k === cur ? 'sel' : ''} ${NEEDS(x.status.state) ? 'you' : ''}`} data-testid=${`sw-item-${k + 1}`} onMouseEnter=${() => setCur(k)} onClick=${() => open(x)}><span class=${`dot ${dotOf(x)}`}></span><span>${hl(x.title)}</span><span class="w">${when(x)}</span></button>`; };
+    const onKey = e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setCur(c => Math.min(order.length - 1, c + 1)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setCur(c => Math.max(0, c - 1)); }
+      else if (e.key === 'Enter' && order[cur]) open(order[cur]);
+      else if (e.key === 'Escape') { e.stopPropagation(); set(q ? { q: null } : { m: null }); }
+    };
+    const ref = useRef(null);
+    useEffect(() => { if (ref.current && !PIN) ref.current.focus(); }, []);
+    return html`<div class="scrim" data-testid="scrim" onClick=${() => set({ m: null, q: null })}></div><div class="cmd" data-testid="switcher" role="dialog" aria-label="Switch session">
+      <div class="ci"><span data-testid="sw-icon">${I.search}</span><input ref=${ref} data-testid="sw-search" placeholder="Search sessions and projects" value=${st.q || ''} aria-label="Search sessions and projects" onInput=${e => { setCur(0); set({ q: e.target.value || null }); }} onKeyDown=${onKey} /><span class="kbd" data-testid="sw-kbd">Ctrl K</span></div>
+      <div class="cl">
+        ${pinned.length ? html`<div class="cg"><span data-testid="sw-group-you">Needs you</span></div>${pinned.map(item)}` : null}
+        ${projects.map(([p, all, rows], gi) => html`<div class="cg"><span data-testid=${`sw-group-${gi + 1}`}>${hl(p)}</span><span data-testid=${`sw-group-${gi + 1}-count`}>${plural(all.length, 'session')}</span></div>${rows.map(item)}`)}
+        ${order.length ? null : html`<div class="cg" data-testid="sw-none">No session or project matches</div>`}
+      </div>
+      <div class="cf"><span data-testid="sw-hint-move"><span class="kbd">↑</span><span class="kbd">↓</span>move</span><span data-testid="sw-hint-open"><span class="kbd">Enter</span>open</span><span data-testid="sw-hint-close"><span class="kbd">Esc</span>close</span></div></div>`;
+  }
+
+  // ---- design v2: the drawers, as a bottom sheet over the home -----------------------------------------------------------
+  const shortWho = w => (w === 'proof gate' ? 'proof' : String(w || '').split(':')[0]);
+  const spanOf = (v, who, now) => { const u = unitFor(v, who), j = v.now.find(n => n.who === who); return u ? (u.end || now) - u.start : j ? now - (j.start || j.since) : 0; };
+  const busyFmt = ms => (ms < 600e3 ? durS(ms) : dur(ms));
+
+  function Sheet({ v, st, set, data }) {
+    const close = () => set({ d: null });
+    const b = (k, key, label) => html`<button class=${`btn ${st.d === k ? 'on' : 'ghost'}`} data-testid=${`sheet-${k}`} aria-pressed=${st.d === k} onClick=${() => set({ d: st.d === k ? null : k })}><span class="kbd">${key}</span>${label}</button>`;
+    const fails = NEEDS(v.status.state) ? [] : failsSincePass(v);
+    return html`<div class="scrim" data-testid="scrim" onClick=${close}></div><div class="drawer" data-testid="sheet" role="dialog" aria-label="Drawer"><span class="grab"></span>
+      <div class="dh">${b('timeline', 'T', 'Timeline')}${b('time', 'W', 'Where the time went')}${b('log', 'L', 'Log')}<span class="spacer"></span>
+        ${st.d === 'log' && fails.length ? html`<span class="badge bad" data-testid="sheet-gate">${I.x} ${plural(fails.length, 'gate failure')}</span>` : null}
+        <button class="btn ghost" data-testid="sheet-close" onClick=${close}><span class="kbd">Esc</span>Close</button></div>
+      <div class="db">${st.d === 'timeline' ? html`<${SheetTimeline} v=${v} st=${st} set=${set} data=${data} />` : st.d === 'time' ? html`<${SheetTime} v=${v} st=${st} set=${set} />` : html`<${SheetLog} v=${v} st=${st} set=${set} />`}</div></div>`;
+  }
+
+  function SheetTimeline({ v, st, set, data }) {
+    const now = NOW(), [ref, W] = useWidth(), t0 = Math.max(v.start, v.from || 0), win = Math.round((data.windowMs || 6 * 3600e3) / 3600e3);
+    const lanes = v.rows.map(r => {
+      const who = r.who || [], main = r.key === 'main';
+      const sub = main ? r.sub : who.length === 1 ? String(who[0]).split(':').slice(1).join(':').trim() || r.sub : who.map(w => String(w).split(/[: ]/)[0].toLowerCase()).join(', ');
+      const jobs = who.map(w => runningJobs(v).find(j => j.who === w)).filter(Boolean);
+      const busy = main ? working(byGroup(v.share)) : who.reduce((n, w) => n + spanOf(v, w, now), 0);
+      const commits = main ? v.commits.length : who.reduce((n, w) => n + ((unitFor(v, w) || {}).commits || 0), 0);
+      const state = main ? (runningJobs(v).length ? `waiting on ${plural(runningJobs(v).length, 'agent')}` : lcfirst(shortStep(v.status.label)) || v.status.state)
+        : jobs.length ? `${who.length > 1 ? `${String(jobs[0].who).split(/[: ]/)[0].toLowerCase()} ` : ''}${lcfirst(shortStep(jobs[0].label))}` : v.commits.some(c => /merge/i.test(c.msg) && c.msg.includes(r.label)) ? 'done, merged' : 'done';
+      return { r, key: main ? 'main' : r.key === 'Reviews' ? 'reviews' : String(r.label).toLowerCase().replace(/[^a-z0-9]+/g, '-'), name: main ? 'Main thread' : r.label, sub, card: main ? 'Main thread' : r.key === 'Reviews' ? 'Reviews' : `${r.label} · ${sub}`, busy, commits, state, run: main ? BUSY(v.status.state) && !runningJobs(v).length : jobs.length > 0 };
+    });
+    const LBL = 200, Hh = 52, GAP = 14, y0 = 22, X = t => LBL + (t - t0) / Math.max(1, now - t0) * (W - LBL - 10), tot = y0 + lanes.length * (Hh + GAP) + 20;
+    const laneOf = who => Math.max(0, lanes.findIndex(l => (l.r.who || []).includes(who)));
+    const pinned = PIN === 'wf-tip' && v.feed.find(f => f.end == null);
+    const job = pinned && v.now.find(n => n.who === pinned.who), pinMs = pinned ? (job && job.since ? now - job.since : now - pinned.t) : 0;
+    return html`<div class="ch"><h3 data-testid="wf-title">One lane per worktree</h3><span class="desc" data-testid="wf-hint">Hover a block for what ran and how long</span>
+        <span class="r"><div class="tabs" data-testid="wf-range">${[1, 2, 6, 24].map((h, i) => html`<button class=${win === h ? 'on' : ''} data-testid=${`wf-range-${i + 1}`} aria-pressed=${win === h} onClick=${() => set({ h: h === 6 ? null : String(h) })}>${h}h</button>`)}</div></span></div>
+      <div ref=${ref} style="position:relative">${W ? html`<svg width=${W} height=${tot} data-testid="wf-chart"><defs><pattern id="wf-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--track)" /><rect width="1.6" height="5" fill="var(--c-idle)" /></pattern></defs>
+        ${[0, .25, .5, .75, 1].map((f, i) => { const t = t0 + f * (now - t0); return html`<line x1=${X(t)} x2=${X(t)} y1="16" y2=${tot - 18} stroke="var(--grid)" stroke-dasharray="3 4" /><text x=${X(t)} y="10" font-size="11.5" fill="var(--muted-foreground)" text-anchor=${i === 4 ? 'end' : 'middle'}>${i === 4 ? 'now' : clock(t)}</text>`; })}
+        ${lanes.map((l, i) => { const cy = y0 + i * (Hh + GAP); return html`<text x="0" y=${cy + 18} font-size="13.5" font-weight="600" fill="var(--foreground)">${l.name}</text><text x="0" y=${cy + 35} font-size="12" fill="var(--muted-foreground)">${l.sub}</text>
+          <rect x=${LBL} y=${cy + 6} width=${Math.max(0, W - LBL - 10)} height=${Hh - 12} rx="6" fill="var(--track)" />
+          ${(l.r.lane || []).filter(s => s[1] > t0).map(s => { const g = GROUP[s[2]], x = X(Math.max(t0, s[0])), w = Math.max(1.5, X(s[1]) - x - 1); return html`<rect x=${x} y=${cy + 8} width=${w} height=${Hh - 16} rx=${Math.min(3, w / 2)} fill=${s[2] === 'asleep' ? 'var(--subtle)' : g === 'idle' ? 'url(#wf-hatch)' : GCOL[g] || 'var(--c-cmd)'} data-tip=${`<b>${s[2] === 'asleep' ? 'Mac asleep' : GNAME[g] || esc(s[2])}</b> · ${dur(s[1] - s[0])}<br><span class=m>${esc(l.name)} · ${clock(s[0])}</span>`} />`; })}
+          ${l.key === 'main' ? v.commits.filter(c => c.t >= t0).map(c => html`<circle cx=${X(c.t)} cy=${cy + Hh - 2} r="3.5" fill="var(--foreground)" stroke="var(--background)" stroke-width="1.5" data-tip=${`Commit · ${clock(c.t)}<br><span class=m>${esc(c.msg)}</span>`} />`) : null}`; })}
+        ${v.events.filter(e => e.kind === 'gateFail' && e.t >= t0).map(e => { const cy = y0 + laneOf(e.who) * (Hh + GAP), x = X(e.t); return html`<g data-tip=${`<b>Gate failed</b> · ${clock(e.t)}<br><span class=m>${esc(e.text)}</span>`}><circle cx=${x} cy=${cy + 4} r="7" fill="var(--bad)" stroke="var(--background)" stroke-width="2" /><path d=${`M${x - 2.5} ${cy + 1.5} l5 5 M${x + 2.5} ${cy + 1.5} l-5 5`} stroke="#fff" stroke-width="1.6" stroke-linecap="round" /></g>`; })}
+        <line x1=${X(now)} x2=${X(now)} y1="14" y2=${tot - 18} stroke="var(--run)" stroke-width="2" /></svg>` : null}</div>
+      <div class="tleg" data-testid="wf-legend">${ORDER.map(f => html`<span><i class=${f === 'idle' ? 'hatch' : ''} style=${`background:${GCOL[f]}`}></i>${GNAME[f]}</span>`)}<span><i style="background:var(--subtle);border-radius:2px"></i>Mac asleep</span><span><i style="background:var(--foreground)"></i>Commit</span><span><i style="background:var(--bad)"></i>Gate failed</span></div>
+      <div class="grid" style=${`grid-template-columns:repeat(${Math.max(1, lanes.length)},1fr);margin-top:auto`}>${lanes.map(l => html`<div class="card kpi" style="padding:12px 14px" data-testid=${`lane-${l.key}`}><div class="ch"><span class=${`dot ${l.run ? 'live' : 'idle'}`}></span><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" data-testid=${`lane-${l.key}-name`}>${l.card}</span></div><div class="v num" style="font-size:20px" data-testid=${`lane-${l.key}-busy`}>${busyFmt(l.busy)}<small>busy · ${plural(l.commits, 'commit')}</small></div><div class="desc" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" data-testid=${`lane-${l.key}-state`}>${l.state}</div></div>`)}</div>
+      ${pinned ? html`<div class="pinned-tip" style="right:330px;top:446px" data-testid="wf-tip"><b>${(lanes[laneOf(pinned.who)] || {}).name} · ${STEP_NAME[pinned.cat] || pinned.cat}</b> · ${durS(pinMs)}<br /><span class="m">${clock(pinned.t)} to now · running</span><br /><code>${pinned.desc}</code></div>` : null}`;
+  }
+
+  const TIME_GROUPS = [['Thinking & writing', ['model'], 'think'], ['Tests & checks', ['test', 'typecheck'], 'check'], ['Reading & editing', ['read', 'edit', 'plan', 'web'], 'work'], ['proof gate', ['gate'], 'check'], ['Screens & browser', ['fidelity'], 'check'], ['Git & other commands', ['git', 'shell', 'hooks'], 'cmd'], ['Builds & dev servers', ['build', 'devserver'], 'cmd'], ['Subagents', ['subagent'], 'cmd']];
+  function SheetTime({ v, st, set }) {
+    const now = NOW(), share = st.tr === '6h' ? v.windowShare || v.share : v.share, g = byGroup(share), work = working(g), you = g.you || 0, stall = g.idle || 0, all = Math.max(1, work + you + stall);
+    const slow = findingsOf(v, share), cats = TIME_GROUPS.map(([n, keys, c]) => [n, keys.reduce((s, k) => s + (share[k] || 0), 0), c]).filter(x => x[1] >= 30e3);
+    const top = Math.max(1, ...cats.map(c => c[1])), f = v.findings;
+    const tip = n => (n === 'Tests & checks' && f.e2eN ? `<br><span class=m>End-to-end tests ${dur(f.e2eMs)} · ${plural(f.e2eN, 'run')}<br>Other tests ${dur(Math.max(0, (share.test || 0) - f.e2eMs))}<br>Type checks &amp; lint ${dur(share.typecheck || 0)}</span>` : '');
+    const pc = ms => Math.round(ms / all * 100);
+    return html`<div class="grid" style="grid-template-columns:repeat(3,1fr) 1.4fr">
+        <div class="card kpi" data-testid="t-clock"><span class="desc" data-testid="t-clock-label">On the clock</span><div class="v num" data-testid="t-clock-value">${dur(now - v.start)}</div></div>
+        <div class="card kpi" data-testid="t-work"><span class="desc" data-testid="t-work-label">Work done, in parallel</span><div class="v num" data-testid="t-work-value">${dur((v.busyMs || 0) * (v.parallel || 1))}<small>${(v.parallel || 1).toFixed(1)}×</small></div></div>
+        <div class="card kpi" data-testid="t-drag"><span class="desc" data-testid="t-drag-label">Biggest drag</span><div class="v num" data-testid="t-drag-value">${slow.length ? html`${dur(slow[0][1])}<small>${lcfirst(slow[0][2])}</small>` : html`–<small>nothing stood out</small>`}</div></div>
+        <div class="card kpi" data-testid="t-split"><div class="ch"><span class="desc" data-testid="t-split-label">The session's time</span><span class="r"><div class="tabs" data-testid="t-range"><button class=${st.tr !== '6h' ? 'on' : ''} data-testid="t-range-1" onClick=${() => set({ tr: null })}>This session</button><button class=${st.tr === '6h' ? 'on' : ''} data-testid="t-range-2" onClick=${() => set({ tr: '6h' })}>Last 6h</button></div></span></div>
+          <div class="catbar" style="height:10px;margin-top:10px" data-testid="t-split-bar"><i style=${`flex:${pc(work)};background:var(--c-think)`} data-tip=${`Claude working · ${dur(work)} · ${pc(work)}%`}></i><i style=${`flex:${pc(you)};background:var(--c-you)`} data-tip=${`Waiting on you · ${dur(you)} · ${pc(you)}%`}></i><i class="hatch" style=${`flex:${pc(stall)}`} data-tip=${`Stalls & overhead · ${dur(stall)} · ${pc(stall)}%`}></i></div>
+          <div class="tleg" style="margin-top:8px" data-testid="t-split-legend"><span><i style="background:var(--c-think)"></i>Claude working ${dur(work)}</span><span><i style="background:var(--c-you)"></i>Waiting on you ${dur(you)}</span><span><i class="hatch"></i>Stalls ${dur(stall)}</span></div></div>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 1fr;flex:1;min-height:0">
+        <div class="card pad col" style="gap:10px" data-testid="t-cats"><div class="ch"><h3 data-testid="t-cats-title">Where Claude's working time went</h3><span class="r desc num" data-testid="t-cats-total">${dur(work)}</span></div>
+          <div class="barlist">${cats.map(([n, ms, c], i) => html`<div class="bl" data-tip=${`<b>${esc(n)}</b> · ${dur(ms)}${tip(n)}`}><div class="bar"><i style=${`width:${ms / top * 100}%;background:${GCOL[c]};opacity:.22`}></i><span data-testid=${`t-cat-${i + 1}-name`}>${n}</span></div><b data-testid=${`t-cat-${i + 1}-value`}>${dur(ms)} · ${Math.round(ms / Math.max(1, work) * 100)}%</b></div>`)}</div></div>
+        <div class="card pad col" style="gap:4px" data-testid="t-slow"><div class="ch"><h3 data-testid="t-slow-title">What slowed it down</h3><span class="r desc" data-testid="t-slow-order">biggest first</span></div>
+          ${slow.length ? slow.map(([, ms, n, d, adv], i) => html`<div style="display:grid;grid-template-columns:64px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:20px;font-weight:600;letter-spacing:-.02em" data-testid=${`slow-${i + 1}-value`}>${dur(ms)}</div>
+            <div><div style="font-weight:500" data-testid=${`slow-${i + 1}-name`}>${n}</div><div class="desc" data-testid=${`slow-${i + 1}-detail`}>${d}</div>${adv ? html`<div class="desc" style="color:var(--foreground);margin-top:2px" data-testid=${`slow-${i + 1}-tip`}>→ ${adv}</div>` : null}</div></div>`) : html`<div class="desc">Nothing slowed this session down.</div>`}</div>
+      </div>`;
+  }
+
+  const KIND = { commit: 'commit', gatePass: 'gate', gateFail: 'gate', commitBlocked: 'gate', memory: 'memory', guard: 'memory', compact: 'compact', agentDone: 'agent', needsInput: 'you', interrupt: 'you' };
+  const PROBLEM = new Set(['gateFail', 'error', 'guard', 'memory', 'commitBlocked', 'gaveUp']);
+  function SheetLog({ v, st, set }) {
+    const [shown, setShown] = useState(10), tab = Number(st.lt) || 1, now = NOW();
+    const problems = v.events.filter(e => PROBLEM.has(e.kind)).length, fails = NEEDS(v.status.state) ? 0 : failsSincePass(v).length;
+    const calls = v.feed.map(f => ({ ...f, call: true }));
+    const list = (tab === 1 ? [...v.events, ...calls.filter(c => c.end == null)] : tab === 2 ? v.events.filter(e => /^gate/.test(e.kind)) : tab === 3 ? v.events.filter(e => e.kind === 'commit')
+      : tab === 4 ? v.events.filter(e => PROBLEM.has(e.kind)) : calls).slice().sort((a, b) => b.t - a.t);
+    const row = x => {
+      if (x.call) { const run = x.end == null; return { t: x.t, cls: run ? 'run' : x.ok === false ? 'bad' : GROUP[x.cat] === 'work' ? 'work' : '', ico: run ? html`<span class="spin" style="width:10px;height:10px;border-width:1.5px"></span>` : x.ok === false ? I.x : GROUP[x.cat] === 'work' ? I.edit : I.shell, text: codey(x.desc), kind: run ? 'running' : x.cat }; }
+      const r = rowOf(x); return { ...r, kind: KIND[x.kind] || 'error' };
+    };
+    return html`<div class="ch"><div class="tabs" data-testid="log-tabs">${['Events', 'Gate', 'Commits', 'Problems', 'Every tool call'].map((n, i) => html`<button class=${tab === i + 1 ? 'on' : ''} data-testid=${`log-tab-${i + 1}`} aria-pressed=${tab === i + 1} onClick=${() => { setShown(10); set({ lt: i ? String(i + 1) : null }); }}>${n}${i === 3 && (fails || problems) ? html` <span class="badge bad" style="height:18px">${fails || problems}</span>` : null}</button>`)}</div><span class="r desc" data-testid="log-count">Showing ${Math.min(shown, list.length)} of ${list.length}</span></div>
+      <div class="card" style="padding:0 16px;flex:1;min-height:0;overflow:auto" data-testid="log-card"><table class="tbl"><thead><tr><th style="width:70px" data-testid="log-h-time">Time</th><th data-testid="log-h-event">Event</th><th style="width:180px" data-testid="log-h-who">Who</th><th style="width:110px" class="rt" data-testid="log-h-kind">Kind</th></tr></thead><tbody>
+        ${list.slice(0, shown).map((x, i) => { const r = row(x); return html`<tr><td class="mono mf" data-testid=${`log-${i + 1}-time`}>${clock(r.t)}</td><td><div style="display:flex;align-items:center;gap:10px"><span class=${`ico ${r.cls}`} data-testid=${`log-${i + 1}-icon`}>${r.ico}</span><span data-testid=${`log-${i + 1}-text`}>${r.text}</span></div></td><td class="mf" data-testid=${`log-${i + 1}-who`}>${shortWho(x.who)}</td><td class="rt"><span class=${`badge ${r.kind === 'running' ? 'run' : ''}`} data-testid=${`log-${i + 1}-kind`}>${r.kind}</span></td></tr>`; })}</tbody></table></div>
+      ${list.length > shown ? html`<button class="btn out" style="align-self:center" data-testid="log-more" onClick=${() => setShown(n => n + 40)}>Show ${Math.min(40, list.length - shown)} earlier</button>` : null}`;
+  }
+
   // ---- design v2: memory ------------------------------------------------------------------------------------------------
   // Past the warning line: what memory is at, and what closing the biggest apps would free.
   function MemAlert({ data, set }) {
@@ -1409,120 +1084,12 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       </div>`;
   }
 
-  function Home({ v, st, set, banner }) {
-    const s = v.status.state;
-    if (st.d === 'timeline' || st.d === 'time' || st.d === 'log') return html`<div class="body"><${Head} v=${v} /><${StatusCard} v=${v} compact=${true} />
-      ${st.d === 'timeline' ? html`<${Timeline} v=${v} st=${st} set=${set} />` : st.d === 'time' ? html`<${TimeView} v=${v} st=${st} set=${set} />` : html`<${LogView} v=${v} st=${st} set=${set} />`}</div>`;
-    let main;
-    if (NEEDS(s)) main = html`<div class="grid">
-      <div class="card panel">
-        <div class="ph"><span data-testid="led-title">What led here</span><span class="r" data-testid="led-order">newest first</span></div>
-        ${v.events.slice(0, 5).map((e, k) => html`<${EventRow} e=${e} id=${`led-${k + 1}`} />`)}
-      </div>
-      <${PlanPanel} v=${v} />
-    </div>`;
-    else if (s === 'waiting' && !runningJobs(v).length) main = html`<${Finished} v=${v} set=${set} />`;
-    else if (s === 'stalled') main = html`<div class="grid">
-      <div class="card panel">
-        <div class="ph"><span data-testid="happened-title">Last activity</span><span class="r" data-testid="happened-scope">newest first</span></div>
-        ${lastActivity(v).map((e, k) => html`<${EventRow} e=${e} id=${`happened-${k + 1}`} />`)}
-      </div>
-      <${PlanPanel} v=${v} />
-    </div>`;
-    else main = html`<div class="grid"><${RunPanel} v=${v} folded=${banner} /><${PlanPanel} v=${v} folded=${banner} /></div>`;
-    return html`<div class="body"><${Head} v=${v} /><${StatusCard} v=${v} />${main}</div>`;
-  }
-  const asStep = (f, withMs) => ({ t: f.t, kind: 'step', text: f.desc, cat: f.cat, ok: f.ok, ms: withMs ? f.end - f.t : null });
-  const newest = (list, n) => list.sort((a, b) => b.t - a.t).slice(0, n);
-  const lastActivity = v => newest([...v.feed.filter(f => f.end).slice(0, 3).map(f => asStep(f)), ...v.events.slice(0, 3)], 3);
-
-  function Finished({ v, set }) {
-    const b = buckets(v.share);
-    return html`<div class="grid" style="grid-template-columns:1fr 1fr">
-      <div class="card panel">
-        <div class="ph"><span data-testid="happened-title">What happened</span><span class="r" data-testid="happened-scope">this session</span></div>
-        ${newest([...v.events.slice(0, 3), ...v.feed.filter(f => f.end && f.end - f.t >= 60e3).slice(0, 3).map(f => asStep(f, true))], 3).map((e, k) => html`<${EventRow} e=${e} id=${`happened-${k + 1}`} />`)}
-        <div class="kv" style="margin-top:18px" data-testid="happened-totals"><span>Tool calls</span><b class="num">${v.counts.toolCalls || 0}</b><span>Commits</span><b class="num">${v.commits.length}</b><span>Commit blocks</span><b class="num">${v.counts.commitBlocks || 0}</b><span>Tool errors</span><b class="num">${v.counts.toolErrors || 0}</b></div>
-      </div>
-      <div class="card panel">
-        <div class="ph"><span data-testid="time-mini-title">Where the time went</span><button class="linkbtn" style="margin:0 0 0 auto" data-testid="time-mini-open" onClick=${() => set({ d: 'time' })}>Open in full ›</button></div>
-        <div class="sbar" data-testid="time-mini-bar" role="img" aria-label=${`Claude working ${fmMin(b.work, 1)}, waiting on you ${fmMin(b.you, 1)}, stalls ${fmMin(b.stall, 1)}`}><i class="w" style=${`flex:${b.work}`}></i><i class="y" style=${`flex:${b.you}`}></i><i class="s" style=${`flex:${b.stall}`}></i></div>
-        <div class="legend" data-testid="time-mini-legend" style="flex-wrap:wrap;row-gap:4px"><span><i class="sw w"></i>Claude working <b class="num">${fmMin(b.work)}</b></span><span><i class="sw y"></i>Waiting on you <b class="num">${fmMin(b.you)}</b></span><span><i class="sw s"></i>Stalls <b class="num">${fmMin(b.stall)}</b></span>${v.status.state === 'waiting' ? html`<span>includes the ${dur(NOW() - v.status.since)} since it finished</span>` : null}</div>
-        <div class="subh" data-testid="time-mini-long-title">Longest single steps</div>
-        ${(v.findings.longest || []).slice(0, 3).map((x, k) => html`<div class="long" data-testid=${`time-mini-long-${k + 1}`}><b class="num">${durS(x.ms)}</b><span class="lt">${x.desc}</span><em>${CAT[x.cat] || x.cat}</em></div>`)}
-      </div>
-    </div>`;
-  }
 
   // ---- where the time went --------------------------------------------------------------------------------------------
-  const STALL = new Set(['idle', 'asleep', 'api', 'compact']);
-  const GROUPS = [['Thinking & writing', ['model']], ['Tests & checks', ['test', 'typecheck']], ['Reading & editing', ['read', 'edit', 'plan', 'web']], ['proof gate', ['gate']], ['Screens & browser', ['fidelity']], ['Git & other commands', ['git', 'shell', 'hooks']], ['Builds & dev servers', ['build', 'devserver']], ['Subagents', ['subagent']]];
-  function buckets(share) {
-    let work = 0, you = 0, stall = 0;
-    for (const [k, ms] of Object.entries(share || {})) { if (k === 'waitUser') you += ms; else if (STALL.has(k)) stall += ms; else work += ms; }
-    return { work, you, stall, clock: work + you + stall };
-  }
-  const fmMin = (ms, spoken) => (ms > 0 && ms < 60e3 ? (spoken ? 'under 1m' : '<1m') : dur(ms));
 
-  const CLS = cat => (cat === 'waitUser' ? 'y' : cat === 'asleep' ? 'z' : STALL.has(cat) ? 's' : 'w');
 
   // ---- timeline -----------------------------------------------------------------------------------------------------
   // What a lane is about: the one agent's task ("payment screen"), or how many agents worked there.
-  const laneSub = l => (l.r.key !== 'Reviews' && l.who.length === 1 ? String(l.who[0]).replace(/^[^:]*:\s*/, '') : l.r.sub);
-  function Timeline({ v, st, set }) {
-    const now = NOW(), from = v.from, to = v.to, span = Math.max(1, to - from);
-    const P = t => Math.max(0, Math.min(100, ((t - from) / span) * 100));
-    const [hover, setHover] = useState(null);
-    const hours = Number(st.h) || Math.round(DATA_WINDOW() / 3600e3);
-    const lanes = v.rows.map(r => {
-      const who = r.key === 'main' ? ['Main thread'] : r.who || [];
-      const marks = [
-        ...v.commits.filter(c => who.includes(c.who)).map(c => ({ t: c.t, bad: false })),
-        ...v.events.filter(e => e.kind === 'gateFail' && (r.key === 'main' ? e.who === 'proof gate' || e.who === 'Main thread' : who.includes(e.who))).map(e => ({ t: e.t, bad: true })),
-      ].filter(m => m.t >= from);
-      return { r, who, marks, blocks: (r.lane || []).filter(([a, b]) => b > from) };
-    });
-    const tipFor = (lane, block) => {
-      const [a, b, cat] = block, running = b >= to - 2000;
-      const call = v.feed.find(f => lane.who.includes(f.who) && f.t <= b && (f.end ?? now) >= a && f.cat === cat);
-      return { lane, block, title: `${lane.r.label} · ${CAT[cat] || cat}`, ms: b - a, when: `${clock(a)} to ${running ? 'now' : clock(b)}`, state: running ? 'running' : '', desc: call ? call.desc : '' };
-    };
-    const pinned = (() => { const m = String(PIN || '').match(/^tl-lane-(\d+)$/); if (!m) return null; const l = lanes[Number(m[1]) - 1]; return l && l.blocks.length ? tipFor(l, l.blocks[l.blocks.length - 1]) : null; })();
-    const [kb, setKb] = useState(null);   // { lane index, block index } from the arrow keys
-    const keyed = kb && lanes[kb.lane] && lanes[kb.lane].blocks[kb.i] ? tipFor(lanes[kb.lane], lanes[kb.lane].blocks[kb.i]) : null;
-    const tip = hover || keyed || pinned;
-    const onKey = (k, e) => {
-      const n = lanes[k].blocks.length;
-      if (!n || (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft')) return;
-      e.preventDefault();
-      const cur = kb && kb.lane === k ? kb.i : e.key === 'ArrowLeft' ? n : -1;
-      setKb({ lane: k, i: Math.max(0, Math.min(n - 1, cur + (e.key === 'ArrowRight' ? 1 : -1))) });
-    };
-    const onMove = (lane, e) => {
-      const r = e.currentTarget.getBoundingClientRect(), t = from + ((e.clientX - r.left) / r.width) * span;
-      const b = lane.blocks.find(([a, z]) => t >= a && t <= z);
-      setHover(b ? { ...tipFor(lane, b), x: e.clientX, y: r.bottom } : null);
-    };
-    const ticks = [0, 1, 2, 3].map(i => clock(from + (i / 4) * span));
-    return html`<div class="card panel" style="flex:1;margin-bottom:20px;display:flex;flex-direction:column;overflow:visible">
-      <div class="ph"><span data-testid="tl-title">One lane per worktree</span>
-        <span class="r" style="display:flex;gap:8px;align-items:center"><span class="scope">${[1, 2, 6, 24].map(h => html`<button class=${h === hours ? 'on' : ''} data-testid=${`tl-${h}h`} onClick=${() => set({ h: String(h) })}>${h}h</button>`)}</span></span></div>
-      <div class="lanes" style="margin-top:14px">
-        ${lanes.map((l, k) => html`<div class="lane" data-testid=${`tl-lane-${k + 1}`} tabindex="0" onMouseMove=${e => onMove(l, e)} onMouseLeave=${() => setHover(null)} onKeyDown=${e => onKey(k, e)} onBlur=${() => setKb(null)}>
-          <span class="ln">${l.r.label}${l.r.key === 'main' ? null : html`<em>${laneSub(l)}</em>`}</span>
-          <div class="trk" onMouseMove=${e => onMove(l, e)}>${l.blocks.map(b => html`<i class=${`${CLS(b[2])} ${tip && tip.lane === l && tip.block === b ? 'sel' : ''}`} style=${`left:${P(b[0])}%;width:${Math.max(0.3, P(b[1]) - P(b[0]))}%`}></i>`)}${l.marks.map(m => html`<u class=${m.bad ? 'bad' : ''} style=${`left:${P(m.t)}%`}></u>`)}${k === 0 && to >= now - 5000 ? html`<span class="nowline"></span>` : null}</div>
-        </div>`)}
-        ${tip ? html`<div class="tip" data-testid="tl-tip" style=${hover ? `position:fixed;left:${Math.min(innerWidth - 290, hover.x + 12)}px;top:${hover.y + 8}px` : 'right:0;top:214px'}><div class="h"><span>${tip.title}</span><span class="num">${durS(tip.ms)}</span></div><div class="r"><span>${tip.when}</span><span>${tip.state}</span></div>${tip.desc ? html`<div class="r"><span>${rich(tip.desc)}</span></div>` : null}</div>` : null}
-      </div>
-      <div class="axis" data-testid="tl-axis"><span></span><div class="ticks">${ticks.map(t => html`<span>${t}</span>`)}<span>${to >= now - 5000 ? 'now' : clock(to)}</span></div></div>
-      <div class="legend" data-testid="tl-legend" style="margin-top:auto;padding-top:18px">
-        <span><i class="sw w"></i>Claude working</span><span><i class="sw y"></i>Waiting on you</span><span><i class="sw s"></i>Stalls & overhead</span><span><i class="sw z"></i>Mac asleep</span>
-        <span><i class="sw" style="background:var(--ink);width:3px;border-radius:1px"></i>Commit</span><span><i class="sw" style="background:var(--bad);width:3px;border-radius:1px"></i>Gate failed</span>
-        <span style="margin-left:auto">Hover a block for what ran and how long</span>
-      </div>
-    </div>`;
-  }
-
   // ---- where the time went, in full ---------------------------------------------------------------------------------
   function findingsOf(v, share) {
     const f = v.findings, wait = (f.longest || []).find(x => x.cat === 'waitUser');
@@ -1535,73 +1102,8 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       ['s', share.compact || 0, 'Compacting context', plural(v.counts.compactions || 0, 'compaction'), ''],
     ].filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3);
   }
-  function TimeView({ v, st, set }) {
-    const share = st.sc === '6h' ? v.windowShare : v.share, b = buckets(share);
-    const groups = GROUPS.map(([label, cats]) => [label, cats, cats.reduce((n, c) => n + (share[c] || 0), 0)]).filter(g => g[2] > 0).sort((x, y) => y[2] - x[2]);
-    const max = Math.max(1, ...groups.map(g => g[2]));
-    const finds = findingsOf(v, share);
-    const done = (v.busyMs || 0) * (v.parallel || 1), par = (v.parallel || 1).toFixed(1);
-    const share100 = ms => (b.clock ? Math.round((100 * ms) / b.clock) : 0);
-    const lt1 = n => (n < 1 && n > 0 ? '<1' : n);
-    const [hover, setHover] = useState(null);
-    const pinned = (String(PIN || '').match(/^time-row-(\d+)$/) || [])[1];
-    const tipRow = hover != null ? hover : pinned ? Number(pinned) - 1 : null;
-    const subsOf = ([label, cats, ms]) => {
-      if (cats.includes('test') && v.findings.e2eMs) { const e2e = Math.min(share.test || 0, v.findings.e2eMs); return [['End-to-end tests', `${dur(e2e)} · ${plural(v.findings.e2eN, 'run')}`], ['Other tests', dur((share.test || 0) - e2e)], ['Type checks & lint', dur(share.typecheck || 0)]].filter(x => x[1] !== '0s'); }
-      return cats.filter(c => share[c]).map(c => [CAT[c] || c, dur(share[c])]);
-    };
-    const headline = html`${Number(par) >= 1.5 ? html`<b>${par}× in parallel</b>: ` : ''}${dur(done)} of work in ${dur(b.clock)}.${finds[0] ? html` Biggest drag: <b>${dur(finds[0][1])} ${finds[0][2].toLowerCase()}</b>${finds[1] ? `, then ${finds[1][2].toLowerCase()}` : ''}.` : ''}`;
-    return html`<div class="tw">
-      <div class="card split">
-        <div class="lead">
-          <div class="stat" data-testid="time-clock"><div class="v num">${dur(b.clock)}</div><div class="l">on the clock</div></div>
-          <div class="stat" data-testid="time-done"><div class="v num">${dur(done)}<small>${par}×</small></div><div class="l">of work done, in parallel</div></div>
-          <div class="headline" data-testid="time-headline">${headline}</div>
-          <span class="scope"><button class=${st.sc === '6h' ? '' : 'on'} data-testid="scope-session" onClick=${() => set({ sc: null })}>This session</button><button class=${st.sc === '6h' ? 'on' : ''} data-testid="scope-6h" onClick=${() => set({ sc: '6h' })}>Last 6h</button></span>
-        </div>
-        <div class="sbar" data-testid="time-bar" role="img" aria-label=${`Claude working ${fmMin(b.work, 1)}, waiting on you ${fmMin(b.you, 1)}, stalls ${fmMin(b.stall, 1)}`}><i class="w" style=${`flex:${b.work}`}></i><i class="y" style=${`flex:${b.you}`}></i><i class="s" style=${`flex:${b.stall}`}></i></div>
-        <div class="legend" data-testid="time-legend"><span><i class="sw w"></i>Claude working <b class="num">${fmMin(b.work)}</b> ${lt1(share100(b.work))}%</span><span><i class="sw y"></i>Waiting on you <b class="num">${fmMin(b.you)}</b> ${lt1(share100(b.you))}%</span><span><i class="sw s"></i>Stalls & overhead <b class="num">${fmMin(b.stall)}</b> ${lt1(share100(b.stall))}%</span></div>
-      </div>
-      <div class="tw-grid">
-        <div class="card panel" style="overflow:visible;position:relative">
-          <div class="ph"><span data-testid="work-title">Where Claude's working time went</span><span class="r num" data-testid="work-total">${dur(b.work)}</span></div>
-          ${groups.map((g, k) => html`<button class=${`brow ${tipRow === k ? 'hov' : ''}`} data-testid=${`time-row-${k + 1}`} onMouseEnter=${() => setHover(k)} onMouseLeave=${() => setHover(null)} onFocus=${() => setHover(k)} onBlur=${() => setHover(null)}><span>${g[0]}</span><span class="tr"><i style=${`width:${(100 * g[2]) / max}%`}></i></span><span class="du num">${dur(g[2])}</span><span class="pc num">${b.work ? lt1(Math.round((100 * g[2]) / b.work) || (g[2] ? 0.5 : 0)) : 0}%</span></button>`)}
-          ${tipRow != null && groups[tipRow] ? html`<div class="tip" data-testid="time-tip" style=${`left:240px;top:${68 + tipRow * 33 + 17}px`}><div class="h"><span>${groups[tipRow][0]}</span><span class="num">${dur(groups[tipRow][2])}</span></div>${subsOf(groups[tipRow]).map(([a, x]) => html`<div class="r"><span>${a}</span><span class="num">${x}</span></div>`)}</div>` : null}
-        </div>
-        <div class="card panel">
-          <div class="ph"><span data-testid="slow-title">What slowed it down</span><span class="r" data-testid="slow-sub">biggest first</span></div>
-          ${finds.length ? finds.map(([k, ms, t, x, fix], i) => html`<div class="find" data-testid=${`finding-${i + 1}`}><div class="m num"><i class=${`sw ${k}`}></i>${dur(ms)}</div><div><div class="t">${t}</div><div class="x">${x}</div>${fix ? html`<div class="fix">${fix}</div>` : null}</div></div>`) : html`<div style="color:var(--muted)" data-testid="slow-none">Nothing stood out.</div>`}
-          <div class="subh" data-testid="long-title">Longest single steps</div>
-          ${(v.findings.longest || []).slice(0, 4).map((x, i) => html`<div class="long" data-testid=${`long-${i + 1}`}><b class="num">${durS(x.ms)}</b><span class="lt">${x.desc}</span><em>${CAT[x.cat] || x.cat}</em></div>`)}
-        </div>
-      </div>
-    </div>`;
-  }
-
   // ---- log ----------------------------------------------------------------------------------------------------------
   // Events by default (plus whatever is running right now); every tool call is one click away.
-  const LOG_FILTERS = [['all', 'Events'], ['gate', 'Gate'], ['commits', 'Commits'], ['problems', 'Problems'], ['tools', 'Every tool call']];
-  function LogView({ v, st, set }) {
-    const now = NOW(), f = st.lf || 'all', limit = Number(st.ln) || 10;
-    const calls = v.feed.map(x => ({ t: x.t, kind: 'step', text: x.desc, cat: x.cat, ok: x.ok, end: x.end, who: x.who }));
-    const evs = v.events;
-    const rows = f === 'tools' ? calls : f === 'gate' ? evs.filter(e => /^gate/.test(e.kind)) : f === 'commits' ? evs.filter(e => e.kind === 'commit')
-      : f === 'problems' ? [...evs.filter(e => /gateFail|commitBlocked|guard|memory|error|gaveUp|interrupt/.test(e.kind)), ...calls.filter(c => c.ok === false)] : [...evs, ...calls.filter(c => c.end == null)];
-    const list = rows.slice().sort((a, b) => b.t - a.t);
-    const who = w => (w === 'proof gate' ? 'proof' : String(w || '').replace(/:.*$/, ''));
-    return html`<div class="card panel" style="flex:1;margin-bottom:20px;overflow:auto">
-      <div class="filters">
-        ${LOG_FILTERS.map(([k, label]) => html`<button class=${`chip ${f === k ? 'on' : ''}`} data-testid=${`log-${k}`} onClick=${() => set({ lf: k === 'all' ? null : k, ln: null })}>${label}</button>`)}
-        <span style="margin-left:auto;color:var(--muted);align-self:center" data-testid="log-count">Showing ${Math.min(limit, list.length)} of ${list.length}</span>
-      </div>
-      ${list.slice(0, limit).map((e, i) => e.kind === 'step'
-        ? html`<div class=${`ev ${e.ok === false ? 'fail' : ''}`} data-testid=${`log-${i + 1}`} style="grid-template-columns:52px 20px 1fr 150px 70px"><span class="tm">${clock(e.t)}</span><${Ic} s=${e.end == null ? 'run' : e.ok === false ? 'fail' : 'done'} /><span class="tx">${rich(e.text)}</span><span class="tx" style="color:var(--muted)">${who(e.who)}</span><span class="tag">${e.end == null ? 'running' : e.cat}</span></div>`
-        : html`<div class=${`ev ${/gateFail|commitBlocked|error|gaveUp/.test(e.kind) ? 'fail' : ''}`} data-testid=${`log-${i + 1}`} style="grid-template-columns:52px 20px 1fr 150px 70px"><span class="tm">${clock(e.t)}</span><${Ic} s=${{ needsInput: 'you', gateFail: 'fail', commitBlocked: 'fail', memory: 'mem', guard: 'mem', commit: 'commit', gatePass: 'done', agentDone: 'done', compact: 'tool', interrupt: 'you', error: 'fail', gaveUp: 'fail' }[e.kind] || 'tool'} /><span class="tx">${eventText(e)}</span><span class="tx" style="color:var(--muted)">${who(e.who)}</span><span class="tag">${{ gateFail: 'gate', gatePass: 'gate', commitBlocked: 'gate', memory: 'memory', guard: 'memory', commit: 'commit', compact: 'compact', agentDone: 'agent', needsInput: 'you', interrupt: 'you' }[e.kind] || e.kind}</span></div>`)}
-      ${list.length ? null : html`<div style="color:var(--muted);padding:12px 0" data-testid="log-empty">${f === 'all' ? 'No events yet in this session.' : 'Nothing here yet.'}</div>`}
-      ${list.length > limit ? html`<button class="linkbtn" data-testid="log-more" onClick=${() => set({ ln: String(limit + 40) })}>Show ${Math.min(40, list.length - limit)} earlier</button>` : null}
-    </div>`;
-  }
-
   // ---- the app ----------------------------------------------------------------------------------------------------------
   let NOW = () => Date.now();
   let DATA_WINDOW = () => 6 * 3600e3;
@@ -1656,15 +1158,17 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     DATA_WINDOW = () => (data && data.windowMs) || 6 * 3600e3;
     NOW = () => (data ? (FROZEN ? data.now : data.now + (Date.now() - lastOk)) : Date.now());
     const offline = SIM === 'offline' || (failed && !FROZEN);
-    if (SIM === 'loading') return html`<${Loading} />`;
-    if (!data) return DATA_URL ? null : html`<${Loading} />`;   // a fixed feed loads at once; no skeleton to catch mid-load
+    if (SIM === 'loading') return html`<${Loading2} data=${data} st=${st} set=${set} />`;
+    if (!data) return DATA_URL ? null : html`<${Loading2} st=${st} set=${set} />`;   // a fixed feed loads at once; no skeleton to catch mid-load
     const sessions = data.sessions;
     const sel = sessions.find(x => x.id === st.s) || sessions[0];
     const live = !offline && !FROZEN || (DATA_URL && !offline);
     const sys = data.machine && data.machine.system;
     const banner = sys && sys.pct >= sys.warnPct && !offline;
-    const updated = `Updated ${Math.max(1, Math.round(((FROZEN ? data.now : Date.now()) - lastOk) / 1000))}s ago`;
-    if (!sel) return html`<div class="app st-none"><${Top} st=${st} set=${set} data=${data} live=${live} /><div class="main"><${V1}><${Empty} set=${set} st=${st} /><//></div></div>`;
+    // Offline: when the last update came, and how long the monitor has been quiet (?simulate=offline: 3 minutes).
+    const lastAt = SIM === 'offline' ? data.now : lastOk, quiet = SIM === 'offline' ? 3 * 60e3 : Date.now() - lastOk;
+    const updated = offline ? `Last update ${coarse(quiet)} ago` : `Updated ${Math.max(1, Math.round(((FROZEN ? data.now : Date.now()) - lastOk) / 1000))}s ago`;
+    if (!sel) return html`<div class="app st-none"><${Top} st=${st} set=${set} data=${data} live=${live} noTabs=${true} /><${Empty2} st=${st} set=${set} /></div>`;
     // The top glow: green while Claude works, coral when it needs you, amber past the memory warning line, none otherwise.
     const glow = offline ? 'none' : NEEDS(sel.status.state) ? 'you' : banner ? 'warn' : BUSY(sel.status.state) ? 'run' : 'none';
     // Hover tooltips: any element with data-tip (markup the page built, with feed text escaped) shows it by the pointer.
@@ -1674,164 +1178,31 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
       const r = e.currentTarget.getBoundingClientRect();
       setTip({ html: t.getAttribute('data-tip'), x: e.clientX - r.left + 14, y: e.clientY - r.top + 14 });
     };
-    const working = !st.d && (BUSY(sel.status.state) || runningJobs(sel).length > 0) && !NEEDS(sel.status.state) && sel.status.state !== 'stalled';
+    const working = (BUSY(sel.status.state) || runningJobs(sel).length > 0) && !NEEDS(sel.status.state) && sel.status.state !== 'stalled';
     return html`<div class=${`app st-${glow} ${FROZEN ? '' : 'animate'}`} onMouseMove=${onMove} onMouseLeave=${() => setTip(null)}>
       <${Top} st=${st} set=${set} data=${data} sel=${sel} live=${live} />
-      <${V1} inline=${true}>
-      ${st.m ? html`<${Menu} data=${data} sel=${sel} st=${st} set=${set} />` : null}
-      ${data.replay ? html`<div class="banner off" data-testid="replay-banner"><div class="bt"><div data-testid="replay-title"><b>Replay of your ${data.replay.source || 'build'} build</b>, as the dashboard showed it at ${clock(data.now)}.</div><div class="bs" data-testid="replay-sub">Live, it refreshes every 2 seconds and the timers tick.${data.machine && data.machine.example ? ' The memory figures are sample data: Claude Code\'s logs don\'t record memory.' : ''}</div></div></div>` : null}
-      ${offline ? html`<${Offline} lastOk=${lastOk} data=${data} />` : null}
-      <//>
-      ${!offline && banner && st.v !== 'memory' ? html`<${MemAlert} data=${data} set=${set} />` : null}
-      <div class="main">
-        ${offline ? html`<${V1}><div class="body dim" aria-hidden="true"><${Head} v=${sel} /><${StatusCard} v=${sel} /></div><//>`
-          : st.v === 'memory' && data.machine ? html`<${Memory} data=${data} sel=${sel} set=${set} />`
-          : st.v === 'job' && st.j ? html`<${Job} v=${sel} who=${st.j} st=${st} set=${set} />`
-          : st.d ? html`<${V1}><${Home} v=${sel} st=${st} set=${set} banner=${banner} /><//>`
-          : working ? html`<${HomeWorking} v=${sel} st=${st} set=${set} data=${data} banner=${banner} />`
+      ${data.replay ? html`<div class="alert grey" data-testid="replay-banner"><span>${I.clock}</span><div><div class="at" data-testid="replay-title">Replay of your ${data.replay.source || 'build'} build, as the dashboard showed it at ${clock(data.now)}.</div><div class="ad" data-testid="replay-sub">Live, it refreshes every 2 seconds and the timers tick.${data.machine && data.machine.example ? ' The memory figures are sample data: Claude Code\'s logs don\'t record memory.' : ''}</div></div></div>` : null}
+      ${offline ? html`<${OfflineAlert} quiet=${quiet} lastAt=${lastAt} />` : banner && st.v !== 'memory' ? html`<${MemAlert} data=${data} set=${set} />` : null}
+      <div class=${`main ${offline ? 'dim' : ''}`}>
+        ${!offline && st.v === 'memory' && data.machine ? html`<${Memory} data=${data} sel=${sel} set=${set} />`
+          : !offline && st.v === 'job' && st.j ? html`<${Job} v=${sel} who=${st.j} st=${st} set=${set} />`
+          : working ? html`<${HomeWorking} v=${sel} st=${st} set=${set} data=${data} banner=${banner} lastAt=${offline ? lastAt : null} />`
           : NEEDS(sel.status.state) ? html`<${HomeNeedsYou} v=${sel} st=${st} set=${set} data=${data} />`
           : sel.status.state === 'stalled' ? html`<${HomeStalled} v=${sel} st=${st} set=${set} data=${data} />`
           : html`<${HomeFinished} v=${sel} st=${st} set=${set} data=${data} />`}
-        <${FootBar} st=${st} set=${set} v=${offline ? null : sel} updated=${updated} />
+        <${FootBar} st=${st} set=${set} v=${sel} updated=${updated} />
       </div>
+      ${st.d && !offline && st.v !== 'memory' && !(st.v === 'job' && st.j) ? html`<${Sheet} v=${sel} st=${st} set=${set} data=${data} />` : null}
+      ${st.m ? html`<${Palette} data=${data} sel=${sel} st=${st} set=${set} />` : null}
       ${tip ? html`<div class="tip" style=${`left:${tip.x}px;top:${tip.y}px`} dangerouslySetInnerHTML=${{ __html: tip.html }}></div>` : null}
     </div>`;
   }
 
-  function Loading() {
-    const sk = (w, h, extra = '') => html`<div class="sk" style=${`width:${w};height:${h}px;${extra}`}></div>`;
-    return html`<div class="app st-none"><div class="v1" style="margin:0"><div class="bar"><${Logo} live=${false} />${sk('180px', 30, 'border-radius:999px')}${sk('210px', 30, 'border-radius:999px;margin-left:6px')}${sk('170px', 30, 'border-radius:999px;margin-left:6px')}<div class="spacer"></div><span data-testid="loading-text" style="color:var(--muted)">Reading session logs…</span></div>
-      <div class="body">${sk('360px', 26)}<div class="card status">${sk('100%', 56)}</div>
-        <div class="grid"><div class="card panel">${sk('40%', 16)}<div style="height:16px"></div>${sk('100%', 80)}<div style="height:10px"></div>${sk('100%', 80)}<div style="height:10px"></div>${sk('100%', 80)}</div><div class="card panel">${sk('30%', 16)}<div style="height:16px"></div>${[1, 2, 3, 4, 5, 6, 7].map(() => sk('100%', 22, 'margin-bottom:12px'))}</div></div>
-        <div class="drawer"></div></div></div></div>`;
-  }
-
-  function Empty({ st, set }) {
-    const h = Number(st.h) || 6;
-    return html`<div class="body"><div class="empty">
-      <div class="glyph" data-testid="empty-glyph">${SVG.inbox}</div>
-      <div class="e1" data-testid="empty-title">No Claude Code sessions in the last ${h} hours</div>
-      <div class="e2" data-testid="empty-sub">Start one in any project and it appears here within a couple of seconds. Sessions that ran earlier show up if you widen the window.</div>
-      <span class="scope" style="margin-top:8px"><button class=${h === 6 ? 'on' : ''} data-testid="empty-6h" onClick=${() => set({ h: null })}>6 hours</button><button class=${h === 24 ? 'on' : ''} data-testid="empty-24h" onClick=${() => set({ h: '24' })}>24 hours</button></span>
-    </div></div>`;
-  }
-
-  function MemBanner({ data, set }) {
-    const s = data.machine.system, a = data.machine.advice || {};
-    const apps = (a.userApps || []).slice(0, 2);
-    const free = apps.reduce((n, x) => n + x.mb, 0);
-    return html`<div class="banner" data-testid="mem-banner">
-      <${Ic} s="warn" id="mem-banner-icon" lg=${true} />
-      <div class="bt"><div data-testid="mem-banner-title"><b>Memory is at ${pct(s.pct)}: ${(s.usedMB / 1024).toFixed(1)} of ${Math.round(s.totalMB / 1024)} GB.</b> Runs and agents now wait their turn.</div>
-        ${apps.length ? html`<div class="bs" data-testid="mem-banner-advice">Closing ${apps.map(x => `${x.name} (${gb(x.mb)})`).join(' and ')} would free about ${gb(free)}, so checks and agents run side by side again.</div>` : null}</div>
-      <button class="btn" data-testid="mem-banner-open" onClick=${() => set({ v: 'memory' })}>What's using it</button>
-    </div>`;
-  }
-
   // ---- one agent, or the main thread, on its own ------------------------------------------------------------------
-  const CAT = { model: 'Thinking', edit: 'Editing code', read: 'Reading & searching', test: 'Tests', typecheck: 'Type checks & lint', fidelity: 'Screens & browser', build: 'Builds & installs', devserver: 'Dev servers', gate: 'proof gate', hooks: 'Other hooks', git: 'Git', subagent: 'Subagents', plan: 'Planning', web: 'Web lookups', api: 'API errors', compact: 'Compacting context', shell: 'Other commands', waitUser: 'Waiting on you' };
   // Consecutive tool calls of the same kind make one step: "Editing code, 5m".
-  function phases(calls, now) {
-    const out = [];
-    for (const c of calls.slice().sort((a, b) => a.t - b.t)) {
-      const last = out[out.length - 1];
-      if (last && last.cat === c.cat) last.calls.push(c); else out.push({ cat: c.cat, calls: [c] });
-    }
-    return out.map(p => ({ label: CAT[p.cat] || p.cat, ms: Math.max(...p.calls.map(c => c.end ?? now)) - p.calls[0].t, running: p.calls.some(c => c.end == null), failed: p.calls.some(c => c.ok === false) }));
-  }
-  function JobView({ v, who, st, set }) {
-    const now = NOW(), main = who === 'main', name = main ? 'Main thread' : who;
-    const n = v.now.find(x => x.who === name), u = main ? null : unitFor(v, who);
-    const calls = v.feed.filter(f => f.who === name);
-    const working = n && n.state === 'working', el = working ? now - n.since : 0, past = el >= 5 * 60e3;
-    const label = String((n && n.label) || ''), cut = label.indexOf(' · ');
-    const steps = main && v.tasks.length ? v.tasks.map(t => ({ label: t.subject, ms: null, running: t.status === 'in_progress', failed: false, todo: t.status === 'pending' })) : phases(calls, now);
-    const shown = calls.slice(0, 6 + (Number(st.all) || 0));
-    const start = u ? u.start : main ? v.start : (calls[calls.length - 1] || { t: now }).t;
-    return html`<div class="body" style="padding-bottom:20px">
-      <div class="crumb"><button class="back" data-testid="back" onClick=${() => set({ v: null, j: null, all: null })}>${SVG.left}${v.title}</button><span data-testid="crumb-here">${name}</span></div>
-      <div class="card status">
-        <${Ic} s=${working ? 'run' : main ? iconOf(v) : 'done'} id="status-icon" lg=${true} />
-        <div style="flex:1"><div class="big" data-testid="status-text">${main ? statusText(v, now) : working ? (cut > 0 ? label.slice(0, cut) : label) : 'Finished'}</div><div class="sub" data-testid="status-sub">${working && cut > 0 ? html`<code>${label.slice(cut + 3)}</code>` : working ? '' : u && u.end ? `Ran for ${dur(u.end - u.start)}` : statusSub(v, now)}</div></div>
-        ${working ? html`<div class="timer num" data-testid="status-timer" style=${past ? 'color:var(--warn-ink)' : ''}>${timer(el)}</div>
-          <div class="prog" data-testid="status-limit"><div class="row"><span>Against the 10-minute limit</span><b class="num">${pct(Math.min(100, el / 6000))}</b></div><div class=${`tbar ${past ? 'warn' : ''}`} style="margin:0;height:6px"><i style=${`width:${Math.min(100, el / 6000).toFixed(0)}%`}></i></div></div>` : null}
-      </div>
-      <div class="grid" style="grid-template-columns:270px 1fr 340px">
-        <div class="card panel">
-          <div class="ph"><span data-testid="steps-title">Steps</span><span class="r num" data-testid="steps-total">${dur(now - start)}</span></div>
-          ${steps.length > 12 ? html`<div class="glabel" data-testid="steps-earlier" style="margin:0 0 6px">${plural(steps.length - 12, 'earlier step')}</div>` : null}
-          <ul class="steps">${steps.slice(-12).map((p, k) => html`<li class=${p.running ? 'c' : p.todo ? '' : 'd'} data-testid=${`jstep-${k + 1}`}><${Ic} s=${p.running ? 'run' : p.todo ? 'todo' : p.failed ? 'fail' : 'done'} />${p.label}${p.ms != null ? html`<span class="who num">${dur(p.ms)}</span>` : null}</li>`)}</ul>
-        </div>
-        <div class="card panel" style="overflow:auto">
-          <div class="ph"><span data-testid="activity-title">Activity</span><span class="r" data-testid="activity-sub">every tool call, newest first</span></div>
-          ${shown.map((f, k) => html`<div class=${`ev ${f.ok === false ? 'fail' : ''}`} data-testid=${`act-${k + 1}`}><span class="tm">${clock(f.t)}</span><${Ic} s=${f.end == null ? 'run' : f.ok === false ? 'fail' : 'done'} /><span class="tx">${rich(f.desc)}</span><span class="tag num">${f.end == null ? timer(now - f.t) : durS(f.end - f.t)}</span></div>`)}
-          ${calls.length > shown.length ? html`<button class="linkbtn" data-testid="act-more" onClick=${() => set({ all: String((Number(st.all) || 0) + 40) })}>Show ${Math.min(40, calls.length - shown.length)} earlier</button>` : null}
-        </div>
-        <div style="display:flex;flex-direction:column;gap:var(--s4);min-height:0">
-          ${main ? null : html`<div class="card panel">
-            <div class="ph"><span data-testid="brief-title">Brief</span><span class="r" data-testid="brief-sub">what it was asked</span></div>
-            <div data-testid="brief-text" style="color:var(--ink-2)">${(u && u.prompt) || 'Not recorded in the log'}</div>
-          </div>`}
-          ${u && u.result ? html`<div class="card panel">
-            <div class="ph"><span data-testid="result-title">Result</span><span class="r" data-testid="result-sub">its last message</span></div>
-            <div data-testid="result-text" style="color:var(--ink-2)">${u.result}</div>
-          </div>` : null}
-          <div class="card panel" style="flex:1">
-            <div class="ph"><span data-testid="output-title">Output</span></div>
-            <div class="kv num" data-testid="output-facts"><span>Commits</span><b>${u ? u.commits : v.commits.filter(c => c.who === name).length}</b><span>Errors</span><b>${u ? u.errors || 0 : calls.filter(c => c.ok === false).length}</b><span>Worktree</span><b class="mono">${(n && n.where) || (u && u.where) || v.project}</b><span>Started</span><b>${ago(now - start)}</b><span>Result</span><b>${working || (main && BUSY(v.status.state)) ? 'Still running' : 'Done'}</b></div>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }
-
   // ---- every session, by project -------------------------------------------------------------------------------------
-  function Menu({ data, sel, st, set }) {
-    const now = NOW(), q = String(st.q || '').toLowerCase();
-    const match = x => !q || x.title.toLowerCase().includes(q) || String(x.project).toLowerCase().includes(q);
-    const pinned = data.sessions.filter(x => NEEDS(x.status.state) && match(x));
-    // Projects with a session that needs you first, then in feed order.
-    const projects = [...new Set([...data.sessions.filter(x => NEEDS(x.status.state)), ...data.sessions].map(x => x.project))].map(p => [p, data.sessions.filter(x => x.project === p)])
-      .map(([p, all]) => [p, all, all.filter(x => !NEEDS(x.status.state) && match(x))]).filter(([p, , rows]) => rows.length || (q && String(p).toLowerCase().includes(q)));
-    const order = [...pinned, ...projects.flatMap(([, , rows]) => rows)];
-    const [cur, setCur] = useState(0);
-    const pin = (String(PIN || '').match(/^menu-item-(\d+)$/) || [])[1];
-    const active = pin ? Number(pin) - 1 : cur;
-    const open = x => set({ s: x.id, m: null, q: null, v: null, d: null });
-    const what = x => {
-      const ms = now - (x.status.since || x.last), st = x.status.state;
-      if (x === sel) return 'open now';
-      if (NEEDS(st)) return `asked ${coarse(ms)} ago`;
-      if (st === 'agents') return plural(runningJobs(x).length || x.status.agents || 0, 'agent');
-      if (st === 'thinking') return 'thinking';
-      if (st === 'working') return 'working';
-      if (st === 'stalled') return `quiet ${coarse(ms)}`;
-      return `finished ${coarse(ms)} ago`;
-    };
-    let n = 0;
-    const row = x => { const k = n++; return html`<button class=${`mi ${k === active ? 'hov' : ''}`} data-testid=${`menu-item-${k + 1}`} role="menuitem" onMouseEnter=${() => setCur(k)} onClick=${() => open(x)}><${Ic} s=${iconOf(x)} /><span class="mt">${x.title}</span><span class="ms">${what(x)}</span></button>`; };
-    const onKey = e => {
-      if (e.key === 'ArrowDown') { e.preventDefault(); setCur(c => Math.min(order.length - 1, c + 1)); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); setCur(c => Math.max(0, c - 1)); }
-      else if (e.key === 'Enter' && order[active]) open(order[active]);
-      else if (e.key === 'Escape') { e.stopPropagation(); set(q ? { q: null } : { m: null }); }
-    };
-    const ref = useRef(null);
-    useEffect(() => { if (ref.current && !PIN) ref.current.focus(); }, []);
-    return html`<div class="scrim" onClick=${() => set({ m: null, q: null })}></div><div class="menu" style="left:min(760px, calc(100vw - 486px))" role="menu">
-      <label class="msearch"><span class="ic" style="color:var(--muted)" aria-hidden="true" data-testid="menu-search-icon">${SVG.search}</span><input ref=${ref} data-testid="menu-search" value=${st.q || ''} placeholder="Find a session or project" aria-label="Find a session or project" onInput=${e => { setCur(0); set({ q: e.currentTarget.value || null }); }} onKeyDown=${onKey} /><span class="k" data-testid="menu-search-key">Ctrl K</span></label>
-      <div class="mscroll">
-        ${pinned.length ? html`<div class="mh" data-testid="menu-group-needs-you">Needs you</div>${pinned.map(row)}` : null}
-        ${projects.map(([p, all, rows], k) => html`<div class="mp" data-testid=${`menu-project-${k + 1}`}><span class="ic" style="color:var(--muted)" aria-hidden="true">${SVG.folder}</span>${p}<em>${plural(all.length, 'session')}</em></div>${rows.map(row)}`)}
-        ${order.length ? null : html`<div class="mh" data-testid="menu-none" style="text-transform:none;letter-spacing:0;font-weight:400">No session or project matches</div>`}
-      </div>
-      <div class="mfoot" data-testid="menu-foot"><span class="k">↑</span><span class="k">↓</span> move <span class="k">Enter</span> open <span class="k">Esc</span> close</div>
-    </div>`;
-  }
-
   // ---- memory -------------------------------------------------------------------------------------------------------
   const PRESSURE = { normal: 'Normal', warn: 'Warning', critical: 'Critical' };
-  const runFor = ms => (ms >= 3600e3 ? dur(ms) : durS(ms));
   // A memory event, in a few words: what proof held back, for which session, and how much it needed.
   function stopOf(e, title) {
     const t = String(e.text || '');
@@ -1839,67 +1210,6 @@ button:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
     const need = (t.match(/needs about ([\d.]+ [MG]B)/) || [])[1] || '';
     return { t: e.t, what, title, need };
   }
-  function MemoryView({ data, sel, set }) {
-    const m = data.machine, s = m.system, now = NOW(), over = s.pct >= s.warnPct;
-    const samples = m.samples && m.samples.length ? m.samples : [[now, s.pct]];
-    const t0 = samples[0][0], span = Math.max(1, now - t0);
-    const W = 820, H = 210, y = p => H - ((Math.max(40, Math.min(100, p)) - 40) / 60) * H, x = t => ((t - t0) / span) * W;
-    const line = samples.map(([t, p], i) => `${i ? 'L' : 'M'}${x(t).toFixed(1)},${y(p).toFixed(1)}`).join('');
-    // Axis labels every 90 minutes on the local clock (09:00, 10:30, …), then "now".
-    const day0 = new Date(t0).setHours(0, 0, 0, 0), marks = [];
-    for (let t = day0 + Math.ceil((t0 - day0) / 5400e3) * 5400e3; t < now - 1800e3; t += 5400e3) marks.push(clock(t));
-    const apps = (m.apps || []).slice(0, 6), top = Math.max(1, ...apps.map(a => a.mb));
-    const userApps = ((m.advice || {}).userApps || []).slice(0, 2), free = userApps.reduce((n, a) => n + a.mb, 0);
-    const stops = newest(data.sessions.flatMap(v => v.events.filter(e => e.kind === 'memory' || e.kind === 'guard').map(e => stopOf(e, v.title))).filter(x => x.what !== 'Memory'), 4);
-    return html`<div class="body" style="padding-bottom:20px">
-      <div class="crumb"><button class="back" data-testid="back" onClick=${() => set({ v: null })}>${SVG.left}${sel.title}</button><span data-testid="crumb-here">Memory, this Mac</span></div>
-      <div class="card" style="padding:20px 24px">
-        <div style="display:flex;align-items:center;gap:16px">
-          <${Ic} s=${over ? 'warn' : 'mem'} id="mem-icon" lg=${true} />
-          <div style="flex:1"><div style="font-size:var(--fs-2xl);font-weight:600;letter-spacing:-.015em" data-testid="mem-title">${pct(s.pct)} used: ${(s.usedMB / 1024).toFixed(1)} of ${Math.round(s.totalMB / 1024)} GB</div><div style="color:var(--muted)" data-testid="mem-sub">${over ? `Past the ${s.warnPct}% warning line. proof holds the Mac under ${s.ceilingPct}%, so new runs and agents wait their turn.` : `Under the ${s.warnPct}% warning line. proof holds the Mac under ${s.ceilingPct}%.`}</div></div>
-          <div class="kv num" style="width:250px" data-testid="mem-facts"><span>Headroom to ceiling</span><b>${gb(Math.max(0, s.headroomMB))}</b><span>Swap in use</span><b>${gb(s.swapMB || 0)}</b><span>Memory pressure</span><b>${PRESSURE[s.pressure] || 'Normal'}</b></div>
-        </div>
-        <div class="gauge" data-testid="mem-gauge"><i style=${`width:${Math.min(100, s.pct)}%`}></i><span class="mk" style=${`left:${s.warnPct}%`}></span><span class="mkl" style=${`left:${s.warnPct}%`}>Warning ${s.warnPct}%</span><span class="mk" style=${`left:${s.ceilingPct}%`}></span><span class="mkl" style=${`left:${s.ceilingPct}%`}>Ceiling ${s.ceilingPct}%</span></div>
-      </div>
-      <div class="grid" style="grid-template-columns:1fr 440px">
-        <div class="card panel" style="display:flex;flex-direction:column">
-          <div class="ph"><span data-testid="hist-title">Last ${plural(Math.ceil(span / 3600e3), 'hour')}</span><span class="r" data-testid="hist-scale">% of memory used</span></div>
-          <div class="chart" style="height:210px;margin:8px 0 6px" data-testid="hist-chart" role="img" aria-label=${`Memory used went from ${pct(samples[0][1])} to ${pct(s.pct)}`}>
-            <svg viewBox=${`0 0 ${W} ${H}`} preserveAspectRatio="none">
-              <line x1="0" x2=${W} y1=${y(s.ceilingPct)} y2=${y(s.ceilingPct)} stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
-              <line x1="0" x2=${W} y1=${y(s.warnPct)} y2=${y(s.warnPct)} stroke="var(--warn)" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
-              <path d=${`${line}L${x(samples[samples.length - 1][0])},${H}L0,${H}Z`} fill="var(--hl)"/>
-              <path d=${line} fill="none" stroke="var(--ink-2)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
-              <circle cx=${x(samples[samples.length - 1][0])} cy=${y(samples[samples.length - 1][1])} r="4" fill=${over ? 'var(--warn)' : 'var(--ink-2)'} stroke="var(--surface)" stroke-width="2"/>
-            </svg>
-            <span class="cl" style=${`top:${(y(s.ceilingPct) / H) * 100}%`}>Ceiling ${s.ceilingPct}%</span>
-            <span class="cl" style=${`top:${(y(s.warnPct) / H) * 100}%`}>Warning ${s.warnPct}%</span>
-          </div>
-          <div class="axis" style="grid-template-columns:1fr;margin:0" data-testid="hist-axis"><div class="ticks">${marks.map(l => html`<span>${l}</span>`)}<span>now</span></div></div>
-          <div class="subh" data-testid="runs-title">Claude's runs, the ones proof may stop</div>
-          ${(m.runs || []).length ? html`<div class="run-row h" data-testid="runs-head"><span>Command</span><span>Session</span><span>Running</span><span style="text-align:right">Memory</span></div>
-          ${m.runs.slice(0, 4).map((r, k) => html`<div class="run-row" data-testid=${`run-${k + 1}`}><code>${r.command}</code><span class="m">${String(r.cwd || '').split('/').filter(Boolean).pop() || ''}</span><span class="m num">${runFor(now - r.start)}</span><span class="v num">${size(r.mb)}</span></div>`)}`
-          : html`<div class="m" style="color:var(--muted)" data-testid="runs-none">None right now.</div>`}
-        </div>
-        <div class="card panel">
-          <div class="ph"><span data-testid="apps-title">Using the most memory</span><span class="r" data-testid="apps-sub">by app</span></div>
-          ${apps.map((a, k) => html`<div class=${`app-row ${a.claude ? 'claude' : ''}`} data-testid=${`app-${k + 1}`}><span class="nm">${a.name}${a.claude ? html`<em>Claude</em>` : null}</span><span class="tr"><i style=${`width:${(a.mb / top) * 100}%`}></i></span><span class="v num">${(a.mb / 1024).toFixed(1)} GB</span></div>`)}
-          ${over && userApps.length ? html`<div class="advice" data-testid="apps-advice"><b>Close ${userApps.map(a => a.name).join(' and ')}</b> to free about ${gb(free)}. Checks and agents then run side by side instead of waiting their turn${(s.swapMB || 0) > 1024 ? ', and macOS stops swapping' : ''}.</div>` : null}
-          ${stops.length ? html`<div class="subh" data-testid="stops-title">Stopped or held back by proof</div>${stops.map((x, k) => html`<div class="ev" data-testid=${`stop-${k + 1}`}><span class="tm">${clock(x.t)}</span><${Ic} s="mem" /><span class="tx">${x.what} <em>${x.title}</em></span><span class="tag">${x.need}</span></div>`)}` : null}
-        </div>
-      </div>
-    </div>`;
-  }
-
-  function Offline({ lastOk, data }) {
-    const since = (FROZEN ? data.now : Date.now()) - (SIM === 'offline' ? data.now - 3 * 60e3 : lastOk);
-    return html`<div class="banner off" data-testid="offline-banner">
-      <span class="ic lg" style="color:var(--muted)" data-testid="offline-icon">${SVG.plug}</span>
-      <div class="bt"><div data-testid="offline-title"><b>Not live.</b> proof's monitor stopped responding ${plural(Math.max(1, Math.round(since / 60e3)), 'minute')} ago.</div><div class="bs" data-testid="offline-sub">What's below is the last update, from ${clock(SIM === 'offline' ? data.now - 3 * 60e3 : lastOk)}. Start it again with <code>/proof:watch</code> in any Claude Code session. The page reconnects by itself.</div></div>
-      <button class="btn" data-testid="offline-copy" onClick=${e => { try { navigator.clipboard.writeText('/proof:watch'); e.currentTarget.textContent = 'Copied'; } catch {} }}>Copy /proof:watch</button>
-    </div>`;
-  }
-
   render(html`<${App} />`, document.getElementById('root'));
 })();
 </script>

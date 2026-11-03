@@ -1576,100 +1576,94 @@
    "commits": [
     {
      "t": 1792243980000,
-     "sha": "a92f0d0",
-     "msg": "order API types",
-     "who": "Lane C unit 14: order API"
-    },
-    {
-     "t": 1792243740000,
-     "sha": "a88f0c0",
-     "msg": "order summary component",
+     "sha": "9d2c41e",
+     "msg": "merge lane-a: cart screen",
      "who": "Main thread"
     },
     {
      "t": 1792243530000,
-     "sha": "a7ef0b0",
-     "msg": "payment form validation",
-     "who": "Lane B unit 13: payment screen"
+     "sha": "a10f000",
+     "msg": "wire payment route",
+     "who": "Main thread"
     },
     {
-     "t": 1792243500000,
-     "sha": "a74f0a0",
+     "t": 1792243510000,
+     "sha": "4be91a0",
      "msg": "payment form",
      "who": "Lane B unit 13: payment screen"
     },
     {
      "t": 1792243140000,
-     "sha": "a6af090",
-     "msg": "design tokens for payment",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792242780000,
-     "sha": "a60f080",
-     "msg": "api client for orders",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792242540000,
-     "sha": "a56f070",
-     "msg": "mock server for e2e",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792242120000,
-     "sha": "a4cf060",
-     "msg": "wire payment route",
-     "who": "Main thread"
-    },
-    {
-     "t": 1792241700000,
-     "sha": "a42f050",
+     "sha": "a11f010",
      "msg": "checkout state machine",
      "who": "Main thread"
     },
     {
+     "t": 1792242780000,
+     "sha": "a12f020",
+     "msg": "merge lane-a: cart screen tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242540000,
+     "sha": "a14b090",
+     "msg": "product detail tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242360000,
+     "sha": "a13af80",
+     "msg": "order summary component",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242120000,
+     "sha": "a129e70",
+     "msg": "mock server for e2e",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241700000,
+     "sha": "a118d60",
+     "msg": "api client for orders",
+     "who": "Main thread"
+    },
+    {
      "t": 1792241220000,
-     "sha": "a38f040",
-     "msg": "merge lane-a: cart screen",
+     "sha": "a107c50",
+     "msg": "design tokens for payment",
      "who": "Main thread"
     },
     {
      "t": 1792240800000,
-     "sha": "a2ef030",
+     "sha": "a0f6b40",
+     "msg": "plan for the checkout flow",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240560000,
+     "sha": "a0e5a30",
      "msg": "cart totals and empty state",
      "who": "Lane A unit 12: cart screen"
     },
     {
-     "t": 1792240560000,
-     "sha": "a24f020",
+     "t": 1792240140000,
+     "sha": "a0d4f20",
      "msg": "cart screen tests",
      "who": "Lane A unit 12: cart screen"
     },
     {
-     "t": 1792240140000,
-     "sha": "a1af010",
+     "t": 1792239840000,
+     "sha": "a0c3e10",
      "msg": "cart screen",
      "who": "Lane A unit 12: cart screen"
-    },
-    {
-     "t": 1792239840000,
-     "sha": "a10f000",
-     "msg": "plan for the checkout flow",
-     "who": "Main thread"
     }
    ],
    "events": [
     {
      "t": 1792243980000,
      "kind": "commit",
-     "text": "a92f0d0 order API types",
-     "who": "Lane C unit 14: order API"
-    },
-    {
-     "t": 1792243740000,
-     "kind": "commit",
-     "text": "a88f0c0 order summary component",
+     "text": "9d2c41e merge lane-a: cart screen",
      "who": "Main thread"
     },
     {
@@ -1679,28 +1673,22 @@
      "who": "Lane B unit 13: payment screen"
     },
     {
+     "t": 1792243550000,
+     "kind": "gatePass",
+     "text": "6 checks in 2m 40s",
+     "who": "proof gate"
+    },
+    {
      "t": 1792243530000,
      "kind": "commit",
-     "text": "a7ef0b0 payment form validation",
-     "who": "Lane B unit 13: payment screen"
+     "text": "a10f000 wire payment route",
+     "who": "Main thread"
     },
     {
-     "t": 1792243500000,
-     "kind": "gatePass",
-     "text": "6 checks in 2m 40s",
-     "who": "proof gate"
-    },
-    {
-     "t": 1792243500000,
+     "t": 1792243510000,
      "kind": "commit",
-     "text": "a74f0a0 payment form",
+     "text": "4be91a0 payment form",
      "who": "Lane B unit 13: payment screen"
-    },
-    {
-     "t": 1792243320000,
-     "kind": "gatePass",
-     "text": "6 checks in 2m 40s",
-     "who": "proof gate"
     },
     {
      "t": 1792243320000,
@@ -1711,13 +1699,13 @@
     {
      "t": 1792243140000,
      "kind": "commit",
-     "text": "a6af090 design tokens for payment",
+     "text": "a11f010 checkout state machine",
      "who": "Main thread"
     },
     {
      "t": 1792242780000,
      "kind": "commit",
-     "text": "a60f080 api client for orders",
+     "text": "a12f020 merge lane-a: cart screen tests",
      "who": "Main thread"
     },
     {
@@ -1729,7 +1717,13 @@
     {
      "t": 1792242540000,
      "kind": "commit",
-     "text": "a56f070 mock server for e2e",
+     "text": "a14b090 product detail tests",
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242360000,
+     "kind": "commit",
+     "text": "a13af80 order summary component",
      "who": "Main thread"
     },
     {
@@ -1741,13 +1735,19 @@
     {
      "t": 1792242120000,
      "kind": "commit",
-     "text": "a4cf060 wire payment route",
+     "text": "a129e70 mock server for e2e",
      "who": "Main thread"
+    },
+    {
+     "t": 1792241880000,
+     "kind": "gatePass",
+     "text": "6 checks in 2m 40s",
+     "who": "proof gate"
     },
     {
      "t": 1792241700000,
      "kind": "commit",
-     "text": "a42f050 checkout state machine",
+     "text": "a118d60 api client for orders",
      "who": "Main thread"
     },
     {
@@ -1759,14 +1759,14 @@
     {
      "t": 1792241220000,
      "kind": "commit",
-     "text": "a38f040 merge lane-a: cart screen",
+     "text": "a107c50 design tokens for payment",
      "who": "Main thread"
     },
     {
      "t": 1792240800000,
      "kind": "commit",
-     "text": "a2ef030 cart totals and empty state",
-     "who": "Lane A unit 12: cart screen"
+     "text": "a0f6b40 plan for the checkout flow",
+     "who": "Main thread"
     },
     {
      "t": 1792240680000,
@@ -1783,7 +1783,7 @@
     {
      "t": 1792240560000,
      "kind": "commit",
-     "text": "a24f020 cart screen tests",
+     "text": "a0e5a30 cart totals and empty state",
      "who": "Lane A unit 12: cart screen"
     },
     {
@@ -1795,14 +1795,14 @@
     {
      "t": 1792240140000,
      "kind": "commit",
-     "text": "a1af010 cart screen",
+     "text": "a0d4f20 cart screen tests",
      "who": "Lane A unit 12: cart screen"
     },
     {
      "t": 1792239840000,
      "kind": "commit",
-     "text": "a10f000 plan for the checkout flow",
-     "who": "Main thread"
+     "text": "a0c3e10 cart screen",
+     "who": "Lane A unit 12: cart screen"
     },
     {
      "t": 1792239120000,
