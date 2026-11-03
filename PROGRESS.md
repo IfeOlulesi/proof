@@ -12,7 +12,7 @@ thinking → reading/editing → commands → checks.
 | # | Unit | Screens | State |
 |---|---|---|---|
 | 0 | Contract: mockup, inventories, routes, tags | - | done |
-| 1 | Foundation: tokens, Geist fonts embedded, top bar, footer bar, card/badge/tabs/kbd | - | |
+| 1 | Foundation: tokens, Geist fonts embedded, top bar, footer bar, card/badge/tabs/kbd | - | done |
 | 2 | Home, working: rings, agent graph, KPI cards, activity chart | home--working (+ dark) | |
 | 3 | Needs you, finished, stalled | 3 × 2 | |
 | 4 | Memory banner and memory view | 2 × 2 | |
@@ -25,6 +25,31 @@ thinking → reading/editing → commands → checks.
 Fixtures: the v2 mockup's sample data is generated in its script (seeded, "now" 14:34 on 17 Oct 2026); the fixture
 feeds in `tests/fixtures/dashboard/` must produce the same numbers. Port the generator to `make.mjs` in unit 1/2.
 Playwright: `npm i --no-save --no-package-lock playwright@1.56.1` (matches the cached headless shell 1194).
+
+## v2 unit 1. Foundation
+
+- `dashboard.html`: Geist and Geist Mono embedded (the latin variable files Google Fonts serves the mockup, so widths
+  match); the mockup's tokens and styles verbatim, light on `:root`, dark by toggle or by the system; `.frame` became
+  `.app` (full window). New top bar (logo, tabs with state dots, "+N more", memory pill with spark, theme) and footer
+  bar (T/W/L drawer buttons with kbd, gate-failure badge, updated). Primitives (card, badge, btn, tabs, kbd) are the
+  mockup's CSS classes.
+- Views not yet on v2 still render, inside `<div class="v1">`: v1 styles are nested under `.v1`, and the v2 styles sit
+  in `@scope (.app) to (.v1)` so neither leaks into the other. Each unit deletes the v1 view and CSS it ports; the
+  last one deletes the `.v1` block and the `@scope` wrapper.
+- Test IDs changed to the v2 inventory's (`logo`, `more`, `mem-pill`, `theme`, `drawer-*`), so `tests/dashboard-page.mjs`
+  (v1 interactions, not in tests/run.sh) is out of date until unit 9 rewrites it.
+- Red: `verify-screen.mjs home--working` on the v1 page: `logo: missing`, `tab-1: font "Plus Jakarta Sans" 600 14px`.
+- Green (top bar and footer items only: logo, tab-1..4, more, mem-pill, theme, drawer-*, foot-gate, updated):
+  home--working, home--working--dark, home--memory-warning (+ dark), home--stalled, empty: PASS.
+  switcher--hidden-needs-you fails (tabs 2-4, more x): v2 leaves a needs-you session hidden behind "+4 more", while
+  the v1 tab logic always gives it a tab, and its fixture is v1's. Unit 7 (that screen).
+- Used in Playwright: tab click, drawer buttons and T/Esc, more (menu), memory pill, theme toggle, loading, offline;
+  no page errors.
+- Not done: the memory pill's spark is empty because the v1 fixtures carry no samples. Porting the mockup's seeded
+  generator (now 14:34, MEM_OK series) to make.mjs moves to unit 2, where the home screen needs it.
+- Verifier: two gaps, both fixed and re-checked in Playwright. A footer drawer button did nothing on the memory or
+  agent view (it now clears the view, as T/W/L do), and the v1 views had lost `box-sizing: border-box` (menu 488 wide,
+  now 470; loading bar 61, now 60).
 
 # Dashboard v1 build: progress
 
