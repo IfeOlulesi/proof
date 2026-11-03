@@ -14,654 +14,1641 @@
   },
   "items": [
     {
-      "id": "brand",
-      "text": "",
+      "id": "logo",
+      "text": "proof\n.",
       "box": {
-        "x": 18,
-        "y": 19,
-        "w": 60,
-        "h": 22
+        "x": 20,
+        "y": 15,
+        "w": 50,
+        "h": 25
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 700 19px/normal",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-1",
       "text": "Checkout flow build",
       "box": {
-        "x": 96,
-        "y": 13,
-        "w": 187,
-        "h": 34
+        "x": 90,
+        "y": 12,
+        "w": 166,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-2",
       "text": "Admin access on production\nneeds you",
       "box": {
-        "x": 287,
-        "y": 13,
-        "w": 322,
-        "h": 34
+        "x": 259,
+        "y": 12,
+        "w": 230,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-3",
       "text": "Dashboard UI redesign",
       "box": {
-        "x": 613,
-        "y": 13,
-        "w": 205,
-        "h": 34
+        "x": 491,
+        "y": 12,
+        "w": 183,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-4",
       "text": "Proof v0.4.0 release",
       "box": {
-        "x": 822,
-        "y": 13,
-        "w": 193,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgb(255, 255, 255)",
-        "radius": "999px",
-        "shadow": "rgba(14, 17, 22, 0.04) 0px 1px 2px 0px"
-      },
-      "motion": {
-        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "tab-more",
-      "text": "+4 more",
-      "box": {
-        "x": 1018,
-        "y": 13,
-        "w": 99,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "mem-chip",
-      "text": "Memory\n68%",
-      "box": {
-        "x": 1160,
-        "y": 13,
-        "w": 218,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "theme-toggle",
-      "text": "Switch to dark theme",
-      "box": {
-        "x": 1388,
-        "y": 13,
-        "w": 34,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "session-title",
-      "text": "Proof v0.4.0 release",
-      "box": {
-        "x": 28,
-        "y": 82,
-        "w": 212,
+        "x": 676,
+        "y": 12,
+        "w": 167,
         "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 22px/31.9px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "session-meta",
-      "text": "proof · main · started 1h 05m ago · Opus 5.5",
+      "id": "more",
+      "text": "+4 more",
       "box": {
-        "x": 254,
-        "y": 90,
-        "w": 281,
-        "h": 21
+        "x": 845,
+        "y": 12,
+        "w": 96,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "mem-pill",
+      "text": "Memory\n68%",
+      "box": {
+        "x": 1188,
+        "y": 12,
+        "w": 179,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "8px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "theme",
+      "text": "Switch theme",
+      "box": {
+        "x": 1388,
+        "y": 12,
+        "w": 32,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "title",
+      "text": "Proof v0.4.0 release",
+      "box": {
+        "x": 24,
+        "y": 79,
+        "w": 185,
+        "h": 29
+      },
+      "style": {
+        "font": "Geist 600 20px/29px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "status-icon",
+      "id": "meta",
+      "text": "proof \u00b7 main \u00b7 started 1h 05m ago \u00b7 Opus 5.5",
+      "box": {
+        "x": 221,
+        "y": 84,
+        "w": 256,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "range",
+      "text": null,
+      "box": {
+        "x": 1254,
+        "y": 76,
+        "w": 162,
+        "h": 34
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "range-1",
+      "text": "Last hour",
+      "box": {
+        "x": 1257,
+        "y": 79,
+        "w": 82,
+        "h": 28
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "range-2",
+      "text": "Session",
+      "box": {
+        "x": 1341,
+        "y": 79,
+        "w": 72,
+        "h": 28
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "6px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "status-card",
+      "text": null,
+      "box": {
+        "x": 24,
+        "y": 126,
+        "w": 520,
+        "h": 239
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "rings",
       "text": "",
       "box": {
-        "x": 53,
-        "y": 170,
-        "w": 22,
+        "x": 45,
+        "y": 165,
+        "w": 160,
+        "h": 160
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "status-badge",
+      "text": "Finished",
+      "box": {
+        "x": 237,
+        "y": 147,
+        "w": 79,
         "h": 22
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(104, 109, 118)",
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
+        "radius": "6px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "status-text",
-      "text": "Finished, waiting for your next message",
+      "id": "status-title",
+      "text": "Waiting for your next message",
       "box": {
-        "x": 93,
-        "y": 153,
-        "w": 1294,
-        "h": 33
+        "x": 237,
+        "y": 179,
+        "w": 286,
+        "h": 58
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 600 23px/33.35px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 600 26px/29.12px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "status-sub",
-      "text": "Idle 41m · 1 commit: 1a27553 proof 0.4.0: first public release",
+      "text": "Idle 41m \u00b7 1 commit: 1a27553 proof 0.4.0: first public release",
       "box": {
-        "x": 93,
-        "y": 188,
-        "w": 1294,
-        "h": 20
+        "x": 237,
+        "y": 243,
+        "w": 286,
+        "h": 38
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "leg-1-name",
+      "text": "Claude working",
+      "box": {
+        "x": 253,
+        "y": 297,
+        "w": 93,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "leg-1-value",
+      "text": "6m",
+      "box": {
+        "x": 504,
+        "y": 297,
+        "w": 19,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "leg-2-name",
+      "text": "Waiting on you",
+      "box": {
+        "x": 253,
+        "y": 325,
+        "w": 88,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "leg-2-value",
+      "text": "58m",
+      "box": {
+        "x": 496,
+        "y": 325,
+        "w": 27,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "happened-card",
+      "text": null,
+      "box": {
+        "x": 560,
+        "y": 126,
+        "w": 856,
+        "h": 239
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "happened-title",
       "text": "What happened",
       "box": {
-        "x": 47,
-        "y": 265,
-        "w": 105,
+        "x": 581,
+        "y": 147,
+        "w": 103,
         "h": 20
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "happened-scope",
       "text": "this session",
       "box": {
-        "x": 619,
-        "y": 265,
-        "w": 74,
-        "h": 20
+        "x": 1325,
+        "y": 148,
+        "w": 70,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "happened-1",
-      "text": "13:56\nCommit 1a27553 proof 0.4.0: first public release\ncommit",
+      "id": "ev-1-time",
+      "text": "13:56",
       "box": {
-        "x": 47,
-        "y": 298,
-        "w": 646,
-        "h": 39
+        "x": 581,
+        "y": 186,
+        "w": 48,
+        "h": 17
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "happened-2",
-      "text": "13:56\nCommit blocked: the command edits files before committing\ngate",
+      "id": "ev-1-icon",
+      "text": "",
       "box": {
-        "x": 47,
-        "y": 337,
-        "w": 646,
-        "h": 39
+        "x": 639,
+        "y": 184,
+        "w": 22,
+        "h": 22
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(21, 128, 61)",
+        "bg": "rgb(240, 253, 244)",
+        "radius": "6px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "happened-3",
-      "text": "13:51\nWait for both CI runs to finish 2m 16s\nshell",
+      "id": "ev-1-text",
+      "text": "Commit 1a27553 proof 0.4.0: first public release",
       "box": {
-        "x": 47,
-        "y": 377,
-        "w": 646,
-        "h": 39
+        "x": 671,
+        "y": 186,
+        "w": 654,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "happened-totals",
-      "text": "Tool calls\n18\nCommits\n1\nCommit blocks\n1\nTool errors\n1",
+      "id": "ev-1-tag",
+      "text": "commit",
       "box": {
-        "x": 47,
-        "y": 434,
-        "w": 646,
-        "h": 105
+        "x": 1335,
+        "y": 184,
+        "w": 60,
+        "h": 22
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "time-mini-title",
-      "text": "Where the time went",
+      "id": "ev-2-time",
+      "text": "13:56",
+      "box": {
+        "x": 581,
+        "y": 227,
+        "w": 48,
+        "h": 17
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-2-icon",
+      "text": "",
+      "box": {
+        "x": 639,
+        "y": 225,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(185, 28, 28)",
+        "bg": "rgb(254, 242, 242)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-2-text",
+      "text": "Commit blocked: the command edits files before committing",
+      "box": {
+        "x": 671,
+        "y": 227,
+        "w": 671,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-2-tag",
+      "text": "gate",
+      "box": {
+        "x": 1352,
+        "y": 225,
+        "w": 43,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-3-time",
+      "text": "13:51",
+      "box": {
+        "x": 581,
+        "y": 268,
+        "w": 48,
+        "h": 17
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-3-icon",
+      "text": "",
+      "box": {
+        "x": 639,
+        "y": 266,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-3-text",
+      "text": "Wait for both CI runs to finish 2m 16s",
+      "box": {
+        "x": 671,
+        "y": 268,
+        "w": 669,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-3-tag",
+      "text": "shell",
+      "box": {
+        "x": 1350,
+        "y": 266,
+        "w": 45,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-4-time",
+      "text": "13:31",
+      "box": {
+        "x": 581,
+        "y": 309,
+        "w": 48,
+        "h": 17
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-4-icon",
+      "text": "",
+      "box": {
+        "x": 639,
+        "y": 307,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-4-text",
+      "text": "You approved the release plan",
+      "box": {
+        "x": 671,
+        "y": 309,
+        "w": 676,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "ev-4-tag",
+      "text": "you",
+      "box": {
+        "x": 1357,
+        "y": 307,
+        "w": 38,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-calls",
+      "text": null,
+      "box": {
+        "x": 24,
+        "y": 378,
+        "w": 336,
+        "h": 123
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-calls-label",
+      "text": "Tool calls",
+      "box": {
+        "x": 43,
+        "y": 395,
+        "w": 298,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-calls-value",
+      "text": "18",
+      "box": {
+        "x": 43,
+        "y": 418,
+        "w": 298,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-calls-bars",
+      "text": "",
+      "box": {
+        "x": 43,
+        "y": 462,
+        "w": 298,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-commits",
+      "text": null,
+      "box": {
+        "x": 376,
+        "y": 378,
+        "w": 336,
+        "h": 123
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-commits-label",
+      "text": "Commits",
+      "box": {
+        "x": 395,
+        "y": 395,
+        "w": 298,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-commits-value",
+      "text": "1",
+      "box": {
+        "x": 395,
+        "y": 418,
+        "w": 298,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-commits-bars",
+      "text": "",
+      "box": {
+        "x": 395,
+        "y": 462,
+        "w": 298,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-blocks",
+      "text": null,
+      "box": {
+        "x": 728,
+        "y": 378,
+        "w": 336,
+        "h": 123
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-blocks-label",
+      "text": "Commit blocks",
       "box": {
         "x": 747,
-        "y": 270,
+        "y": 395,
+        "w": 298,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-blocks-value",
+      "text": "1\nthe gate stopped one commit",
+      "box": {
+        "x": 747,
+        "y": 418,
+        "w": 298,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-blocks-bars",
+      "text": "",
+      "box": {
+        "x": 747,
+        "y": 462,
+        "w": 298,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-errors",
+      "text": null,
+      "box": {
+        "x": 1080,
+        "y": 378,
+        "w": 336,
+        "h": 123
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-errors-label",
+      "text": "Tool errors",
+      "box": {
+        "x": 1099,
+        "y": 395,
+        "w": 298,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-errors-value",
+      "text": "1\na CI wait timed out once",
+      "box": {
+        "x": 1099,
+        "y": 418,
+        "w": 298,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-errors-bars",
+      "text": "",
+      "box": {
+        "x": 1099,
+        "y": 462,
+        "w": 298,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "time-card",
+      "text": null,
+      "box": {
+        "x": 24,
+        "y": 517,
+        "w": 573,
+        "h": 321
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "time-title",
+      "text": "Where the time went",
+      "box": {
+        "x": 45,
+        "y": 542,
         "w": 136,
         "h": 20
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "time-mini-open",
-      "text": "Open in full ›",
+      "id": "time-open",
+      "text": "Open in full",
       "box": {
-        "x": 1299,
-        "y": 265,
-        "w": 94,
-        "h": 30
+        "x": 460,
+        "y": 536,
+        "w": 116,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
-        "color": "rgb(43, 48, 56)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "time-mini-bar",
-      "text": "Claude working 6m, waiting on you 58m, stalls under 1m",
+      "id": "time-bar",
+      "text": "",
       "box": {
-        "x": 747,
-        "y": 309,
-        "w": 646,
-        "h": 14
+        "x": 45,
+        "y": 580,
+        "w": 531,
+        "h": 10
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "time-mini-legend",
-      "text": "Claude working\n6m\nWaiting on you\n58m\nStalls\n<1m\nincludes the 41m since it finished",
-      "box": {
-        "x": 747,
-        "y": 333,
-        "w": 646,
-        "h": 45
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "time-mini-long-title",
-      "text": "LONGEST SINGLE STEPS",
+      "id": "time-note",
+      "text": "Claude working 6m \u00b7 waiting on you 58m \u00b7 stalls under 1m. Includes the 41m since it finished.",
       "box": {
-        "x": 747,
-        "y": 391,
-        "w": 646,
-        "h": 16
+        "x": 45,
+        "y": 602,
+        "w": 531,
+        "h": 38
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "time-mini-long-1",
-      "text": "2m 16s\nWait for both CI runs to finish\nOther commands",
+      "id": "longest-title",
+      "text": "Longest single steps",
       "box": {
-        "x": 747,
-        "y": 411,
-        "w": 646,
-        "h": 30
+        "x": 45,
+        "y": 655,
+        "w": 531,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "time-mini-long-2",
-      "text": "1m 24s\nWait for the tag's CI run to finish\nOther commands",
+      "id": "longest-1-name",
+      "text": "Wait for both CI runs to finish",
       "box": {
-        "x": 747,
-        "y": 441,
-        "w": 646,
-        "h": 30
+        "x": 55,
+        "y": 692,
+        "w": 174,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "time-mini-long-3",
-      "text": "11s\nVerify identical tree, re-point tag, force-push main and tag\nGit",
+      "id": "longest-1-time",
+      "text": "2m 16s",
       "box": {
-        "x": 747,
-        "y": 472,
-        "w": 646,
-        "h": 30
+        "x": 512,
+        "y": 692,
+        "w": 64,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "dtab-timeline",
+      "id": "longest-2-name",
+      "text": "Wait for the tag's CI run to finish",
+      "box": {
+        "x": 55,
+        "y": 728,
+        "w": 192,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "longest-2-time",
+      "text": "1m 24s",
+      "box": {
+        "x": 512,
+        "y": 728,
+        "w": 64,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "longest-3-name",
+      "text": "Verify identical tree, re-point tag, force-push main and tag",
+      "box": {
+        "x": 55,
+        "y": 764,
+        "w": 343,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "longest-3-time",
+      "text": "11s",
+      "box": {
+        "x": 512,
+        "y": 764,
+        "w": 64,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "activity-card",
+      "text": null,
+      "box": {
+        "x": 613,
+        "y": 517,
+        "w": 803,
+        "h": 321
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "act-title",
+      "text": "Activity",
+      "box": {
+        "x": 634,
+        "y": 538,
+        "w": 50,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "act-desc",
+      "text": "every 5 minutes",
+      "box": {
+        "x": 692,
+        "y": 538,
+        "w": 95,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "act-legend",
+      "text": "Thinking & writing\nReading & editing\nCommands\nChecks & screens\nWaiting on you\nStalls",
+      "box": {
+        "x": 634,
+        "y": 570,
+        "w": 761,
+        "h": 18
+      },
+      "style": {
+        "font": "Geist 400 12.5px/18.125px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "activity",
+      "text": "",
+      "box": {
+        "x": 634,
+        "y": 598,
+        "w": 761,
+        "h": 221
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "drawer-timeline",
       "text": "T\nTimeline",
       "box": {
-        "x": 28,
-        "y": 858,
-        "w": 107,
-        "h": 34
+        "x": 16,
+        "y": 862,
+        "w": 103,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "dtab-time",
+      "id": "drawer-time",
       "text": "W\nWhere the time went",
       "box": {
-        "x": 139,
-        "y": 858,
-        "w": 189,
-        "h": 34
+        "x": 123,
+        "y": 862,
+        "w": 179,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "dtab-log",
+      "id": "drawer-log",
       "text": "L\nLog",
       "box": {
-        "x": 332,
-        "y": 858,
-        "w": 78,
-        "h": 34
+        "x": 306,
+        "y": 862,
+        "w": 75,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "updated",
       "text": "Updated 2s ago",
       "box": {
-        "x": 1317,
-        "y": 865,
-        "w": 95,
-        "h": 18
+        "x": 1330,
+        "y": 868,
+        "w": 94,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     }
   ]

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>proof share image</title>
+<!-- Source of assets/og.png (1200x630), the site's link preview. Copy is the hero's, verbatim.
+     Render: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --hide-scrollbars \
+       --window-size=1200,630 --virtual-time-budget=4000 --screenshot=assets/og.png mockup/site/og.html -->
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+:root {
+  --bg: #08090B; --surface: #111317; --line-2: #2C3037; --ink: #F5F5F4; --ink-2: #D4D5D8; --muted: #A0A4AB; --faint: #80858D;
+  --green: #22C55E; --green-ink: #4ADE80; --green-line: rgba(34,197,94,.35); --on-green: #04140A;
+  --font: "Geist", system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+.card { position: relative; width: 1200px; height: 630px; padding: 52px 64px; display: flex; flex-direction: column; }
+/* the hero's dot field and breathing glow, frozen */
+.card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, #2C3037 1.2px, transparent 1.6px) 0 0 / 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 55%, #000 30%, transparent 85%); mask-image: radial-gradient(ellipse 75% 70% at 50% 55%, #000 30%, transparent 85%); }
+.card::after { content: ""; position: absolute; left: 50%; top: 330px; width: 1100px; height: 560px; transform: translateX(-50%); background: radial-gradient(closest-side, rgba(34,197,94,.22), transparent); }
+.card > * { position: relative; z-index: 1; }
+.top { display: flex; align-items: center; justify-content: space-between; }
+.top img { height: 34px; display: block; }
+.url { font: 500 17px var(--mono); color: var(--faint); }
+.mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.chip { display: inline-flex; align-items: center; gap: 10px; height: 36px; padding: 0 16px 0 12px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); font-size: 16px; color: var(--muted); }
+.live { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(34,197,94,.18); }
+h1 { margin: 26px 0 0; font-size: 84px; line-height: 1.02; letter-spacing: -0.05em; font-weight: 600; }
+h1 .q { display: block; color: var(--muted); }
+h1 .p { background: linear-gradient(180deg, var(--ink) 30%, var(--green-ink)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-bottom: .08em; }
+.isw { position: relative; display: inline-block; }
+.tick { position: absolute; right: -.62em; top: .06em; width: .44em; height: .44em; border-radius: 50%; background: var(--green); color: var(--on-green); display: grid; place-items: center; box-shadow: 0 0 0 .08em var(--bg), 0 0 .5em -.05em var(--green); }
+.tick svg { width: 62%; height: 62%; }
+.checks { display: flex; justify-content: center; gap: 12px; }
+.ok { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 12px; border-radius: 12px; border: 1px solid var(--green-line); background: rgba(17,19,23,.85); font: 500 17px var(--mono); color: var(--ink-2); }
+.ok i { width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: var(--on-green); display: grid; place-items: center; }
+.ok svg { width: 12px; height: 12px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top"><img src="../../assets/logo-dark.svg" alt="proof"><span class="url">ifeolulesi.github.io/proof</span></div>
+  <div class="mid">
+    <span class="chip"><span class="live"></span>A free plugin for Claude Code</span>
+    <h1><span class="q">Your agent says "done".</span><span class="p">proof makes sure it </span><span class="isw"><span class="p">is</span><span class="tick"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg></span></span><span class="p">.</span></h1>
+  </div>
+  <div class="checks">
+    <span class="ok"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg></i>pages load</span>
+    <span class="ok"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg></i>buttons do what they should</span>
+    <span class="ok"><i><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-6.5"/></svg></i>screens match the design</span>
+  </div>
+</div>
+</body>
+</html>

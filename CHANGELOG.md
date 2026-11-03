@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0 (2026-11-03)
+
+- **A new dashboard.** The live dashboard is redesigned, in light and dark. A session's home opens on rings for how much of it Claude spent working and how long it waited on you, a graph of the agents running and finished, cards for tasks, features, gate rounds and memory, and a chart of what kept Claude busy every 10 minutes. A session that needs you turns coral and says where to answer; a finished one shows what happened and where the time went; a stalled one shows how long nothing has run.
+- **Drawers slide up over the session.** Timeline, where the time went, and the log open as a sheet; Esc, a click outside or the same button closes it.
+- **A searchable session switcher.** Ctrl/Cmd+K or "+N more" opens a palette grouped by project, with sessions that need you on top. A session that needs you and has no tab shows on "+N more".
+- **Agent drill-down and memory view, redesigned.** An agent's page shows its current step against the 10-minute limit, its steps, every tool call and its brief. The memory view shows headroom, swap, pressure, the last 6 hours, the apps using the most memory, and what proof stopped or held back.
+- **The feed names more.** An agent's own gate rounds are named for the agent, running agents carry when they started, and a plan approval names the plan from its heading ("Ask you to approve the release plan").
+
 ## 0.6.0 (2026-11-03)
 
 - **Update notices.** Claude Code doesn't auto-update plugins from third-party marketplaces unless you turn it on, so proof now tells Claude at the start of a session when a newer version is out, and Claude offers to update. It reads the released version from GitHub at most once a day, in the background; nothing is sent. Turn it off with `"updateCheck": false` in `~/.config/proof/machine.json`.

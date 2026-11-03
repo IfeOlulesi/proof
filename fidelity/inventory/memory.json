@@ -14,759 +14,1662 @@
   },
   "items": [
     {
-      "id": "brand",
-      "text": "",
+      "id": "logo",
+      "text": "proof\n.",
       "box": {
-        "x": 18,
-        "y": 19,
-        "w": 60,
-        "h": 22
+        "x": 20,
+        "y": 15,
+        "w": 50,
+        "h": 25
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 700 19px/normal",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-1",
       "text": "Checkout flow build",
       "box": {
-        "x": 96,
-        "y": 13,
-        "w": 190,
-        "h": 34
+        "x": 90,
+        "y": 12,
+        "w": 166,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgb(255, 255, 255)",
-        "radius": "999px",
-        "shadow": "rgba(14, 17, 22, 0.04) 0px 1px 2px 0px"
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "8px",
+        "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-2",
       "text": "Admin access on production\nneeds you",
       "box": {
-        "x": 290,
-        "y": 13,
-        "w": 322,
-        "h": 34
+        "x": 259,
+        "y": 12,
+        "w": 230,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-3",
       "text": "Dashboard UI redesign",
       "box": {
-        "x": 616,
-        "y": 13,
-        "w": 205,
-        "h": 34
+        "x": 491,
+        "y": 12,
+        "w": 183,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-4",
       "text": "Proof v0.4.0 release",
       "box": {
-        "x": 825,
-        "y": 13,
-        "w": 189,
-        "h": 34
+        "x": 676,
+        "y": 12,
+        "w": 167,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "tab-more",
+      "id": "more",
       "text": "+4 more",
       "box": {
-        "x": 1018,
-        "y": 13,
-        "w": 99,
-        "h": 34
+        "x": 845,
+        "y": 12,
+        "w": 96,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "mem-chip",
+      "id": "mem-pill",
       "text": "Memory\n85%",
       "box": {
-        "x": 1160,
-        "y": 13,
-        "w": 218,
-        "h": 34
+        "x": 1188,
+        "y": 12,
+        "w": 179,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgb(255, 255, 255)",
-        "radius": "999px",
-        "shadow": "none"
+        "radius": "8px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "theme-toggle",
-      "text": "Switch to dark theme",
+      "id": "theme",
+      "text": "Switch theme",
       "box": {
         "x": 1388,
-        "y": 13,
-        "w": 34,
-        "h": 34
+        "y": 12,
+        "w": 32,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "back",
       "text": "Checkout flow build",
       "box": {
-        "x": 28,
-        "y": 82,
-        "w": 164,
-        "h": 30
+        "x": 24,
+        "y": 76,
+        "w": 170,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgb(255, 255, 255)",
-        "radius": "999px",
-        "shadow": "none"
+        "radius": "8px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "crumb-here",
+      "id": "title",
       "text": "Memory, this Mac",
       "box": {
-        "x": 202,
-        "y": 87,
-        "w": 114,
-        "h": 20
+        "x": 212,
+        "y": 78,
+        "w": 162,
+        "h": 29
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 600 20px/29px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "mem-icon",
-      "text": "",
+      "id": "meta",
+      "text": "Real memory \u00b7 sample history and runs",
       "box": {
-        "x": 53,
-        "y": 176,
-        "w": 22,
-        "h": 22
+        "x": 385,
+        "y": 83,
+        "w": 230,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(217, 119, 6)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "mem-title",
-      "text": "85% used: 20.3 of 24 GB",
+      "id": "mem-gauge-card",
+      "text": null,
       "box": {
-        "x": 91,
-        "y": 161,
-        "w": 1030,
-        "h": 33
+        "x": 24,
+        "y": 124,
+        "w": 400,
+        "h": 150
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 600 23px/33.35px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "mem-sub",
-      "text": "Past the 75% warning line. proof holds the Mac under 93%, so new runs and agents wait their turn.",
-      "box": {
-        "x": 91,
-        "y": 194,
-        "w": 1030,
-        "h": 20
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "mem-facts",
-      "text": "Headroom to ceiling\n2.0 GB\nSwap in use\n14.6 GB\nMemory pressure\nWarning",
-      "box": {
-        "x": 1137,
-        "y": 149,
-        "w": 250,
-        "h": 77
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "mem-gauge",
-      "text": "Warning 75%\nCeiling 93%",
+      "text": "",
       "box": {
-        "x": 53,
-        "y": 244,
-        "w": 1334,
-        "h": 12
+        "x": 45,
+        "y": 143,
+        "w": 55,
+        "h": 112
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgb(235, 234, 230)",
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "mem-used",
+      "text": "85% used: 20.3 of 24 GB",
+      "box": {
+        "x": 118,
+        "y": 158,
+        "w": 285,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 600 15px/21.75px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "mem-explain",
+      "text": "Past the 75% warning line. proof holds the Mac under 93%, so new runs and agents wait their turn.",
+      "box": {
+        "x": 118,
+        "y": 184,
+        "w": 285,
+        "h": 57
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-headroom",
+      "text": null,
+      "box": {
+        "x": 440,
+        "y": 124,
+        "w": 315,
+        "h": 150
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-headroom-label",
+      "text": "Headroom to ceiling",
+      "box": {
+        "x": 459,
+        "y": 141,
+        "w": 277,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-headroom-value",
+      "text": "2.0\nGB",
+      "box": {
+        "x": 459,
+        "y": 164,
+        "w": 277,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-headroom-bar",
+      "text": "",
+      "box": {
+        "x": 459,
+        "y": 249,
+        "w": 277,
+        "h": 8
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(241, 241, 243)",
+        "radius": "4px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-swap",
+      "text": null,
+      "box": {
+        "x": 771,
+        "y": 124,
+        "w": 315,
+        "h": 150
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-swap-label",
+      "text": "Swap in use",
+      "box": {
+        "x": 790,
+        "y": 141,
+        "w": 277,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-swap-value",
+      "text": "14.6\nGB on disk",
+      "box": {
+        "x": 790,
+        "y": 164,
+        "w": 277,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-swap-note",
+      "text": "macOS is swapping, which slows builds",
+      "box": {
+        "x": 790,
+        "y": 238,
+        "w": 235,
+        "h": 17
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-pressure",
+      "text": null,
+      "box": {
+        "x": 1101,
+        "y": 124,
+        "w": 315,
+        "h": 150
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-pressure-label",
+      "text": "Memory pressure",
+      "box": {
+        "x": 1120,
+        "y": 141,
+        "w": 277,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-pressure-value",
+      "text": "Warning",
+      "box": {
+        "x": 1120,
+        "y": 164,
+        "w": 277,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-pressure-badge",
+      "text": "reported by macOS",
+      "box": {
+        "x": 1120,
+        "y": 235,
+        "w": 126,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(180, 83, 9)",
+        "bg": "rgb(255, 251, 235)",
         "radius": "6px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "hist-title",
+      "id": "mem-history",
+      "text": null,
+      "box": {
+        "x": 24,
+        "y": 290,
+        "w": 976,
+        "h": 290
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "mem-history-title",
       "text": "Last 6 hours",
       "box": {
-        "x": 47,
-        "y": 340,
-        "w": 77,
+        "x": 45,
+        "y": 311,
+        "w": 81,
         "h": 20
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "hist-scale",
+      "id": "mem-history-desc",
       "text": "% of memory used",
       "box": {
-        "x": 818,
-        "y": 340,
-        "w": 119,
-        "h": 20
+        "x": 134,
+        "y": 312,
+        "w": 110,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "hist-chart",
-      "text": "Ceiling 93%\nWarning 75%",
+      "id": "mem-chart",
+      "text": "",
       "box": {
-        "x": 47,
-        "y": 381,
-        "w": 890,
-        "h": 210
+        "x": 45,
+        "y": 343,
+        "w": 934,
+        "h": 218
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "hist-axis",
-      "text": "09:00\n10:30\n12:00\n13:30\nnow",
+      "id": "apps-card",
+      "text": null,
       "box": {
-        "x": 47,
-        "y": 597,
-        "w": 890,
-        "h": 18
+        "x": 1016,
+        "y": 290,
+        "w": 400,
+        "h": 290
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "runs-title",
-      "text": "CLAUDE'S RUNS, THE ONES PROOF MAY STOP",
-      "box": {
-        "x": 47,
-        "y": 630,
-        "w": 890,
-        "h": 16
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "runs-head",
-      "text": "COMMAND\nSESSION\nRUNNING\nMEMORY",
-      "box": {
-        "x": 47,
-        "y": 650,
-        "w": 890,
-        "h": 25
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "run-1",
-      "text": "npx playwright test checkout.spec.ts\nlane-b\n6m 12s\n1.4 GB",
-      "box": {
-        "x": 47,
-        "y": 674,
-        "w": 890,
-        "h": 37
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "run-2",
-      "text": "pnpm dev\nmain\n1h 12m\n610 MB",
-      "box": {
-        "x": 47,
-        "y": 712,
-        "w": 890,
-        "h": 37
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "run-3",
-      "text": "vitest run src/api\nlane-c\n40s\n380 MB",
-      "box": {
-        "x": 47,
-        "y": 749,
-        "w": 890,
-        "h": 36
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "apps-title",
       "text": "Using the most memory",
       "box": {
-        "x": 991,
-        "y": 340,
-        "w": 155,
+        "x": 1037,
+        "y": 311,
+        "w": 156,
         "h": 20
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "apps-sub",
+      "id": "apps-by",
       "text": "by app",
       "box": {
-        "x": 1349,
-        "y": 340,
-        "w": 44,
-        "h": 20
+        "x": 1355,
+        "y": 312,
+        "w": 40,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "app-1",
-      "text": "Brave Browser\n3.8 GB",
+      "id": "app-1-name",
+      "text": "Brave Browser",
       "box": {
-        "x": 991,
-        "y": 373,
-        "w": 402,
-        "h": 32
+        "x": 1047,
+        "y": 343,
+        "w": 86,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "app-2",
-      "text": "OrbStack\n2.6 GB",
+      "id": "app-1-size",
+      "text": "3.8 GB",
       "box": {
-        "x": 991,
-        "y": 406,
-        "w": 402,
-        "h": 32
+        "x": 1331,
+        "y": 343,
+        "w": 64,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "app-3",
-      "text": "Claude Code\nClaude\n2.1 GB",
+      "id": "app-2-name",
+      "text": "OrbStack",
       "box": {
-        "x": 991,
-        "y": 438,
-        "w": 402,
-        "h": 32
+        "x": 1047,
+        "y": 368,
+        "w": 57,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "app-4",
-      "text": "Orca\n0.8 GB",
+      "id": "app-2-size",
+      "text": "2.6 GB",
       "box": {
-        "x": 991,
-        "y": 470,
-        "w": 402,
-        "h": 32
+        "x": 1331,
+        "y": 368,
+        "w": 64,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "app-5",
-      "text": "Visual Studio Code\n0.5 GB",
+      "id": "app-3-name",
+      "text": "Claude Code Claude",
       "box": {
-        "x": 991,
-        "y": 503,
-        "w": 402,
-        "h": 32
+        "x": 1047,
+        "y": 393,
+        "w": 141,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "app-6",
-      "text": "Claude\n0.5 GB",
+      "id": "app-3-size",
+      "text": "2.1 GB",
       "box": {
-        "x": 991,
-        "y": 535,
-        "w": 402,
-        "h": 32
+        "x": 1331,
+        "y": 393,
+        "w": 64,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "app-4-name",
+      "text": "Orca",
+      "box": {
+        "x": 1047,
+        "y": 418,
+        "w": 28,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "app-4-size",
+      "text": "0.8 GB",
+      "box": {
+        "x": 1331,
+        "y": 418,
+        "w": 64,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "app-5-name",
+      "text": "Visual Studio Code",
+      "box": {
+        "x": 1047,
+        "y": 443,
+        "w": 112,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "app-5-size",
+      "text": "0.5 GB",
+      "box": {
+        "x": 1331,
+        "y": 443,
+        "w": 64,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "app-6-name",
+      "text": "Claude",
+      "box": {
+        "x": 1047,
+        "y": 468,
+        "w": 42,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "app-6-size",
+      "text": "0.5 GB",
+      "box": {
+        "x": 1331,
+        "y": 468,
+        "w": 64,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "apps-advice",
       "text": "Close Brave Browser and OrbStack to free about 6.5 GB. Checks and agents then run side by side instead of waiting their turn, and macOS stops swapping.",
       "box": {
-        "x": 991,
-        "y": 579,
-        "w": 402,
-        "h": 87
+        "x": 1037,
+        "y": 504,
+        "w": 358,
+        "h": 57
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgb(255, 246, 229)",
-        "radius": "12px",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "runs-card",
+      "text": null,
+      "box": {
+        "x": 24,
+        "y": 596,
+        "w": 976,
+        "h": 242
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "runs-title",
+      "text": "Claude's runs, the ones proof may stop",
+      "box": {
+        "x": 45,
+        "y": 617,
+        "w": 253,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "runs-h-cmd",
+      "text": "Command",
+      "box": {
+        "x": 45,
+        "y": 645,
+        "w": 538,
+        "h": 36
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "runs-h-session",
+      "text": "Session",
+      "box": {
+        "x": 583,
+        "y": 645,
+        "w": 138,
+        "h": 36
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "runs-h-time",
+      "text": "Running",
+      "box": {
+        "x": 721,
+        "y": 645,
+        "w": 130,
+        "h": 36
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "runs-h-mem",
+      "text": "Memory",
+      "box": {
+        "x": 851,
+        "y": 645,
+        "w": 128,
+        "h": 36
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-1-cmd",
+      "text": "npx playwright test checkout.spec.ts",
+      "box": {
+        "x": 53,
+        "y": 693,
+        "w": 259,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-1-session",
+      "text": "lane-b",
+      "box": {
+        "x": 591,
+        "y": 690,
+        "w": 54,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-1-time",
+      "text": "6m 12s",
+      "box": {
+        "x": 721,
+        "y": 681,
+        "w": 130,
+        "h": 40
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-1-mem",
+      "text": "1.4 GB",
+      "box": {
+        "x": 851,
+        "y": 681,
+        "w": 128,
+        "h": 40
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-2-cmd",
+      "text": "pnpm dev",
+      "box": {
+        "x": 53,
+        "y": 733,
+        "w": 58,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-2-session",
+      "text": "main",
+      "box": {
+        "x": 591,
+        "y": 730,
+        "w": 45,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-2-time",
+      "text": "1h 12m",
+      "box": {
+        "x": 721,
+        "y": 721,
+        "w": 130,
+        "h": 40
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-2-mem",
+      "text": "610 MB",
+      "box": {
+        "x": 851,
+        "y": 721,
+        "w": 128,
+        "h": 40
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-3-cmd",
+      "text": "vitest run src/api",
+      "box": {
+        "x": 53,
+        "y": 773,
+        "w": 130,
+        "h": 16
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-3-session",
+      "text": "lane-c",
+      "box": {
+        "x": 591,
+        "y": 770,
+        "w": 54,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-3-time",
+      "text": "40s",
+      "box": {
+        "x": 721,
+        "y": 761,
+        "w": 130,
+        "h": 40
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "run-3-mem",
+      "text": "380 MB",
+      "box": {
+        "x": 851,
+        "y": 761,
+        "w": 128,
+        "h": 40
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "stops-card",
+      "text": null,
+      "box": {
+        "x": 1016,
+        "y": 596,
+        "w": 400,
+        "h": 242
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "stops-title",
-      "text": "STOPPED OR HELD BACK BY PROOF",
+      "text": "Stopped or held back by proof",
       "box": {
-        "x": 991,
-        "y": 680,
-        "w": 402,
-        "h": 16
+        "x": 1037,
+        "y": 617,
+        "w": 198,
+        "h": 20
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 11px/15.95px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "stop-1",
-      "text": "01:33\nHeld back an agent TRB test case documents review\n1.2 GB",
+      "id": "stop-1-time",
+      "text": "13:01",
       "box": {
-        "x": 991,
-        "y": 700,
-        "w": 402,
-        "h": 39
+        "x": 1037,
+        "y": 656,
+        "w": 48,
+        "h": 17
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "stop-2",
-      "text": "13:01\nDidn't start a test run Admin access on production\n1.5 GB",
+      "id": "stop-1-icon",
+      "text": "",
       "box": {
-        "x": 991,
-        "y": 739,
-        "w": 402,
-        "h": 38
+        "x": 1095,
+        "y": 654,
+        "w": 22,
+        "h": 22
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(180, 83, 9)",
+        "bg": "rgb(255, 251, 235)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "stop-1-text",
+      "text": "Didn't start a test run \u00b7 Admin access on production",
+      "box": {
+        "x": 1127,
+        "y": 656,
+        "w": 215,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "stop-1-tag",
+      "text": "1.5 GB",
+      "box": {
+        "x": 1352,
+        "y": 656,
+        "w": 43,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "stop-2-time",
+      "text": "01:33",
+      "box": {
+        "x": 1037,
+        "y": 697,
+        "w": 48,
+        "h": 17
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "stop-2-icon",
+      "text": "",
+      "box": {
+        "x": 1095,
+        "y": 695,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(180, 83, 9)",
+        "bg": "rgb(255, 251, 235)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "stop-2-text",
+      "text": "Held back an agent \u00b7 TRB test case documents review",
+      "box": {
+        "x": 1127,
+        "y": 697,
+        "w": 215,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "stop-2-tag",
+      "text": "1.2 GB",
+      "box": {
+        "x": 1352,
+        "y": 697,
+        "w": 43,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "drawer-timeline",
+      "text": "T\nTimeline",
+      "box": {
+        "x": 16,
+        "y": 862,
+        "w": 103,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "drawer-time",
+      "text": "W\nWhere the time went",
+      "box": {
+        "x": 123,
+        "y": 862,
+        "w": 179,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "drawer-log",
+      "text": "L\nLog",
+      "box": {
+        "x": 306,
+        "y": 862,
+        "w": 75,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "updated",
+      "text": "Updated 2s ago",
+      "box": {
+        "x": 1330,
+        "y": 868,
+        "w": 94,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     }
   ]

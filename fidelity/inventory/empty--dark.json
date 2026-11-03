@@ -14,171 +14,213 @@
   },
   "items": [
     {
-      "id": "brand",
-      "text": "",
+      "id": "logo",
+      "text": "proof\n.",
       "box": {
-        "x": 18,
-        "y": 19,
-        "w": 60,
-        "h": 22
+        "x": 20,
+        "y": 15,
+        "w": 50,
+        "h": 25
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(245, 245, 244)",
+        "font": "Geist 700 19px/normal",
+        "color": "rgb(250, 250, 250)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "mem-chip",
+      "id": "mem-pill",
       "text": "Memory\n68%",
       "box": {
-        "x": 1160,
-        "y": 13,
-        "w": 218,
-        "h": 34
+        "x": 1188,
+        "y": 12,
+        "w": 179,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(168, 171, 177)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgb(17, 17, 19)",
+        "radius": "8px",
+        "shadow": "rgba(0, 0, 0, 0.4) 0px 1px 2px 0px"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "theme-toggle",
-      "text": "Switch to light theme",
+      "id": "theme",
+      "text": "Switch theme",
       "box": {
         "x": 1388,
-        "y": 13,
-        "w": 34,
-        "h": 34
+        "y": 12,
+        "w": 32,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(168, 171, 177)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(161, 161, 170)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "empty-glyph",
-      "text": "",
+      "id": "empty",
+      "text": null,
       "box": {
-        "x": 692,
-        "y": 350,
-        "w": 56,
-        "h": 56
+        "x": 490,
+        "y": 383,
+        "w": 460,
+        "h": 190
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(168, 171, 177)",
-        "bg": "rgb(21, 22, 25)",
-        "radius": "16px",
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "empty-icon",
+      "text": "",
+      "box": {
+        "x": 696,
+        "y": 383,
+        "w": 48,
+        "h": 48
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(161, 161, 170)",
+        "bg": "rgb(17, 17, 19)",
+        "radius": "12px",
+        "shadow": "rgba(0, 0, 0, 0.4) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "empty-title",
       "text": "No Claude Code sessions in the last 6 hours",
       "box": {
-        "x": 544,
-        "y": 422,
-        "w": 352,
-        "h": 25
+        "x": 536,
+        "y": 447,
+        "w": 369,
+        "h": 26
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 17px/24.65px",
-        "color": "rgb(245, 245, 244)",
+        "font": "Geist 600 18px/26.1px",
+        "color": "rgb(250, 250, 250)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "empty-sub",
+      "id": "empty-body",
       "text": "Start one in any project and it appears here within a couple of seconds. Sessions that ran earlier show up if you widen the window.",
       "box": {
         "x": 490,
-        "y": 457,
+        "y": 483,
         "w": 460,
-        "h": 41
+        "h": 38
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(168, 171, 177)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(161, 161, 170)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "empty-6h",
+      "id": "empty-range",
+      "text": null,
+      "box": {
+        "x": 643,
+        "y": 539,
+        "w": 155,
+        "h": 34
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgb(28, 28, 31)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "empty-range-1",
       "text": "6 hours",
       "box": {
-        "x": 649,
-        "y": 520,
-        "w": 67,
+        "x": 646,
+        "y": 542,
+        "w": 69,
         "h": 28
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 600 12.5px/18.125px",
-        "color": "rgb(245, 245, 244)",
-        "bg": "rgb(31, 33, 37)",
-        "radius": "999px",
-        "shadow": "none"
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgb(17, 17, 19)",
+        "radius": "6px",
+        "shadow": "rgba(0, 0, 0, 0.4) 0px 1px 2px 0px"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "empty-24h",
+      "id": "empty-range-2",
       "text": "24 hours",
       "box": {
-        "x": 716,
-        "y": 520,
-        "w": 74,
+        "x": 717,
+        "y": 542,
+        "w": 77,
         "h": 28
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(168, 171, 177)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(161, 161, 170)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "6px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     }
   ]

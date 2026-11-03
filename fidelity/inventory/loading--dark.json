@@ -14,45 +14,108 @@
   },
   "items": [
     {
-      "id": "brand",
-      "text": "",
+      "id": "logo",
+      "text": "proof\n.",
       "box": {
-        "x": 18,
-        "y": 19,
-        "w": 60,
-        "h": 22
+        "x": 20,
+        "y": 15,
+        "w": 50,
+        "h": 25
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(245, 245, 244)",
+        "font": "Geist 700 19px/normal",
+        "color": "rgb(250, 250, 250)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "mem-pill",
+      "text": "Memory\n68%",
+      "box": {
+        "x": 1188,
+        "y": 12,
+        "w": 179,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgb(17, 17, 19)",
+        "radius": "8px",
+        "shadow": "rgba(0, 0, 0, 0.4) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "theme",
+      "text": "Switch theme",
+      "box": {
+        "x": 1388,
+        "y": 12,
+        "w": 32,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(161, 161, 170)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "loading-card",
+      "text": null,
+      "box": {
+        "x": 619,
+        "y": 453,
+        "w": 202,
+        "h": 50
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgb(17, 17, 19)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.6) 0px 16px 48px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "loading-text",
-      "text": "Reading session logs…",
+      "text": "Reading session logs\u2026",
       "box": {
-        "x": 1274,
-        "y": 19,
-        "w": 148,
+        "x": 664,
+        "y": 468,
+        "w": 138,
         "h": 20
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(168, 171, 177)",
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(250, 250, 250)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     }
   ]

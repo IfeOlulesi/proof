@@ -80,7 +80,13 @@ export function describe(name, input = {}) {
     case 'WebFetch': return `Read ${tidy(input.url || '').slice(0, 80)}`;
     case 'Skill': return `Load skill ${input.skill || input.command || ''}`;
     case 'AskUserQuestion': return 'Ask you a question';
-    case 'ExitPlanMode': return 'Ask you to approve the plan';
+    case 'ExitPlanMode': {   // a first line "# Release plan" names it: "Ask you to approve the release plan"
+      const first = String(input.plan || '').split('\n').find(l => l.trim()) || '';
+      const m = first.match(/^\s*#+\s+(.+)$/), h = m ? m[1].replace(/[*_`]/g, '').trim() : '';
+      const name = (h.match(/^([\w][\w .'-]{0,39}?)\s+plan$/i) || [])[1] || '';
+      const word = name.split(' ')[0], lead = word && word !== word.toUpperCase() ? word[0].toLowerCase() + word.slice(1) : word;
+      return name ? `Ask you to approve the ${[lead, ...name.split(' ').slice(1)].join(' ')} plan` : 'Ask you to approve the plan';
+    }
     case 'TaskStop': case 'KillShell': case 'KillBash': return 'Stop a background run';
     case 'TaskOutput': case 'BashOutput': return 'Wait for a background run';
     case 'ToolSearch': return 'Load more tools';
