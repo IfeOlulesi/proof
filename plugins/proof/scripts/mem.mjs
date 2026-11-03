@@ -31,6 +31,7 @@ export function machineConfig() {
     autoOpen: (file.autoOpenDashboard ?? true) !== false && env.PROOF_AUTO_OPEN !== '0',
     autoOpenAfterMin: num(file.autoOpenAfterMinutes, 45),
     admitWaitS: num(env.PROOF_ADMIT_WAIT ?? file.admitWaitSeconds, 180),
+    updateCheck: (file.updateCheck ?? true) !== false && env.PROOF_UPDATE_CHECK !== '0',
   };
 }
 

@@ -10,6 +10,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dataDir, git, gitRoot, loadConfig, loadState, protectedSnapshot, pruneData, readStdin, saveState } from './lib.mjs';
 import { gb, machineConfig, readSystemFast } from './mem.mjs';
+import { updateNotice } from './updates.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT || resolve(here, '..');
@@ -64,6 +65,11 @@ if (process.env.PROOF_MONITOR !== '0' && !(await monitorUp())) {
   try { spawn(process.execPath, [join(here, 'monitor.mjs'), '--daemon'], { detached: true, stdio: 'ignore', env: { ...process.env, PROOF_DATA_DIR: dataDir() } }).unref(); } catch {}
 }
 lines.push(`Live dashboard of every session: http://127.0.0.1:${mcfg.port}/ (the proof:watch skill opens it). For work you expect to take more than an hour, open it at the start and keep your task list current, one item per unit, so it shows progress.`);
+
+if (mcfg.updateCheck) {
+  const notice = updateNotice(pluginRoot);
+  if (notice) lines.push(notice);
+}
 
 const rules = readFileSync(join(here, 'rules.md'), 'utf8').trim();
 process.stdout.write(JSON.stringify({

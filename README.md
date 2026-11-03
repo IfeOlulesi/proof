@@ -47,14 +47,18 @@ Install the proof plugin (github.com/IfeOlulesi/proof).
 2. Run `claude plugin marketplace add IfeOlulesi/proof`, then
    `claude plugin install proof@proof`. Check `claude plugin list` shows
    proof@proof as enabled.
-3. If we're in a git repo, turn proof on here: write .claude/proof.json
+3. Turn on auto-update for it: in ~/.claude/settings.json, add
+   "proof": { "source": { "source": "github", "repo": "IfeOlulesi/proof" },
+   "autoUpdate": true } under "extraKnownMarketplaces". If you can't edit that
+   file, tell me to do it in /plugin → Marketplaces → proof → Enable auto-update.
+4. If we're in a git repo, turn proof on here: write .claude/proof.json
    (format: github.com/IfeOlulesi/proof#turn-it-on-in-a-project) with checks for
    the type check, lint and tests this project already uses. Run each one once
    and show me which pass and which fail.
-4. Finally, tell me to run /reload-plugins.
+5. Finally, tell me to run /reload-plugins.
 ```
 
-Claude checks for git and Node.js, asks before installing anything, installs proof, and sets it up in the project you're in.
+Claude checks for git and Node.js, asks before installing anything, installs proof with auto-update on, and sets it up in the project you're in.
 
 > [!TIP]
 > When it's done, run `/reload-plugins` (or restart Claude Code) to load proof.
@@ -68,7 +72,7 @@ You need git and Node.js 20+ on your `PATH`. Then, in a terminal:
 claude plugin marketplace add IfeOlulesi/proof && claude plugin install proof@proof
 ```
 
-Restart Claude Code. `claude plugin list` should show `proof@proof` as enabled.
+Restart Claude Code. `claude plugin list` should show `proof@proof` as enabled. Then turn on auto-update: `/plugin` → Marketplaces → proof → Enable auto-update.
 
 </details>
 
@@ -198,13 +202,18 @@ To add the spec and design checks to the gate, see the [discover](plugins/proof/
   "dashboardPort": 47331,
   "autoOpenDashboard": true,
   "autoOpenAfterMinutes": 45,
-  "admitWaitSeconds": 180
+  "admitWaitSeconds": 180,
+  "updateCheck": true
 }
 ```
 
 </details>
 
 ## Update
+
+Claude Code updates plugins on its own only for marketplaces with auto-update on, and it's off for third-party marketplaces like this one until you turn it on: `/plugin` → Marketplaces → proof → Enable auto-update. The install prompt above does this for you.
+
+Without it, proof tells Claude when a newer version is out, at the start of a session, and Claude offers to update. To update by hand:
 
 ```bash
 claude plugin marketplace update proof
@@ -215,7 +224,7 @@ If a repo has a `fidelity/` folder, also run `node <plugin>/skills/build/fidelit
 
 ## Privacy
 
-proof makes no network calls. The dashboard listens on 127.0.0.1 only. It reads Claude Code's own logs in `~/.claude` to draw the dashboard, and only ever stops processes Claude started.
+proof makes one network call: at most once a day, in the background, it reads the released version number from GitHub (`raw.githubusercontent.com`) to tell you about updates. Nothing is sent. Turn it off with `"updateCheck": false` in `~/.config/proof/machine.json`. The dashboard listens on 127.0.0.1 only. It reads Claude Code's own logs in `~/.claude` to draw the dashboard, and only ever stops processes Claude started.
 
 ## Limits
 
