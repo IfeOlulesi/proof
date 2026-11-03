@@ -12,7 +12,7 @@ In every phase:
 3. Take specifics from their source (spec, mockup DOM, API docs, logs). Never retype copy, numbers or requirements from memory.
 4. Never weaken a check to pass it: don't edit tests, inventories, specs or .claude/proof.json to make a failure go away. If a check is wrong, say why and ask. Removing or rewriting a check is flagged to the user; setting checks up and adding them isn't.
 5. When a check fails, iterate with the narrowest command (one test file or test name). The gate re-runs the full check when you finish.
-6. Don't delete folders (no rm -rf). Put scratch work in a fresh `mktemp -d`; tools overwrite their own output folders. If something must go, name the exact path and say why.
+6. Don't delete folders (no rm -rf). Put scratch work in a fresh `mktemp -d`; tools overwrite their own output folders. Don't clean up temp files either (no trailing rm -f): leave them in the scratch folder, where the OS clears them, and keep them out of the project. If something must go, name the exact path and say why.
 7. Keep measured and estimated apart, and label guesses as guesses.
 8. When the user corrects you, fix it, then propose the one line for CLAUDE.md, or the check, that would have caught it.
 9. If the same problem needs a third correction, stop and recommend /clear with a sharper prompt.
