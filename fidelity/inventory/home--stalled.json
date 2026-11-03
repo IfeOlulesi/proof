@@ -14,591 +14,1326 @@
   },
   "items": [
     {
-      "id": "brand",
-      "text": "",
+      "id": "logo",
+      "text": "proof\n.",
       "box": {
-        "x": 18,
-        "y": 19,
-        "w": 60,
-        "h": 22
+        "x": 20,
+        "y": 15,
+        "w": 50,
+        "h": 25
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 700 19px/normal",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-1",
       "text": "Checkout flow build",
       "box": {
-        "x": 96,
-        "y": 13,
-        "w": 187,
-        "h": 34
+        "x": 90,
+        "y": 12,
+        "w": 166,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-2",
       "text": "Admin access on production\nneeds you",
       "box": {
-        "x": 287,
-        "y": 13,
-        "w": 322,
-        "h": 34
+        "x": 259,
+        "y": 12,
+        "w": 230,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-3",
       "text": "API docs refresh",
       "box": {
-        "x": 613,
-        "y": 13,
-        "w": 164,
-        "h": 34
+        "x": 491,
+        "y": 12,
+        "w": 143,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 600 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgb(255, 255, 255)",
-        "radius": "999px",
-        "shadow": "rgba(14, 17, 22, 0.04) 0px 1px 2px 0px"
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "8px",
+        "shadow": "none"
       },
       "motion": {
         "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "tab-4",
       "text": "Proof v0.4.0 release",
       "box": {
-        "x": 781,
-        "y": 13,
-        "w": 189,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "tab-more",
-      "text": "+4 more",
-      "box": {
-        "x": 974,
-        "y": 13,
-        "w": 99,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "mem-chip",
-      "text": "Memory\n68%",
-      "box": {
-        "x": 1160,
-        "y": 13,
-        "w": 218,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "theme-toggle",
-      "text": "Switch to dark theme",
-      "box": {
-        "x": 1388,
-        "y": 13,
-        "w": 34,
-        "h": 34
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "999px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "session-title",
-      "text": "API docs refresh",
-      "box": {
-        "x": 28,
-        "y": 82,
+        "x": 636,
+        "y": 12,
         "w": 167,
         "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 22px/31.9px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 13.5px/19.575px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "session-meta",
-      "text": "shop-app · docs/api · started 52m ago",
+      "id": "more",
+      "text": "+4 more",
       "box": {
-        "x": 209,
-        "y": 90,
-        "w": 253,
-        "h": 21
+        "x": 805,
+        "y": 12,
+        "w": 96,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "mem-pill",
+      "text": "Memory\n68%",
+      "box": {
+        "x": 1188,
+        "y": 12,
+        "w": 179,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "8px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "theme",
+      "text": "Switch theme",
+      "box": {
+        "x": 1388,
+        "y": 12,
+        "w": 32,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "8px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "title",
+      "text": "API docs refresh",
+      "box": {
+        "x": 24,
+        "y": 79,
+        "w": 151,
+        "h": 29
+      },
+      "style": {
+        "font": "Geist 600 20px/29px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "status-icon",
-      "text": "",
+      "id": "meta",
+      "text": "shop-app \u00b7 docs/api \u00b7 started 52m ago",
       "box": {
-        "x": 53,
-        "y": 170,
-        "w": 22,
+        "x": 187,
+        "y": 84,
+        "w": 231,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "range",
+      "text": null,
+      "box": {
+        "x": 1254,
+        "y": 76,
+        "w": 162,
+        "h": 34
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "range-1",
+      "text": "Last hour",
+      "box": {
+        "x": 1257,
+        "y": 79,
+        "w": 82,
+        "h": 28
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "range-2",
+      "text": "Session",
+      "box": {
+        "x": 1341,
+        "y": 79,
+        "w": 72,
+        "h": 28
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "6px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "status-card",
+      "text": null,
+      "box": {
+        "x": 24,
+        "y": 126,
+        "w": 936,
+        "h": 236
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "status-badge",
+      "text": "Stalled",
+      "box": {
+        "x": 45,
+        "y": 159,
+        "w": 76,
         "h": 22
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(104, 109, 118)",
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
+        "radius": "6px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "status-text",
-      "text": "No activity for 18 minutes",
-      "box": {
-        "x": 93,
-        "y": 153,
-        "w": 1214,
-        "h": 33
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 600 23px/33.35px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "status-sub",
-      "text": "Nothing is running and Claude isn't waiting on you. The last step was pnpm docs:build, which finished 18m ago.",
-      "box": {
-        "x": 93,
-        "y": 188,
-        "w": 1214,
-        "h": 21
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "status-timer",
       "text": "18:04",
       "box": {
-        "x": 1325,
-        "y": 164,
-        "w": 62,
-        "h": 33
+        "x": 849,
+        "y": 145,
+        "w": 90,
+        "h": 49
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 500 23px/33.35px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 34px/49.3px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "happened-title",
-      "text": "Last activity",
+      "id": "status-title",
+      "text": "No activity for 18 minutes",
       "box": {
-        "x": 47,
-        "y": 265,
-        "w": 80,
-        "h": 20
+        "x": 45,
+        "y": 210,
+        "w": 894,
+        "h": 44
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 600 30px/43.5px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "happened-scope",
-      "text": "newest first",
+      "id": "status-sub",
+      "text": "Nothing is running and Claude isn't waiting on you. The last step was pnpm docs:build, which finished 18m ago.",
       "box": {
-        "x": 923,
-        "y": 265,
-        "w": 74,
-        "h": 20
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "happened-1",
-      "text": "14:19\npnpm docs:build\nbuild",
-      "box": {
-        "x": 47,
-        "y": 299,
-        "w": 950,
-        "h": 40
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "happened-2",
-      "text": "14:18\nEdit docs/api/orders.md\nedit",
-      "box": {
-        "x": 47,
-        "y": 338,
-        "w": 950,
-        "h": 40
-      },
-      "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "0px",
-        "shadow": "none"
-      },
-      "motion": {
-        "transition": "all",
-        "animation": "none"
-      }
-    },
-    {
-      "id": "happened-3",
-      "text": "14:16\nCommit 7c1e0b2 docs: order endpoints\ncommit",
-      "box": {
-        "x": 47,
-        "y": 378,
-        "w": 950,
+        "x": 45,
+        "y": 260,
+        "w": 620,
         "h": 38
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "beat-label",
+      "text": "last hour",
+      "box": {
+        "x": 45,
+        "y": 319,
+        "w": 52,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "heartbeat",
+      "text": "",
+      "box": {
+        "x": 109,
+        "y": 313,
+        "w": 640,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "beat-now",
+      "text": "now",
+      "box": {
+        "x": 761,
+        "y": 319,
+        "w": 25,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-card",
+      "text": null,
+      "box": {
+        "x": 976,
+        "y": 126,
+        "w": 440,
+        "h": 236
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-title",
+      "text": "Last activity",
+      "box": {
+        "x": 997,
+        "y": 147,
+        "w": 81,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-order",
+      "text": "newest first",
+      "box": {
+        "x": 1325,
+        "y": 148,
+        "w": 70,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-1-time",
+      "text": "14:16",
+      "box": {
+        "x": 997,
+        "y": 186,
+        "w": 48,
+        "h": 17
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-1-icon",
+      "text": "",
+      "box": {
+        "x": 1055,
+        "y": 184,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-1-text",
+      "text": "pnpm docs:build",
+      "box": {
+        "x": 1087,
+        "y": 186,
+        "w": 252,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-1-tag",
+      "text": "build",
+      "box": {
+        "x": 1349,
+        "y": 184,
+        "w": 46,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-2-time",
+      "text": "14:15",
+      "box": {
+        "x": 997,
+        "y": 227,
+        "w": 48,
+        "h": 17
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-2-icon",
+      "text": "",
+      "box": {
+        "x": 1055,
+        "y": 225,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(37, 99, 235)",
+        "bg": "color(srgb 0.145098 0.388235 0.921569 / 0.14)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-2-text",
+      "text": "Edit docs/api/orders.md",
+      "box": {
+        "x": 1087,
+        "y": 227,
+        "w": 259,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-2-tag",
+      "text": "edit",
+      "box": {
+        "x": 1356,
+        "y": 225,
+        "w": 39,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-3-time",
+      "text": "14:13",
+      "box": {
+        "x": 997,
+        "y": 268,
+        "w": 48,
+        "h": 17
+      },
+      "style": {
+        "font": "\"Geist Mono\" 400 12px/17.4px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-3-icon",
+      "text": "",
+      "box": {
+        "x": 1055,
+        "y": 266,
+        "w": 22,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(21, 128, 61)",
+        "bg": "rgb(240, 253, 244)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-3-text",
+      "text": "Commit 7c1e0b2 docs: order endpoints",
+      "box": {
+        "x": 1087,
+        "y": 268,
+        "w": 238,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "last-3-tag",
+      "text": "commit",
+      "box": {
+        "x": 1335,
+        "y": 266,
+        "w": 60,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "plan-card",
+      "text": null,
+      "box": {
+        "x": 24,
+        "y": 378,
+        "w": 453,
+        "h": 175
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "plan-title",
       "text": "Plan",
       "box": {
-        "x": 1051,
-        "y": 265,
-        "w": 28,
+        "x": 45,
+        "y": 399,
+        "w": 29,
         "h": 20
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 700 13.5px/19.575px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "plan-count",
       "text": "2 / 3",
       "box": {
-        "x": 1366,
-        "y": 265,
-        "w": 27,
-        "h": 20
+        "x": 412,
+        "y": 398,
+        "w": 45,
+        "h": 22
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 13.5px/19.575px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "plan-1-box",
+      "text": "",
+      "box": {
+        "x": 45,
+        "y": 436,
+        "w": 16,
+        "h": 16
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgb(9, 9, 11)",
+        "radius": "4px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "plan-1-name",
+      "text": "Audit endpoints against code",
+      "box": {
+        "x": 71,
+        "y": 435,
+        "w": 173,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "step-1",
-      "text": "Audit endpoints against code",
+      "id": "plan-2-box",
+      "text": "",
       "box": {
-        "x": 1051,
-        "y": 299,
-        "w": 342,
-        "h": 34
+        "x": 45,
+        "y": 472,
+        "w": 16,
+        "h": 16
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
-        "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(250, 250, 250)",
+        "bg": "rgb(9, 9, 11)",
+        "radius": "4px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "step-2",
+      "id": "plan-2-name",
       "text": "Rewrite order endpoints",
       "box": {
-        "x": 1051,
-        "y": 335,
-        "w": 342,
-        "h": 34
+        "x": 71,
+        "y": 471,
+        "w": 142,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "step-3",
+      "id": "plan-3-box",
+      "text": "",
+      "box": {
+        "x": 45,
+        "y": 508,
+        "w": 16,
+        "h": 16
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "4px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "plan-3-name",
       "text": "Rewrite payment endpoints",
       "box": {
-        "x": 1051,
-        "y": 371,
-        "w": 342,
-        "h": 34
+        "x": 71,
+        "y": 507,
+        "w": 163,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(14, 17, 22)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "dtab-timeline",
+      "id": "kpi-idle",
+      "text": null,
+      "box": {
+        "x": 493,
+        "y": 378,
+        "w": 453,
+        "h": 175
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-idle-label",
+      "text": "Stalled",
+      "box": {
+        "x": 512,
+        "y": 398,
+        "w": 42,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-idle-badge",
+      "text": "35% of the session",
+      "box": {
+        "x": 803,
+        "y": 396,
+        "w": 125,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-idle-value",
+      "text": "18m\nof 52m",
+      "box": {
+        "x": 512,
+        "y": 423,
+        "w": 415,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-idle-bar",
+      "text": "",
+      "box": {
+        "x": 512,
+        "y": 526,
+        "w": 415,
+        "h": 10
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-memory",
+      "text": null,
+      "box": {
+        "x": 963,
+        "y": 378,
+        "w": 453,
+        "h": 175
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-memory-label",
+      "text": "Memory",
+      "box": {
+        "x": 982,
+        "y": 398,
+        "w": 49,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-memory-badge",
+      "text": "Room for 3 more runs",
+      "box": {
+        "x": 1258,
+        "y": 396,
+        "w": 139,
+        "h": 22
+      },
+      "style": {
+        "font": "Geist 500 12px/17.4px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-memory-value",
+      "text": "68%\n16.3 of 24 GB",
+      "box": {
+        "x": 982,
+        "y": 423,
+        "w": 415,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 600 26px/29.9px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "kpi-memory-spark",
+      "text": "",
+      "box": {
+        "x": 982,
+        "y": 506,
+        "w": 415,
+        "h": 30
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "act-title",
+      "text": "Activity",
+      "box": {
+        "x": 45,
+        "y": 589,
+        "w": 50,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "act-desc",
+      "text": "every 5 minutes \u00b7 the hatched end is the stall",
+      "box": {
+        "x": 103,
+        "y": 590,
+        "w": 265,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "act-legend",
+      "text": "Thinking & writing\nReading & editing\nCommands\nChecks & screens\nWaiting on you\nStalls",
+      "box": {
+        "x": 757,
+        "y": 590,
+        "w": 638,
+        "h": 18
+      },
+      "style": {
+        "font": "Geist 400 12.5px/18.125px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "activity",
+      "text": "",
+      "box": {
+        "x": 45,
+        "y": 622,
+        "w": 1350,
+        "h": 197
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "drawer-timeline",
       "text": "T\nTimeline",
       "box": {
-        "x": 28,
-        "y": 858,
-        "w": 107,
-        "h": 34
+        "x": 16,
+        "y": 862,
+        "w": 103,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "dtab-time",
+      "id": "drawer-time",
       "text": "W\nWhere the time went",
       "box": {
-        "x": 139,
-        "y": 858,
-        "w": 189,
-        "h": 34
+        "x": 123,
+        "y": 862,
+        "w": 179,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
-      "id": "dtab-log",
+      "id": "drawer-log",
       "text": "L\nLog",
       "box": {
-        "x": 332,
-        "y": 858,
-        "w": 78,
-        "h": 34
+        "x": 306,
+        "y": 862,
+        "w": 75,
+        "h": 32
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 14px/20.3px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
-        "radius": "9px",
+        "radius": "8px",
         "shadow": "none"
       },
       "motion": {
-        "transition": "all",
-        "animation": "none"
+        "transition": "background 0.12s cubic-bezier(0.2, 0, 0, 1), border-color 0.12s cubic-bezier(0.2, 0, 0, 1)",
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     },
     {
       "id": "updated",
       "text": "Updated 2s ago",
       "box": {
-        "x": 1317,
-        "y": 865,
-        "w": 95,
-        "h": 18
+        "x": 1330,
+        "y": 868,
+        "w": 94,
+        "h": 19
       },
       "style": {
-        "font": "\"Plus Jakarta Sans\" 400 12.5px/18.125px",
-        "color": "rgb(84, 90, 100)",
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",
         "shadow": "none"
       },
       "motion": {
         "transition": "all",
-        "animation": "none"
+        "animation": "none 0s ease 0s 1 normal none running"
       }
     }
   ]

@@ -69,16 +69,15 @@
       "keyboard": "4 selects tab 4"
     },
     {
-      "element": "tab-more",
+      "element": "more",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "open"
+        "pressed"
       ],
-      "effect": "toggle the session menu (switcher--menu); Esc or a click outside closes it; focus moves to the first item; when a session that needs you is hidden in the menu, the button carries a coral \"1 needs you\" badge (switcher--hidden-needs-you)",
+      "effect": "toggle the session menu (switcher--menu); Esc or a click outside closes it; focus moves to the first item; when a session that needs you is hidden in the menu, the button carries a coral \"1 needs you\" badge (switcher--hidden-needs-you) A needs-you session that is not a visible tab puts a coral \"1 needs you\" badge on this button (switcher--hidden-needs-you).",
       "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
@@ -86,158 +85,22 @@
       "keyboard": "Ctrl+K opens it"
     },
     {
-      "element": "menu-search",
-      "trigger": "type",
-      "states": [
-        "empty",
-        "typing",
-        "no-match"
-      ],
-      "effect": "filters sessions by title or project name as you type; a matching project shows all its sessions; needs-you sessions stay pinned on top when they match; no match shows \"No session or project matches\"; focused when the menu opens",
-      "duration_ms": 0,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "none",
-      "keyboard": "Ctrl K opens the menu with this focused; Up/Down move through rows; Enter opens; Esc clears, then closes"
-    },
-    {
-      "element": "menu-item-1",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "menu-item-2",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "menu-item-3",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "menu-item-4",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "menu-item-5",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "menu-item-6",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "menu-item-7",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "menu-item-8",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Up/Down move, Enter selects"
-    },
-    {
-      "element": "mem-chip",
+      "element": "mem-pill",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "current"
+        "pressed"
       ],
-      "effect": "open the memory view (memory). Under the warning line (warnPct, 75%) the chip track is grey and nothing else shows; at or past it the track turns amber and the mem-banner appears under the switcher on every session screen until memory drops below the line again",
+      "effect": "open the memory view (memory). The pill shows used % and a 6-hour spark line: the value and line are green under the warning line (warnPct, 75%) and amber past it, when the memory banner also shows.",
       "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "theme-toggle",
+      "element": "theme",
       "trigger": "click",
       "states": [
         "default",
@@ -249,10 +112,40 @@
       "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
-      "reduced_motion": "colours swap instantly"
+      "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "job-main",
+      "element": "range-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "scope the home to the last hour: rings, KPI cards and the activity chart re-draw from windowShare; the chart buckets become 5 minutes",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "range-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "scope the home to the whole session (share); the activity chart uses 10-minute buckets (5 for sessions under an hour)",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "node-lane-b",
       "trigger": "click",
       "states": [
         "default",
@@ -260,14 +153,14 @@
         "focus-visible",
         "pressed"
       ],
-      "effect": "open the agent drill-down (job) for this agent; hover raises the card (border-strong + shadow-2); the main thread drill-down uses the same layout with the task list as its steps and no Brief panel",
+      "effect": "open the agent drill-down (job) for this agent. Hover raises the node (border to --subtle, --shadow-lg) and shows a tooltip with type, current step and duration. Running nodes show a spinner and their wire from the main thread flows (dash offset, 900 ms loop); finished nodes show a check and a grey wire.",
       "duration_ms": 120,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
+      "reduced_motion": "no hover lift; spinner and wire flow stop, state still reads from icon and colour"
     },
     {
-      "element": "job-1",
+      "element": "node-lane-c",
       "trigger": "click",
       "states": [
         "default",
@@ -275,14 +168,14 @@
         "focus-visible",
         "pressed"
       ],
-      "effect": "open the agent drill-down (job) for this agent; hover raises the card (border-strong + shadow-2)",
+      "effect": "open the agent drill-down (job) for this agent. Hover raises the node (border to --subtle, --shadow-lg) and shows a tooltip with type, current step and duration. Running nodes show a spinner and their wire from the main thread flows (dash offset, 900 ms loop); finished nodes show a check and a grey wire.",
       "duration_ms": 120,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
+      "reduced_motion": "no hover lift; spinner and wire flow stop, state still reads from icon and colour"
     },
     {
-      "element": "job-2",
+      "element": "node-verifier",
       "trigger": "click",
       "states": [
         "default",
@@ -290,14 +183,14 @@
         "focus-visible",
         "pressed"
       ],
-      "effect": "open the agent drill-down (job) for this agent; hover raises the card (border-strong + shadow-2)",
+      "effect": "open the agent drill-down (job) for this agent. Hover raises the node (border to --subtle, --shadow-lg) and shows a tooltip with type, current step and duration. Running nodes show a spinner and their wire from the main thread flows (dash offset, 900 ms loop); finished nodes show a check and a grey wire.",
       "duration_ms": 120,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
+      "reduced_motion": "no hover lift; spinner and wire flow stop, state still reads from icon and colour"
     },
     {
-      "element": "job-3",
+      "element": "node-explore",
       "trigger": "click",
       "states": [
         "default",
@@ -305,14 +198,14 @@
         "focus-visible",
         "pressed"
       ],
-      "effect": "open the agent drill-down (job) for this agent; hover raises the card (border-strong + shadow-2)",
+      "effect": "open the agent drill-down (job) for this agent. Hover raises the node (border to --subtle, --shadow-lg) and shows a tooltip with type, current step and duration. Running nodes show a spinner and their wire from the main thread flows (dash offset, 900 ms loop); finished nodes show a check and a grey wire.",
       "duration_ms": 120,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
+      "reduced_motion": "no hover lift; spinner and wire flow stop, state still reads from icon and colour"
     },
     {
-      "element": "job-4",
+      "element": "node-lane-a",
       "trigger": "click",
       "states": [
         "default",
@@ -320,80 +213,113 @@
         "focus-visible",
         "pressed"
       ],
-      "effect": "open the agent drill-down (job) for this agent; hover raises the card (border-strong + shadow-2); a finished agent uses the same layout: no timer, Result shows its final message, steps all done or failed",
+      "effect": "open the agent drill-down (job) for this agent. Hover raises the node (border to --subtle, --shadow-lg) and shows a tooltip with type, current step and duration. Running nodes show a spinner and their wire from the main thread flows (dash offset, 900 ms loop); finished nodes show a check and a grey wire.",
       "duration_ms": 120,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
+      "reduced_motion": "no hover lift; spinner and wire flow stop, state still reads from icon and colour"
     },
     {
-      "element": "job-5",
-      "trigger": "click",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible",
-        "pressed"
-      ],
-      "effect": "open the agent drill-down (job) for this agent; hover raises the card (border-strong + shadow-2); a finished agent uses the same layout: no timer, Result shows its final message, steps all done or failed",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "dtab-timeline",
+      "element": "drawer-timeline",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
         "pressed",
-        "on"
+        "current"
       ],
-      "effect": "open the drawer on this tab (or switch tab if open; clicking the open tab closes it). The drawer replaces the run graph and plan; the status card shrinks to one line",
+      "effect": "open the bottom sheet on \"Timeline\": scrim fades in over the home and the sheet slides up from the bottom until its top edge is 196px from the top of the window (140px below the 56px top bar). If the sheet is open on another tab it switches tab.",
       "duration_ms": 320,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "sheet appears without sliding",
+      "keyboard": "T toggles"
+    },
+    {
+      "element": "sheet-timeline",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "current"
+      ],
+      "effect": "switch the open sheet to \"Timeline\"; clicking the current tab closes the sheet",
+      "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly",
       "keyboard": "T toggles"
     },
     {
-      "element": "dtab-time",
+      "element": "drawer-time",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
         "pressed",
-        "on"
+        "current"
       ],
-      "effect": "open the drawer on this tab (or switch tab if open; clicking the open tab closes it). The drawer replaces the run graph and plan; the status card shrinks to one line",
+      "effect": "open the bottom sheet on \"Where the time went\": scrim fades in over the home and the sheet slides up from the bottom until its top edge is 196px from the top of the window (140px below the 56px top bar). If the sheet is open on another tab it switches tab.",
       "duration_ms": 320,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "sheet appears without sliding",
+      "keyboard": "W toggles"
+    },
+    {
+      "element": "sheet-time",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "current"
+      ],
+      "effect": "switch the open sheet to \"Where the time went\"; clicking the current tab closes the sheet",
+      "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly",
       "keyboard": "W toggles"
     },
     {
-      "element": "dtab-log",
+      "element": "drawer-log",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
         "pressed",
-        "on"
+        "current"
       ],
-      "effect": "open the drawer on this tab (or switch tab if open; clicking the open tab closes it). The drawer replaces the run graph and plan; the status card shrinks to one line",
+      "effect": "open the bottom sheet on \"Log\": scrim fades in over the home and the sheet slides up from the bottom until its top edge is 196px from the top of the window (140px below the 56px top bar). If the sheet is open on another tab it switches tab.",
       "duration_ms": 320,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "sheet appears without sliding",
+      "keyboard": "L toggles"
+    },
+    {
+      "element": "sheet-log",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "current"
+      ],
+      "effect": "switch the open sheet to \"Log\"; clicking the current tab closes the sheet",
+      "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly",
       "keyboard": "L toggles"
     },
     {
-      "element": "drawer-close",
+      "element": "sheet-close",
       "trigger": "click",
       "states": [
         "default",
@@ -401,15 +327,15 @@
         "focus-visible",
         "pressed"
       ],
-      "effect": "close the drawer; the home layout returns",
+      "effect": "close the sheet: it slides down and the scrim fades; focus returns to the drawer button that opened it",
       "duration_ms": 320,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly",
-      "keyboard": "Esc"
+      "reduced_motion": "sheet disappears without sliding",
+      "keyboard": "Esc; a click on the scrim also closes it"
     },
     {
-      "element": "time-mini-open",
+      "element": "answer-copy",
       "trigger": "click",
       "states": [
         "default",
@@ -417,7 +343,22 @@
         "focus-visible",
         "pressed"
       ],
-      "effect": "open the drawer on \"Where the time went\"",
+      "effect": "copy the session's working directory to the clipboard; label reads \"Copied\" for 1.5 s",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "time-open",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "pressed"
+      ],
+      "effect": "open the drawer on \"Where the time went\" (the bottom sheet)",
       "duration_ms": 320,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
@@ -455,7 +396,7 @@
       "keyboard": "Esc or Backspace"
     },
     {
-      "element": "act-more",
+      "element": "show-earlier",
       "trigger": "click",
       "states": [
         "default",
@@ -470,148 +411,73 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "tl-1h",
+      "element": "wf-range-1",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
-      "effect": "set the timeline window to 1h (data.json?hours=…); lanes re-draw",
+      "effect": "set the timeline window to 1h (data.json?hours=\u2026); lanes and the lane summary cards re-draw",
       "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "tl-2h",
+      "element": "wf-range-2",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
-      "effect": "set the timeline window to 2h (data.json?hours=…); lanes re-draw",
+      "effect": "set the timeline window to 2h (data.json?hours=\u2026); lanes and the lane summary cards re-draw",
       "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "tl-6h",
+      "element": "wf-range-3",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
-      "effect": "set the timeline window to 6h (data.json?hours=…); lanes re-draw",
+      "effect": "set the timeline window to 6h (data.json?hours=\u2026); lanes and the lane summary cards re-draw",
       "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "tl-24h",
+      "element": "wf-range-4",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
-      "effect": "set the timeline window to 24h (data.json?hours=…); lanes re-draw",
+      "effect": "set the timeline window to 24h (data.json?hours=\u2026); lanes and the lane summary cards re-draw",
       "duration_ms": 200,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "tl-lane-1",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover-block",
-        "focus-visible"
-      ],
-      "effect": "hovering a block outlines it and shows tl-tip next to the pointer: lane, activity, duration, start–end; arrow keys move between blocks when the lane has focus",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "tl-lane-2",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover-block",
-        "focus-visible"
-      ],
-      "effect": "hovering a block outlines it and shows tl-tip next to the pointer: lane, activity, duration, start–end; arrow keys move between blocks when the lane has focus",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "tl-lane-3",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover-block",
-        "focus-visible"
-      ],
-      "effect": "hovering a block outlines it and shows tl-tip next to the pointer: lane, activity, duration, start–end; arrow keys move between blocks when the lane has focus",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "tl-lane-4",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover-block",
-        "focus-visible"
-      ],
-      "effect": "hovering a block outlines it and shows tl-tip next to the pointer: lane, activity, duration, start–end; arrow keys move between blocks when the lane has focus",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "tl-lane-5",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover-block",
-        "focus-visible"
-      ],
-      "effect": "hovering a block outlines it and shows tl-tip next to the pointer: lane, activity, duration, start–end; arrow keys move between blocks when the lane has focus",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "scope-session",
+      "element": "t-range-1",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "show the whole session (share)",
       "duration_ms": 200,
@@ -620,14 +486,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "scope-6h",
+      "element": "t-range-2",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "show only the last 6 hours (windowShare)",
       "duration_ms": 200,
@@ -636,112 +501,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "time-row-1",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "highlight the row and show time-tip with its breakdown (per sub-category or per agent)",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "time-row-2",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "highlight the row and show time-tip with its breakdown (per sub-category or per agent)",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "time-row-3",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "highlight the row and show time-tip with its breakdown (per sub-category or per agent)",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "time-row-4",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "highlight the row and show time-tip with its breakdown (per sub-category or per agent)",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "time-row-5",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "highlight the row and show time-tip with its breakdown (per sub-category or per agent)",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "time-row-6",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "highlight the row and show time-tip with its breakdown (per sub-category or per agent)",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "time-row-7",
-      "trigger": "hover",
-      "states": [
-        "default",
-        "hover",
-        "focus-visible"
-      ],
-      "effect": "highlight the row and show time-tip with its breakdown (per sub-category or per agent)",
-      "duration_ms": 120,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no transition; state changes instantly"
-    },
-    {
-      "element": "log-all",
+      "element": "log-tab-1",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "filter the log to events",
       "duration_ms": 120,
@@ -750,14 +516,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "log-gate",
+      "element": "log-tab-2",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "filter the log to gate runs",
       "duration_ms": 120,
@@ -766,14 +531,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "log-commits",
+      "element": "log-tab-3",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "filter the log to commits",
       "duration_ms": 120,
@@ -782,14 +546,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "log-problems",
+      "element": "log-tab-4",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "filter the log to gate failures, errors, guard and memory stops",
       "duration_ms": 120,
@@ -798,14 +561,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "log-tools",
+      "element": "log-tab-5",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "filter the log to every tool call (feed)",
       "duration_ms": 120,
@@ -829,14 +591,156 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
+      "element": "sw-search",
+      "trigger": "type",
+      "states": [
+        "empty",
+        "typing",
+        "no-results"
+      ],
+      "effect": "filters sessions by title or project name as you type; a matching project shows all its sessions; needs-you sessions stay pinned on top when they match; no match shows \"No session or project matches\"; focused when the menu opens",
+      "duration_ms": 0,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Ctrl K opens the menu with this focused; Up/Down move through rows; Enter opens; Esc clears, then closes"
+    },
+    {
+      "element": "sw-item-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "sw-item-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "sw-item-3",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "sw-item-4",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "sw-item-5",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "sw-item-6",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "sw-item-7",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "sw-item-8",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
       "element": "offline-copy",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "copied"
+        "pressed"
       ],
       "effect": "copy \"/proof:watch\" to the clipboard; label reads \"Copied\" for 1.5 s",
       "duration_ms": 120,
@@ -845,14 +749,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "empty-6h",
+      "element": "empty-range-1",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "set the window to 6 hours",
       "duration_ms": 200,
@@ -861,14 +764,13 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "empty-24h",
+      "element": "empty-range-2",
       "trigger": "click",
       "states": [
         "default",
         "hover",
         "focus-visible",
-        "pressed",
-        "on"
+        "selected"
       ],
       "effect": "set the window to 24 hours",
       "duration_ms": 200,
@@ -877,37 +779,126 @@
       "reduced_motion": "no transition; state changes instantly"
     },
     {
-      "element": "brand",
+      "element": "status-badge",
       "trigger": "none (ambient)",
       "states": [
         "live",
-        "not-live",
-        "loading"
+        "offline"
       ],
-      "effect": "green dot with a halo that scales 1→2.4 and fades, looping while data arrives every 2 s; grey and still when the last fetch failed (offline); grey and still during first load until the first data.json arrives",
-      "duration_ms": 2000,
-      "easing": "cubic-bezier(0.2, 0, 0, 1)",
-      "delay_ms": 0,
-      "reduced_motion": "no halo; dot stays solid"
-    },
-    {
-      "element": "status-icon",
-      "trigger": "none (ambient)",
-      "states": [
-        "working",
-        "gate",
-        "thinking",
-        "agents",
-        "approval",
-        "needsInput",
-        "waiting",
-        "stalled"
-      ],
-      "effect": "icon per status.state, see status--all: green pulsing dot for working/gate/thinking/agents, coral ! for approval/needsInput, grey ring for waiting, grey clock for stalled",
+      "effect": "live dot inside the Live badge pulses (ring 0\u21926px, fades) every 1.8 s while data arrives; grey and still when offline",
       "duration_ms": 1800,
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no pulse"
+    },
+    {
+      "element": "rings",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "each ring shows a tooltip with its name and value; rings animate from 0 to their value on first load",
+      "duration_ms": 320,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "rings draw at their value without animating"
+    },
+    {
+      "element": "activity-chart",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "hovering a 10-minute column shows a tooltip listing each activity and its time in that slot, in legend order",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "same, no fade"
+    },
+    {
+      "element": "kpi-gate-tracker",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "each block shows passed/failed, time and the checks that ran",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "kpi-features-tracker",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "each block shows the feature id and whether it passes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "wf-chart",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "hovering a block outlines it and shows tl-tip next to the pointer: lane, activity, duration, start\u2013end; arrow keys move between blocks when the lane has focus",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "sw-item-9",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "selected",
+        "focus-visible"
+      ],
+      "effect": "open that session: it becomes the selected tab (taking the last tab slot if not already a tab) and the menu closes",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly",
+      "keyboard": "Up/Down move, Enter selects"
+    },
+    {
+      "element": "node-main",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "pressed"
+      ],
+      "effect": "open the agent drill-down (job) for the main thread. Hover raises the node and shows a tooltip with its role and commit count. Its badge reads its state: 'waiting on N' while agents run, 'thinking' or the current step otherwise.",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no hover lift"
+    },
+    {
+      "element": "logo",
+      "trigger": "none (ambient)",
+      "states": [
+        "live",
+        "offline"
+      ],
+      "effect": "the brand dot fades 1 \u2192 .45 \u2192 1 every 1.8 s while data arrives every 2 s; grey and still when the feed stops (offline)",
+      "duration_ms": 1800,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no fade; colour still shows live or offline"
     }
   ]
 }

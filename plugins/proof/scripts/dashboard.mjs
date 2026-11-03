@@ -72,7 +72,7 @@ export function sessionView(s, now, windowMs) {
   const nowList = [{ who: 'Main thread', type: 'main', ...status }];
   for (const a of s.activeAgents(now)) {
     const st = a.status(now);
-    nowList.push({ who: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', where: nameOf(workspaceOf(a, s.cwd)), ...st });
+    nowList.push({ who: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', where: nameOf(workspaceOf(a, s.cwd)), start: a.start, ...st });
   }
 
   // Recent tool calls across the main thread and agents.
@@ -89,7 +89,7 @@ export function sessionView(s, now, windowMs) {
   const tasks = [...s.tasks.values()].filter(t => t.id && !String(t.id).startsWith('pending:')).map(t => ({ id: t.id, subject: t.subject, status: t.status, active: t.active, t: t.t }));
   const commits = [s, ...agents].flatMap(x => x.commits.map(c => ({ ...c, who: x.agent ? x.agent.description : 'Main thread' }))).sort((a, b) => b.t - a.t);
   const events = [s, ...agents].flatMap(x => x.events.map(e => ({ ...e, who: x.agent ? x.agent.description : 'Main thread' })))
-    .concat(s.gate.map(g => ({ t: g.t, kind: g.ok ? 'gatePass' : 'gateFail', text: g.text, who: 'proof gate' })))
+    .concat([s, ...agents].flatMap(x => x.gate.map(g => ({ t: g.t, kind: g.ok ? 'gatePass' : 'gateFail', text: g.text, who: x.agent ? x.agent.description : 'proof gate' }))))
     .concat(commits.map(c => ({ t: c.t, kind: 'commit', text: `${c.sha.slice(0, 7)} ${c.msg}`, who: c.who })))
     .filter(e => e.t >= from - 1).sort((a, b) => b.t - a.t);
 

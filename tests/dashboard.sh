@@ -20,6 +20,12 @@ v=$(view "$L")
 expect "about 9 minutes count as waiting on you" "[ \$(field 'Math.round((v.share.waitUser||0)/60e3)' <<<\"\$v\") -ge 8 ]"
 expect "and none as planning" "[ \$(field 'Math.round((v.share.plan||0)/60e3)' <<<\"\$v\") -eq 0 ]"
 expect "the step reads as asking you to approve the plan" "field 'v.feed.map(f=>f.desc)' <<<\"\$v\" | grep -q 'Ask you to approve the plan'"
+call "$L" 10 ExitPlanMode 2 '{"plan":"# Release plan\n\n1. tag 2. publish"}'
+result "$L" 9 2 '"User has approved your plan."'
+v=$(view "$L")
+expect "a plan with a heading is named by it" "field 'v.feed.map(f=>f.desc)' <<<\"\$v\" | grep -q 'Ask you to approve the release plan'"
+names=$(node --input-type=module -e "import { describe } from '$S/timeline.mjs'; for (const p of ['# **API docs plan**\n1. a', '## Plan: migrate the DB', '# Release planning', 'Intro.\n\n## Context plan', '#!/bin/bash plan', '# '+'x'.repeat(70)+' plan']) console.log(describe('ExitPlanMode', { plan: p }))")
+expect "headings that aren't '<name> plan' on the first line fall back to 'the plan'; acronyms keep their case" "[ \"\$names\" = \"\$(printf 'Ask you to approve the API docs plan\nAsk you to approve the plan\nAsk you to approve the plan\nAsk you to approve the plan\nAsk you to approve the plan\nAsk you to approve the plan')\" ]"
 
 echo "== a question left open for hours is still a question, not a stall"
 mkdir -p "$T/l2"; L="$T/l2/s1.jsonl"
@@ -60,6 +66,13 @@ call "$A" 18 Edit 5 '{"file_path":"/tmp/app/src/pay.tsx"}'
 result "$A" 18 5 '"ok"'
 v=$(view "$L")
 expect "units[].prompt is the prompt it was launched with" "field 'v.units[0] && v.units[0].prompt' <<<\"\$v\" | grep -q 'Build the payment screen to the mockup.'"
+
+echo "== an agent's own gate rounds and start time"
+log "$A" 17 '{"type":"attachment","attachment":{"type":"hook_system_message","hookEvent":"Stop","content":"proof: test failed — checkout.spec.ts › rejects expired card"}}'
+call "$A" 2 Read 6 '{"file_path":"/tmp/app/src/card.ts"}'
+v=$(view "$L")
+expect "a gate round in an agent's log is an event, named for that agent" "field 'v.events.filter(e=>e.kind===\"gateFail\").map(e=>e.who)' <<<\"\$v\" | grep -q 'Lane B unit 13: payment screen'"
+expect "a running agent in now[] carries when it started, not just its current step" "[ \$(field 'Math.round((Date.now() - v.now.find(n=>n.type!==\"main\").start)/60e3)' <<<\"\$v\") -ge 17 ]"
 
 echo "== the page"
 H="$S/dashboard.html"
