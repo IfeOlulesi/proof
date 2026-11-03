@@ -51,9 +51,22 @@ const machine = (pct = 68) => ({
   keepAwake: { on: true, enabled: true }, asleep: [],
 });
 
+// The coding agent each sample session runs in (the mockup's AGENT table and its sample data).
+const AGENT = { claude: 'Claude', opencode: 'opencode', gemini: 'Gemini CLI', codex: 'Codex', cursor: 'Cursor', grok: 'Grok Build', antigravity: 'Antigravity' };
+// "What proof caught": the mockup's RECAP sample (all time is this Mac's real backfill; this session is the checkout
+// build's one failed gate round).
+const recapNums = (caught, commitsBlocked, gaveUp, askedUser, flaky, checkMs, sessions) => ({ runs: 0, caught, commitsBlocked, askedUser, gaveUp, flaky, checkMs, sessions });
+const RECAP = {
+  all: { ...recapNums(16, 11, 5, 46, 24, 4 * H + 5 * M, 64), runs: 929, bars: [0, 1, 0, 2, 1, 0, 3, 1, 2, 0, 4, 2] },
+  week: { ...recapNums(4, 3, 1, 8, 5, 38 * M, 11), runs: 140, bars: [0, 1, 0, 2, 0, 1, 0] },
+  reading: null,
+};
+const NO_RECAP = recapNums(0, 0, 0, 0, 0, 0, 0);
+
 // A session with every field the page reads, so a fixture only spells out what its screen shows.
 const session = o => ({
   id: o.id, title: o.title, cwd: `/Users/you/code/${o.project}`, project: o.project, branch: o.branch || 'main', model: o.model || null,
+  agent: o.agent || 'claude', agentLabel: AGENT[o.agent || 'claude'], recap: o.recap || NO_RECAP,
   start: o.start, last: NOW, to: NOW, from: o.start,
   status: o.status, now: [{ who: 'Main thread', type: 'main', ...o.status }, ...(o.jobs || [])],
   rows: o.rows || [], asleep: [], share: o.share || {}, busyMs: o.busyMs || 0, parallel: o.parallel || 1, windowShare: o.share || {},
@@ -109,7 +122,8 @@ const checkout = () => {
   commits.sort((a, b) => b.t - a.t);
   const done = ['Set up proof gate', 'Product list screen', 'Product detail screen', 'Cart screen'].map((subject, i) => ({ id: String(i + 1), subject, status: 'completed' }));
   return session({
-    id: 'checkout', title: 'Checkout flow build', project: 'shop-app', branch: 'feat/checkout', model: 'claude-opus-5-5', start: NOW - min(102),
+    id: 'checkout', title: 'Checkout flow build', project: 'shop-app', branch: 'feat/checkout', model: 'claude-opus-5-5', start: NOW - min(102), agent: 'opencode',
+    recap: { ...recapNums(1, 1, 0, 0, 0, 9 * M, 1), runs: 8 },
     status: { state: 'agents', since: NOW - sec(372), cat: 'subagent', label: '3 background agents working', agents: 3 },
     jobs: [
       { who: 'Lane B unit 13: payment screen', type: 'general-purpose', where: 'lane-b', state: 'working', since: NOW - sec(372), cat: 'test', label: 'Running e2e tests · checkout.spec.ts › pays with saved card' },
@@ -203,7 +217,7 @@ const release = () => {
 };
 
 const docs = () => session({
-  id: 'docs', title: 'API docs refresh', project: 'shop-app', branch: 'docs/api', start: DC.start,
+  id: 'docs', title: 'API docs refresh', project: 'shop-app', branch: 'docs/api', start: DC.start, agent: 'gemini',
   status: { state: 'stalled', since: DC.last, label: 'No activity for a while' },
   rows: [{ key: 'main', label: 'Main thread', sub: 'orchestrates, talks to you', lane: asBlocks(DC.segs) }],
   share: { model: min(12), edit: min(19), shell: min(3), idle: min(18) },
@@ -223,12 +237,12 @@ const docs = () => session({
 const brief = (id, title, project, state, ago, extra = {}) => session({ id, title, project, start: NOW - ago - min(30), status: { state, since: NOW - ago, label: '' }, ...extra });
 const others = () => [
   admin(),
-  brief('dash', 'Dashboard UI redesign', 'proof', 'thinking', sec(9)),
+  brief('dash', 'Dashboard UI redesign', 'proof', 'thinking', sec(9), { agent: 'codex' }),
   release(),
-  brief('readme', 'Proof README and description improvement', 'proof', 'waiting', min(70)),
-  brief('logo', 'Proof logo', 'proof', 'waiting', min(75)),
+  brief('readme', 'Proof README and description improvement', 'proof', 'waiting', min(70), { agent: 'grok' }),
+  brief('logo', 'Proof logo', 'proof', 'waiting', min(75), { agent: 'antigravity' }),
   brief('trb', 'TRB test case documents review', 'eap_multi_agent_backend', 'waiting', min(13 * 60), { events: [{ t: at(1, 33), kind: 'memory', text: 'proof memory: not able to start another agent ("Audit Tenant Onboarding readiness") now. The Mac is at 86% and this needs about 1.2 GB, past proof\'s 85% ceiling.', who: 'Main thread' }] }),
-  brief('logs', 'Multi-agent API logs analysis', 'eap_multi_agent_backend', 'waiting', min(14 * 60)),
+  brief('logs', 'Multi-agent API logs analysis', 'eap_multi_agent_backend', 'waiting', min(14 * 60), { agent: 'cursor' }),
 ];
 
 // The memory view: this Mac's readings on 17 Oct (85%, apps, swap), with a sample history and sample runs.
@@ -245,7 +259,7 @@ const busyMachine = () => {
   return m;
 };
 
-const feed = (sessions, pct) => ({ version: '0.5.0', now: NOW, windowMs: 2 * 3600e3, live: false, replay: null, categories: {}, machine: machine(pct), sessions });
+const feed = (sessions, pct) => ({ version: '0.5.0', now: NOW, windowMs: 2 * 3600e3, live: false, replay: null, categories: {}, machine: machine(pct), recap: RECAP, sessions });
 
 // ---- one fixture per screen -----------------------------------------------------------------------------------------
 
@@ -255,6 +269,9 @@ const fixtures = {
   // The tabs hold the first four sessions; the one that needs you is fifth, so it shows on "+4 more".
   'switcher--hidden-needs-you': () => { const [adm, dash, rel, ...rest] = others(); return feed([checkout(), dash, rel, docs(), adm, ...rest.slice(0, 3)]); },
   'empty': () => feed([]),
+  // The recap card's other states (the mockup's recap--states frame): reading past sessions, and nothing caught.
+  'recap--reading': () => ({ ...feed([checkout(), ...others()]), recap: { ...RECAP, reading: { done: 23, total: 64 } } }),
+  'recap--none': () => ({ ...feed([checkout(), ...others()]), recap: { all: { ...recapNums(0, 0, 0, 0, 0, 22 * M, 6), runs: 40, bars: Array(12).fill(0) }, week: { ...recapNums(0, 0, 0, 0, 0, 22 * M, 6), runs: 40, bars: Array(7).fill(0) }, reading: null } }),
   'home--stalled': () => { const o = others(); o.splice(1, 1, docs()); return feed([checkout(), o[0], o[1], ...o.slice(2)]); },
 };
 

@@ -113,8 +113,8 @@
         "Fidelity inventories updated for the changed frames"
       ],
       "verify": "user approves the mockup frames (recorded in the decision log)",
-      "passes": false,
-      "evidence": "mockup frames drafted on the v2 dashboard (scratchpad design-agents/); waiting for the user's approval"
+      "passes": true,
+      "evidence": "SPEC.md decision log 2026-11-03: \"The agent badge and the \"What proof caught\" card are approved as mocked up (catch bars in the checks colour, the card defaults to all time); the user said to continue in reply to the approval question.\" Inventories re-extracted for the 24 changed frames."
     },
     {
       "id": "F11",
@@ -123,8 +123,8 @@
         "dashboard.html shows the agent label as mocked up"
       ],
       "verify": "fidelity/verify-screen.mjs ALL PASS for every changed screen, light and dark",
-      "passes": false,
-      "evidence": ""
+      "passes": true,
+      "evidence": "fidelity/verify-screen.mjs ALL PASS for 20 changed frames (home--working, home--memory-warning, home--needs-you, home--stalled, switcher--menu-search, switcher--hidden-needs-you, drawer--time, offline, light and dark); drawer--log, drawer--timeline, home--finished, switcher--menu fail only on the pre-existing contract-copy items, every new item passes; node tests/dashboard-page.mjs 50 passed; bash tests/dashboard.sh 35 passed (recap cases); bash tests/ledger.sh 46 passed; bash tests/agents.sh 128 passed"
     },
     {
       "id": "F12",

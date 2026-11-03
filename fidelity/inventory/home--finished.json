@@ -203,10 +203,31 @@
       }
     },
     {
-      "id": "meta",
-      "text": "proof \u00b7 main \u00b7 started 1h 05m ago \u00b7 Opus 5.5",
+      "id": "agent-badge",
+      "text": "Claude",
       "box": {
         "x": 221,
+        "y": 83,
+        "w": 54,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 11.5px/16.675px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "meta",
+      "text": "proof · main · started 1h 05m ago · Opus 5.5",
+      "box": {
+        "x": 287,
         "y": 84,
         "w": 256,
         "h": 19
@@ -372,7 +393,7 @@
     },
     {
       "id": "status-sub",
-      "text": "Idle 41m \u00b7 1 commit: 1a27553 proof 0.4.0: first public release",
+      "text": "Idle 41m · 1 commit: 1a27553 proof 0.4.0: first public release",
       "box": {
         "x": 237,
         "y": 243,
@@ -1296,7 +1317,7 @@
     },
     {
       "id": "time-note",
-      "text": "Claude working 6m \u00b7 waiting on you 58m \u00b7 stalls under 1m. Includes the 41m since it finished.",
+      "text": "Claude working 6m · waiting on you 58m · stalls under 1m. Includes the 41m since it finished.",
       "box": {
         "x": 45,
         "y": 602,

@@ -384,3 +384,43 @@ Spec: `SPEC.md`, units in `features.json`. Branch `multi-agent`.
   (no fail-fast flag, same as Claude); Grok's rules in a rules file.
 - Next: F10 (agent label + recap card mockup on the v2 dashboard) awaits the user's approval; F11 builds it after
   this branch merges `main` (v2 dashboard, 0.7.0).
+
+## F11. Agent badge and recap card on the dashboard
+
+- Design approved 2026-11-03 (decision log): `mockup/app.html` and `mockup/interactions.json` replaced with the approved
+  versions. 24 inventories re-extracted (12 screens × light/dark: home--working, home--memory-warning, home--needs-you,
+  home--finished, home--stalled, switcher--menu, switcher--menu-search, switcher--hidden-needs-you, drawer--timeline,
+  drawer--time, drawer--log, offline), routes kept. Re-extracting the old mockup first gave byte-identical inventories,
+  so nothing in them was hand-edited and no item was dropped; the new ones only add items or change copy/positions.
+  empty, job, loading and memory are unchanged. The `contract` tag is not moved (nothing committed), so
+  `fidelity/verify-screen.sh` stops at its contract check; the screens were checked with `fidelity/verify-screen.mjs`.
+- Data: `board()` adds `recap` (all time with catches per week for 12 weeks; 7 calendar days with catches per day;
+  `reading: {done, total}` while the first backfill runs) and `sessions[].recap` (this session), from the ledger's
+  `tally()`. Cached: the ledger is read and tallied at most every 30 s (about 10 ms on this Mac's 400 KB ledger).
+  `backfill.mjs` writes `backfill.progress.json` (transcript files read of total); "reading" means no marker and a lock
+  under 10 minutes old, so a disabled or dead backfill never leaves the card spinning.
+- Page: neutral agent badge after the title on every session home and in switcher rows (`data-agent`, agent column);
+  "Claude working / asked you / stopped to ask you / isn't waiting on you" read the session's `agentLabel`. Home while
+  working: activity (legend below) beside "What proof caught" (range tabs, default all time, remembered per browser;
+  This session shows the gate tracker; grey 0 when nothing was caught; tight under the memory banner; reading state).
+- Fixtures: `make.mjs` gives each sample session its agent (opencode, Gemini CLI, Codex, Cursor, Grok Build,
+  Antigravity, Claude) and the mockup's recap numbers; new `recap--reading` and `recap--none` feeds for the page test.
+- Checks: verify-screen.mjs ALL PASS for 20 of the 24 changed frames; the other 4 screens (8 frames: drawer--log,
+  drawer--timeline, home--finished, switcher--menu, light and dark) fail only on the pre-existing contract-copy items 1,
+  4, 5 and 6 above, exactly as before the change (baseline run with the old inventories). Every new item (agent-badge,
+  recap-*, switcher rows 1–4 with badges) passes there too. `node tests/dashboard-page.mjs` 50 passed (15 new: badge,
+  agent copy, switcher agent, recap ranges, tooltips, remembered range, reading, nothing caught, tight).
+  `bash tests/dashboard.sh` 35 passed (11 new recap cases on a known ledger via PROOF_LEDGER: all time, 7 days,
+  this session, weekly and daily bars, 30 s cache, reading/dead lock/done). `bash tests/ledger.sh` 46 passed (1 new:
+  backfill progress file). `bash tests/agents.sh` 128 passed. The new tests were written after the code, not red first.
+- Screen judge (3 runs, 15 frames): every new element matches (agent badge, agent column in the switcher, agent copy,
+  recap card and its tight variant). Its 6 findings all predate this change and sit in parts it didn't touch (the
+  fixtures only gained fields): the dark stall hatch (the mockup's shared SVG pattern id, unit 3 above) on
+  home--working, home--memory-warning and home--stalled dark; home--finished commit/block cells in slot 3 not 6;
+  drawer--timeline commit dots (the 14:29 commit placed at 14:06, see make.mjs).
+- Real data: a replay of this project's logs (`dashboard.mjs --logs … --json`) renders with this Mac's ledger
+  (18 caught, 66 sessions), no page errors.
+- Not verified / open: the recap--states spec frame has no inventory (it is a spec sheet of five cards, not an app
+  screen); its states are covered by the page test. With both the replay banner and the memory banner (replay pages
+  only), the card's last row is cut off. "0 failures caught. No gate runs yet" (a range with no gate runs at all) is
+  copy the mockup doesn't have; needs the user's OK. Not checked in a live monitor session.

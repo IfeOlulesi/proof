@@ -14,6 +14,8 @@ import { gitRoot } from './lib.mjs';
 import { ledgerPath, readLedger, record } from './ledger.mjs';
 
 export const markerPath = () => join(dirname(ledgerPath()), 'backfill.json');
+// How far a running backfill got ({ done, total } transcript files), for the dashboard's "Reading past sessions…".
+export const progressPath = () => join(dirname(ledgerPath()), 'backfill.progress.json');
 
 // Subagents log their edits in their own files, so a subagent call stands in for them.
 const EDIT_TOOLS = new Set(['Edit', 'Write', 'MultiEdit', 'NotebookEdit', 'Agent', 'Task']);
@@ -107,7 +109,15 @@ export async function backfill({ files = transcriptFiles(), now = Date.now() } =
   let added = 0, sessions = 0;
   const seenRecords = new Set();
   const born = f => { try { const s = statSync(f); return s.birthtimeMs || s.mtimeMs; } catch { return 0; } };
-  for (const f of [...files].sort((a, b) => born(a) - born(b))) {   // oldest first: the original keeps its records
+  const list = [...files].sort((a, b) => born(a) - born(b));   // oldest first: the original keeps its records
+  let shown = 0;
+  const progress = (done, force) => {
+    if (!force && Date.now() - shown < 250) return;
+    shown = Date.now();
+    try { mkdirSync(dirname(progressPath()), { recursive: true }); writeFileSync(progressPath(), JSON.stringify({ done, total: list.length })); } catch {}
+  };
+  for (const [i, f] of list.entries()) {
+    progress(i, i === 0);
     let runs;
     try { runs = await readTranscript(f, seenRecords); } catch { continue; }
     const bySession = new Map();
@@ -124,6 +134,7 @@ export async function backfill({ files = transcriptFiles(), now = Date.now() } =
       added += list.length;
     }
   }
+  progress(list.length, true);
   try { mkdirSync(dirname(markerPath()), { recursive: true }); writeFileSync(markerPath(), JSON.stringify({ at: now, added, sessions })); } catch {}
   return { added, sessions };
 }

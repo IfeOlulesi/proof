@@ -199,6 +199,8 @@ r=$(recap --session live1)
 expect "live session: only the transcript run before the first live line is added, and its failure can't be compared with the live pass (got $r)" "[ \"\$(num \"\$r\" runs)\" = 2 ] && [ \"\$(num \"\$r\" caught)\" = 0 ] && [ \"\$(num \"\$r\" flaky)\" = 0 ]"
 node "$S/backfill.mjs" >/dev/null
 expect "a second backfill adds nothing" "[ \$(grep -c '\"src\":\"transcript\"' \"$PROOF_LEDGER\") = 11 ]"
+pg=$(cat "$(dirname "$PROOF_LEDGER")/backfill.progress.json" 2>/dev/null)
+expect "it leaves how far it got for the dashboard: every transcript file read (got $pg)" "node -e 'const p=JSON.parse(process.argv[1]);process.exit(p.total>0&&p.done===p.total?0:1)' '$pg'"
 
 echo "== backfill from a folder with a space in its path"
 mkdir -p "$T/with space" && cp -R "$S" "$T/with space/"

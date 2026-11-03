@@ -203,10 +203,31 @@
       }
     },
     {
-      "id": "meta",
-      "text": "shop-app \u00b7 feat/checkout \u00b7 started 1h 42m ago \u00b7 Opus 5.5",
+      "id": "agent-badge",
+      "text": "opencode",
       "box": {
         "x": 220,
+        "y": 83,
+        "w": 69,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 11.5px/16.675px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "meta",
+      "text": "shop-app · feat/checkout · started 1h 42m ago · Opus 5.5",
+      "box": {
+        "x": 301,
         "y": 84,
         "w": 346,
         "h": 19
@@ -393,7 +414,7 @@
     },
     {
       "id": "status-sub",
-      "text": "3 agents running \u00b7 14 commits",
+      "text": "3 agents running · 14 commits",
       "box": {
         "x": 237,
         "y": 238,
@@ -414,11 +435,11 @@
     },
     {
       "id": "leg-1-name",
-      "text": "Claude working",
+      "text": "opencode working",
       "box": {
         "x": 253,
         "y": 273,
-        "w": 93,
+        "w": 109,
         "h": 19
       },
       "style": {
@@ -687,7 +708,7 @@
     },
     {
       "id": "node-lane-b",
-      "text": "Lane B unit 13: payment screen\n\u00b7 Running e2e tests\n20m",
+      "text": "Lane B unit 13: payment screen\n· Running e2e tests\n20m",
       "box": {
         "x": 755,
         "y": 183,
@@ -708,7 +729,7 @@
     },
     {
       "id": "node-lane-c",
-      "text": "Lane C unit 14: order API\n\u00b7 Editing src/api/orders.ts\n2:40",
+      "text": "Lane C unit 14: order API\n· Editing src/api/orders.ts\n2:40",
       "box": {
         "x": 755,
         "y": 223,
@@ -729,7 +750,7 @@
     },
     {
       "id": "node-verifier",
-      "text": "Verifier: cart screen\n\u00b7 Reading cart.tsx and its acceptance criteria\n0:48",
+      "text": "Verifier: cart screen\n· Reading cart.tsx and its acceptance criteria\n0:48",
       "box": {
         "x": 755,
         "y": 263,
@@ -1277,9 +1298,9 @@
       "id": "act-legend",
       "text": "Thinking & writing\nReading & editing\nCommands\nChecks & screens\nWaiting on you\nStalls",
       "box": {
-        "x": 757,
-        "y": 578,
-        "w": 638,
+        "x": 45,
+        "y": 609,
+        "w": 894,
         "h": 18
       },
       "style": {
@@ -1299,12 +1320,537 @@
       "text": "",
       "box": {
         "x": 45,
-        "y": 609,
-        "w": 1350,
-        "h": 210
+        "y": 637,
+        "w": 894,
+        "h": 182
       },
       "style": {
         "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-card",
+      "text": null,
+      "box": {
+        "x": 976,
+        "y": 556,
+        "w": 440,
+        "h": 282
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "10px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-title",
+      "text": "What proof caught",
+      "box": {
+        "x": 995,
+        "y": 580,
+        "w": 122,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-range",
+      "text": null,
+      "box": {
+        "x": 1156,
+        "y": 573,
+        "w": 241,
+        "h": 34
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "9px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-range-1",
+      "text": "This session",
+      "box": {
+        "x": 1159,
+        "y": 576,
+        "w": 98,
+        "h": 28
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-range-2",
+      "text": "7 days",
+      "box": {
+        "x": 1259,
+        "y": 576,
+        "w": 63,
+        "h": 28
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-range-3",
+      "text": "All time",
+      "box": {
+        "x": 1324,
+        "y": 576,
+        "w": 70,
+        "h": 28
+      },
+      "style": {
+        "font": "Geist 500 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgb(255, 255, 255)",
+        "radius": "6px",
+        "shadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-caught-value",
+      "text": "16",
+      "box": {
+        "x": 995,
+        "y": 617,
+        "w": 40,
+        "h": 34
+      },
+      "style": {
+        "font": "Geist 600 34px/34px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-caught-label",
+      "text": "failures caught before you saw them",
+      "box": {
+        "x": 1043,
+        "y": 631,
+        "w": 238,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 14px/20.3px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-sessions",
+      "text": "64 sessions",
+      "box": {
+        "x": 1329,
+        "y": 633,
+        "w": 68,
+        "h": 18
+      },
+      "style": {
+        "font": "Geist 400 12.5px/18.125px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-bars",
+      "text": "",
+      "box": {
+        "x": 995,
+        "y": 661,
+        "w": 402,
+        "h": 48
+      },
+      "style": {
+        "font": "Geist 400 13.5px/19.575px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-axis-start",
+      "text": "12 weeks ago",
+      "box": {
+        "x": 995,
+        "y": 715,
+        "w": 71,
+        "h": 17
+      },
+      "style": {
+        "font": "Geist 400 11.5px/16.675px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-axis-end",
+      "text": "this week",
+      "box": {
+        "x": 1346,
+        "y": 715,
+        "w": 51,
+        "h": 17
+      },
+      "style": {
+        "font": "Geist 400 11.5px/16.675px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-blocked",
+      "text": null,
+      "box": {
+        "x": 995,
+        "y": 747,
+        "w": 192,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-blocked-label",
+      "text": "Commits blocked",
+      "box": {
+        "x": 995,
+        "y": 753,
+        "w": 104,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-blocked-value",
+      "text": "11",
+      "box": {
+        "x": 1171,
+        "y": 753,
+        "w": 16,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 600 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-handed",
+      "text": null,
+      "box": {
+        "x": 1205,
+        "y": 747,
+        "w": 192,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-handed-label",
+      "text": "Handed back to you",
+      "box": {
+        "x": 1205,
+        "y": 753,
+        "w": 119,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-handed-bar",
+      "text": "",
+      "box": {
+        "x": 1332,
+        "y": 759,
+        "w": 41,
+        "h": 6
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-handed-value",
+      "text": "51",
+      "box": {
+        "x": 1381,
+        "y": 753,
+        "w": 16,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 600 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-flaky",
+      "text": null,
+      "box": {
+        "x": 995,
+        "y": 779,
+        "w": 192,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-flaky-label",
+      "text": "Flaky checks",
+      "box": {
+        "x": 995,
+        "y": 785,
+        "w": 77,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-flaky-value",
+      "text": "24",
+      "box": {
+        "x": 1171,
+        "y": 785,
+        "w": 16,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 600 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-time",
+      "text": null,
+      "box": {
+        "x": 1205,
+        "y": 779,
+        "w": 192,
+        "h": 32
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(9, 9, 11)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-time-label",
+      "text": "Time in checks",
+      "box": {
+        "x": 1205,
+        "y": 785,
+        "w": 88,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 400 13px/18.85px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "recap-time-value",
+      "text": "4h 05m",
+      "box": {
+        "x": 1350,
+        "y": 785,
+        "w": 47,
+        "h": 19
+      },
+      "style": {
+        "font": "Geist 600 13px/18.85px",
         "color": "rgb(9, 9, 11)",
         "bg": "rgba(0, 0, 0, 0)",
         "radius": "0px",

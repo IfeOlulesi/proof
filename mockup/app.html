@@ -95,6 +95,8 @@ code, .mono { font-family: var(--mono); font-size: 12px; }
 .badge.warn { background: var(--warn-soft); border-color: var(--warn-line); color: var(--warn-ink); }
 .badge.bad { background: var(--bad-soft); border-color: var(--bad-line); color: var(--bad-ink); }
 .badge.solid-you { background: var(--solid-you); border-color: var(--solid-you); color: var(--on-solid-you); font-weight: 600; }
+/* agent label: which coding agent a session runs in. Neutral on purpose: no logos, no vendor colour, shown for every agent */
+.badge.agent { height: 20px; padding: 0 7px; font-size: var(--fs-xs); background: var(--muted); color: var(--muted-foreground); border-color: var(--border); }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; white-space: nowrap; transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
 .btn.out { border: 1px solid var(--input); background: var(--card); box-shadow: var(--shadow-xs); }
 .btn.out:hover { background: var(--muted); }
@@ -234,6 +236,30 @@ svg text { font-family: var(--font); }
 .cmd .it { display: flex; align-items: center; gap: 10px; width: 100%; height: 36px; padding: 0 10px; border-radius: var(--radius-md); font-size: 13.5px; text-align: left; }
 .cmd .it.sel { background: var(--muted); }
 .cmd .it .w { margin-left: auto; font-size: 12.5px; color: var(--muted-foreground); }
+/* rows with an agent column: dot · title · agent · when, so the agent column lines up and can be scanned */
+.cmd .it.ag { display: grid; grid-template-columns: 8px 1fr 96px 128px; gap: 10px; }
+.cmd .it.ag .tt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmd .it.ag .badge.agent { justify-self: start; }
+.cmd .it.ag .w { margin-left: 0; text-align: right; }
+
+/* recap: what proof caught */
+.recap { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.recap .hero { display: flex; align-items: baseline; gap: 8px; }
+.recap .hero .n { font-size: 34px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.recap .hero .l { font-size: var(--fs-md); font-weight: 500; }
+.recap .hero .s { margin-left: auto; font-size: var(--fs-sm); color: var(--muted-foreground); white-space: nowrap; }
+.rbars { display: flex; align-items: flex-end; gap: 4px; height: 48px; border-bottom: 1px solid var(--border); padding-bottom: 1px; }
+.rbars i { flex: 1; border-radius: 3px; background: var(--c-check); min-height: 3px; }
+.rbars i.z { background: var(--track); }
+.rbars-axis { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--muted-foreground); margin-top: 6px; }
+.rstats { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; border-top: 1px solid var(--border); padding-top: 4px; }
+.rstat { display: flex; align-items: center; gap: 8px; height: 32px; font-size: 13px; border-bottom: 1px solid var(--border); min-width: 0; }
+.rstat:nth-last-child(-n+2) { border-bottom: 0; }
+.rstat .k { color: var(--muted-foreground); white-space: nowrap; }
+.rstat .v { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rstat .catbar { width: 44px; height: 6px; }
+/* tight: when a banner takes height (memory warning), the card loses ~36px and keeps every piece */
+.recap.tight { gap: 7px; padding: 14px 18px; } .recap.tight .hero .n { font-size: 28px; } .recap.tight .rbars { height: 34px; } .recap.tight .rbars-axis { margin-top: 3px; } .recap.tight .rstat { height: 28px; }
 .cmd .it.you .w { color: var(--you-ink); font-weight: 500; }
 .cmd mark { background: transparent; color: var(--foreground); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .cmd .cf { display: flex; align-items: center; gap: 14px; height: 40px; padding: 0 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
@@ -358,7 +384,10 @@ function topbar(o = {}) {
     <span class="sep"></span>
     <button class="btn ghost icon" aria-label="Switch theme"${T('theme')}>${o.dark ? I.sun : I.moon}</button></div>`;
 }
-const headBlock = (title, meta, right = '') => `<div class="head"><h1${T('title')}>${title}</h1><span class="meta"${T('meta')}>${meta}</span><div class="r">${right}</div></div>`;
+// coding agent per session: view data carries `agent` (id) and `agentLabel` (what the user reads)
+const AGENT = { claude: 'Claude', opencode: 'opencode', gemini: 'Gemini CLI', codex: 'Codex', cursor: 'Cursor', grok: 'Grok Build', antigravity: 'Antigravity' };
+const agentBadge = (agent, id = 'agent-badge') => `<span class="badge agent" title="Runs in ${AGENT[agent]}"${T(id)}>${AGENT[agent]}</span>`;
+const headBlock = (title, meta, right = '', agent = '') => `<div class="head"><h1${T('title')}>${title}</h1>${agent ? agentBadge(agent) : ''}<span class="meta"${T('meta')}>${meta}</span><div class="r">${right}</div></div>`;
 const rangeTabs = (on = 'Session') => `<div class="tabs"${T('range')}>${['Last hour', 'Session'].map((x, i) => `<button class="${x === on ? 'on' : ''}"${T(`range-${i + 1}`)}>${x}</button>`).join('')}</div>`;
 function footBar(o = {}) {
   const b = (k, n, id) => `<button class="btn ${o.on === id ? 'on' : ''}"${T(`drawer-${id}`)}><span class="kbd">${k}</span>${n}</button>`;
@@ -433,14 +462,14 @@ const li = (id, tm, icoCls, ico, text, right = '') => `<div class="li"><span cla
 const TASKS = [['Set up proof gate', 'done'], ['Product list screen', 'done'], ['Product detail screen', 'done'], ['Cart screen', 'done'], ['Payment screen', 'doing', 'Lane B'], ['Order API', 'doing', 'Lane C'], ['Verify cart screen', 'doing', 'Verifier'], ['Order confirmation screen', 'todo'], ['Full e2e pass', 'todo']];
 const ckSegs = [...CK.main, ...CK.agents.flatMap(a => a.segs)];
 const ckRingVals = [
-  { v: .71, c: 'var(--c-think)', n: 'Claude working', val: '1h 12m' },
+  { v: .71, c: 'var(--c-think)', n: 'opencode working', val: '1h 12m' },
   { v: .23, c: 'var(--c-you)', n: 'Waiting on you', val: '23m' },
   { v: 4 / 9, c: 'var(--c-work)', n: 'Tasks done', val: '4 of 9' }];
 function homeWorking(o) {
   const warn = o.memWarn;
   return topbar({ ...o, mem: warn ? 85 : 68 }) + (warn ? `<div class="alert"${T('mem-banner')}><span${T('mem-banner-icon')}>${I.warn}</span><div><div class="at"${T('mem-banner-title')}>Memory is at 85%: 20.3 of 24 GB. Runs and agents now wait their turn.</div><div class="ad"${T('mem-banner-body')}>Closing Brave Browser (3.8 GB) and OrbStack (2.6 GB) would free about 6.5 GB, so checks and agents run side by side again.</div></div><button class="btn out"${T('mem-banner-open')}>What's using it</button></div>` : '') + `
   <div class="main">
-    ${headBlock('Checkout flow build', 'shop-app · <code>feat/checkout</code> · started 1h 42m ago · Opus 5.5', rangeTabs())}
+    ${headBlock('Checkout flow build', 'shop-app · <code>feat/checkout</code> · started 1h 42m ago · Opus 5.5', rangeTabs(), 'opencode')}
     <div class="grid" style="grid-template-columns:420px 1fr;height:${warn ? 236 : 262}px">
       <div class="card status"${T('status-card')}>${rings(ckRingVals, 'rings', warn ? 150 : 170)}
         <div><div class="ch"><span class="badge run"${T('status-badge')}><span class="dot live" style="width:6px;height:6px"></span>Live</span><span class="r timer num"${T('status-timer')}>6:12</span></div>
@@ -459,9 +488,71 @@ function homeWorking(o) {
       <div class="card kpi"${T('kpi-memory')}><div class="ch"><span class="desc"${T('kpi-memory-label')}>Memory</span>${warn ? `<span class="r badge warn"${T('kpi-memory-badge')}>Runs wait their turn</span>` : `<span class="r badge"${T('kpi-memory-badge')}>Room for 3 more runs</span>`}</div>
         <div class="v num"${T('kpi-memory-value')}>${warn ? '85%' : '68%'}<small>${warn ? '20.3' : '16.3'} of 24 GB</small></div><div class="foot" data-tip="<b>Memory, last 6 hours</b><br><span class=m>dashed line: proof's 93% ceiling</span>">${spark(warn ? MEM_HI : MEM_OK, 288, 30, { fluid: true, id: 'kpi-memory-spark', color: warn ? 'var(--warn)' : 'var(--c-think)' })}</div></div>
     </div>
-    ${activityCard(ckSegs, CK.start, NOW, { bucket: 10 * M })}
+    <div class="grid" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
+      ${activityCard(ckSegs, CK.start, NOW, { bucket: 10 * M, legendBelow: true })}
+      ${recapCard('all', { tight: warn })}
+    </div>
     ${footBar({ gateFail: true })}
   </div>`;
+}
+
+// ======================================================================================================
+// recap: what proof caught (from the gate-run history). Leads with catches; the rest is one quiet grid.
+// ======================================================================================================
+const RECAP = {
+  // real numbers from this machine's backfill
+  all: { caught: 16, blocked: 11, gaveUp: 5, asked: 46, flaky: 24, inChecks: '4h 05m', sessions: 64, unit: 'week',
+    bars: [0, 1, 0, 2, 1, 0, 3, 1, 2, 0, 4, 2], axis: ['12 weeks ago', 'this week'] },
+  week: { caught: 4, blocked: 3, gaveUp: 1, asked: 8, flaky: 5, inChecks: '38m', sessions: 11, unit: 'day',
+    bars: [0, 1, 0, 2, 0, 1, 0], axis: ['Sun', 'today'] },
+  session: { caught: 1, blocked: 1, gaveUp: 0, asked: 0, flaky: 0, inChecks: '9m', sessions: 1, unit: 'gate run' },
+  none: { caught: 0, blocked: 0, gaveUp: 0, asked: 0, flaky: 0, inChecks: '22m', sessions: 6, unit: 'day',
+    bars: [0, 0, 0, 0, 0, 0, 0], axis: ['Sun', 'today'] },
+};
+const RANGE_TABS = [['session', 'This session'], ['week', '7 days'], ['all', 'All time']];
+function recapCard(on, o = {}) {
+  const r = RECAP[on], tab = on === 'none' ? 'week' : on, handed = r.gaveUp + r.asked, max = Math.max(1, ...(r.bars || [1]));
+  const hero = r.caught
+    ? `<span class="n num"${T('recap-caught-value')}>${r.caught}</span><span class="l"${T('recap-caught-label')}>${r.caught === 1 ? 'failure' : 'failures'} caught before you saw ${r.caught === 1 ? 'it' : 'them'}</span>`
+    : `<span class="n num mf"${T('recap-caught-value')}>0</span><span class="l"${T('recap-caught-label')}>failures to catch. Every check passed</span>`;
+  const vis = on === 'session'
+    ? `<div${T('recap-bars')}>${trackerHTML(CK.gates, 14, 'recap-session-tracker')}</div><div class="rbars-axis"><span${T('recap-axis-start')}>first gate run</span><span${T('recap-axis-end')}>latest</span></div>`
+    : `<div class="rbars"${T('recap-bars')}>${r.bars.map((b, i) => `<i class="${b ? '' : 'z'}" style="height:${b ? Math.max(14, b / max * 100) : 7}%" data-tip="<b>${b} caught</b><br><span class=m>${r.unit === 'week' ? `${r.bars.length - 1 - i ? `${r.bars.length - 1 - i} week${r.bars.length - 1 - i > 1 ? 's' : ''} ago` : 'this week'}` : r.axis[0] === 'Sun' ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'today'][i] : ''}</span>"></i>`).join('')}</div>
+       <div class="rbars-axis"><span${T('recap-axis-start')}>${r.axis[0]}</span><span${T('recap-axis-end')}>${r.axis[1]}</span></div>`;
+  const stat = (k, label, value, extra = '', tip = '') => `<div class="rstat"${tip ? ` data-tip="${tip}"` : ''}${T(`recap-${k}`)}><span class="k"${T(`recap-${k}-label`)}>${label}</span>${extra}<span class="v"${T(`recap-${k}-value`)}>${value}</span></div>`;
+  const handedBar = handed ? `<span class="catbar"${T('recap-handed-bar')}><i style="flex:${r.asked || .001};background:var(--c-you)"></i><i class="hatch" style="flex:${r.gaveUp || .001}"></i></span>` : '';
+  return pre(o, `<div class="card recap ${o.tight ? 'tight' : ''}"${T('recap-card')}>
+    <div class="ch"><h3${T('recap-title')}>What proof caught</h3><span class="r"><div class="tabs"${T('recap-range')}>${RANGE_TABS.map(([k, n], i) => `<button class="${k === tab ? 'on' : ''}"${T(`recap-range-${i + 1}`)}>${n}</button>`).join('')}</div></span></div>
+    <div class="hero">${hero}<span class="s"${T('recap-sessions')}>${on === 'session' ? 'this session' : `${r.sessions} sessions`}</span></div>
+    <div>${vis}</div>
+    <div class="rstats">
+      ${stat('blocked', 'Commits blocked', r.blocked)}
+      ${stat('handed', 'Handed back to you', handed, handedBar, `<b>${handed} handed back</b><br>${r.asked} times it asked you<br>${r.gaveUp} times it gave up`)}
+      ${stat('flaky', 'Flaky checks', r.flaky, '', 'Failed, then passed on a re-run with no change')}
+      ${stat('time', 'Time in checks', r.inChecks)}
+    </div></div>`);
+}
+// spec sheets show several cards in one frame: prefix their test IDs so they stay unique
+const pre = (o, html) => o.pre ? html.replace(/data-testid="recap-/g, `data-testid="${o.pre}-`) : html;
+function recapLoading(o = {}) {
+  return pre(o, `<div class="card recap"${T('recap-card')}>
+    <div class="ch"><h3${T('recap-title')}>What proof caught</h3><span class="r"><div class="tabs"${T('recap-range')}>${RANGE_TABS.map(([k, n], i) => `<button class="${k === 'all' ? 'on' : ''}"${T(`recap-range-${i + 1}`)}>${n}</button>`).join('')}</div></span></div>
+    <div class="hero"><span class="spin" style="align-self:center"${T('recap-loading-spin')}></span><span class="l"${T('recap-loading-text')}>Reading past sessions… 23 of 64</span></div>
+    <div class="sk" style="height:76px"></div>
+    <div class="rstats">${['blocked', 'handed', 'flaky', 'time'].map(k => `<div class="rstat"><div class="sk" style="height:12px;width:100%"></div></div>`).join('')}</div></div>`);
+}
+function recapStates(o) {
+  const cell = (k, name, note, card) => `<div class="col" style="gap:8px"><div><b style="font-weight:600"${T(`rs-${k}-name`)}>${name}</b> <span class="desc"${T(`rs-${k}-note`)}>${note}</span></div>${card}</div>`;
+  return topbar(o) + `<div class="main">
+    ${headBlock('What proof caught, every state', 'the recap card on the home screen · range tabs scope it')}
+    <div class="grid" style="grid-template-columns:repeat(3,440px);justify-content:space-between;row-gap:20px">
+      ${cell('all', 'All time', 'default. Real numbers from this Mac, bars per week', recapCard('all', { pre: 'rs-all' }))}
+      ${cell('week', '7 days', 'bars per day', recapCard('week', { pre: 'rs-week' }))}
+      ${cell('session', 'This session', 'the gate runs of this session, caught ones in red', recapCard('session', { pre: 'rs-session' }))}
+      ${cell('none', 'Nothing caught', 'zero is good news, so the number goes grey, not green', recapCard('none', { pre: 'rs-none' }))}
+      ${cell('loading', 'Reading history', 'first open, while past sessions are read', recapLoading({ pre: 'rs-loading' }))}
+    </div>
+    ${footBar({ updated: 'Spec sheet' })}</div>`;
 }
 
 // ======================================================================================================
@@ -473,7 +564,7 @@ function homeNeedsYou(o) {
   const vals = [{ v: .02, c: 'var(--c-think)', n: 'Claude working', val: '58m' }, { v: .98, c: 'var(--you)', n: 'Waiting on you', val: '49h 35m' }, { v: 0, c: 'var(--c-work)', n: 'Tasks done', val: 'no task list' }];
   return topbar({ ...o, cur: 'admin' }) + `
   <div class="main">
-    ${headBlock('Admin access on production', 'eap_multi_agent_backend · <code>feat/langfuse-tracing</code> · started 2 days ago', rangeTabs())}
+    ${headBlock('Admin access on production', 'eap_multi_agent_backend · <code>feat/langfuse-tracing</code> · started 2 days ago', rangeTabs(), 'claude')}
     <div class="card status wide you" style="height:236px"${T('status-card')}>${rings(vals, 'rings', 170)}
       <div><span class="badge you"${T('status-badge')}><span class="dot you"></span>Needs you</span>
         <div class="big"${T('status-title')}>Claude asked you something</div>
@@ -509,7 +600,7 @@ function homeFinished(o) {
   const vals = [{ v: 6 / 65, c: 'var(--c-think)', n: 'Claude working', val: '6m' }, { v: 58 / 65, c: 'var(--c-you)', n: 'Waiting on you', val: '58m' }, { v: 0, c: 'var(--c-work)', n: 'Tasks done', val: 'no task list' }];
   return topbar({ ...o, cur: 'release' }) + `
   <div class="main">
-    ${headBlock('Proof v0.4.0 release', 'proof · <code>main</code> · started 1h 05m ago · Opus 5.5', rangeTabs())}
+    ${headBlock('Proof v0.4.0 release', 'proof · <code>main</code> · started 1h 05m ago · Opus 5.5', rangeTabs(), 'claude')}
     <div class="grid" style="grid-template-columns:520px 1fr;height:236px">
       <div class="card status"${T('status-card')}>${rings(vals, 'rings', 160)}
         <div><span class="badge"${T('status-badge')}><span class="dot idle"></span>Finished</span>
@@ -549,12 +640,12 @@ function homeStalled(o) {
   const beats = Array.from({ length: 60 }, (_, i) => { const t = NOW - (60 - i) * M; const s = DC.segs.find(x => x[0] <= t && x[1] > t); return s ? s[2] : null; });
   return topbar({ ...o, cur: 'docs', tabs: ['checkout', 'admin', 'docs', 'release'] }) + `
   <div class="main">
-    ${headBlock('API docs refresh', 'shop-app · <code>docs/api</code> · started 52m ago', rangeTabs())}
+    ${headBlock('API docs refresh', 'shop-app · <code>docs/api</code> · started 52m ago', rangeTabs(), 'gemini')}
     <div class="grid" style="grid-template-columns:1fr 440px;height:236px">
       <div class="card pad col" style="justify-content:space-between"${T('status-card')}>
         <div class="ch"><span class="badge"${T('status-badge')}>${I.clock} Stalled</span><span class="r timer lg num"${T('status-timer')}>18:04</span></div>
         <div><div class="big" style="font-size:30px;font-weight:600;letter-spacing:-.03em"${T('status-title')}>No activity for 18 minutes</div>
-          <div class="desc" style="margin-top:6px;max-width:620px"${T('status-sub')}>Nothing is running and Claude isn't waiting on you. The last step was <code>pnpm docs:build</code>, which finished 18m ago.</div></div>
+          <div class="desc" style="margin-top:6px;max-width:620px"${T('status-sub')}>Nothing is running and Gemini CLI isn't waiting on you. The last step was <code>pnpm docs:build</code>, which finished 18m ago.</div></div>
         <div style="display:flex;align-items:center;gap:12px"><span class="desc"${T('beat-label')}>last hour</span>
           <svg width="640" height="30"${T('heartbeat')}>${beats.map((f, i) => `<rect x="${i * 10.6}" y="${f && f !== 'idle' ? 2 : 13}" width="5" height="${f && f !== 'idle' ? 26 : 4}" rx="2" fill="${f && f !== 'idle' ? COL[f] : 'var(--border)'}" data-tip="${clock(NOW - (60 - i) * M)} · ${f && f !== 'idle' ? NAME[f] : 'nothing running'}"/>`).join('')}</svg>
           <span class="desc"${T('beat-now')}>now</span></div></div>
@@ -569,7 +660,7 @@ function homeStalled(o) {
         <div style="margin-top:6px">${[['Audit endpoints against code', 1], ['Rewrite order endpoints', 1], ['Rewrite payment endpoints', 0]].map(([n, d], i) => `<div class="check ${d ? 'done' : ''}"><span class="cb ${d ? 'on' : 'cur'}"${T(`plan-${i + 1}-box`)}>${d ? I.check : ''}</span><span class="ct"${T(`plan-${i + 1}-name`)}>${n}</span></div>`).join('')}</div></div>
       <div class="card kpi"${T('kpi-idle')}><div class="ch"><span class="desc"${T('kpi-idle-label')}>Stalled</span><span class="r badge"${T('kpi-idle-badge')}>35% of the session</span></div>
         <div class="v num"${T('kpi-idle-value')}>18m<small>of 52m</small></div>
-        <div class="foot"><div class="catbar" style="height:10px"${T('kpi-idle-bar')}><i style="flex:31;background:var(--c-work)" data-tip="Claude working · 31m"></i><i style="flex:3;background:var(--c-cmd)" data-tip="Commands · 3m"></i><i class="hatch" style="flex:18" data-tip="Stalls · 18m"></i></div></div></div>
+        <div class="foot"><div class="catbar" style="height:10px"${T('kpi-idle-bar')}><i style="flex:31;background:var(--c-work)" data-tip="Gemini CLI working · 31m"></i><i style="flex:3;background:var(--c-cmd)" data-tip="Commands · 3m"></i><i class="hatch" style="flex:18" data-tip="Stalls · 18m"></i></div></div></div>
       <div class="card kpi"${T('kpi-memory')}><div class="ch"><span class="desc"${T('kpi-memory-label')}>Memory</span><span class="r badge"${T('kpi-memory-badge')}>Room for 3 more runs</span></div>
         <div class="v num"${T('kpi-memory-value')}>68%<small>16.3 of 24 GB</small></div><div class="foot">${spark(MEM_OK, 300, 30, { fluid: true, id: 'kpi-memory-spark', color: 'var(--c-think)' })}</div></div>
     </div>
@@ -717,11 +808,11 @@ function drawerTime(o) {
       <div class="card kpi"${T('t-work')}><span class="desc"${T('t-work-label')}>Work done, in parallel</span><div class="v num"${T('t-work-value')}>3h 54m<small>2.3×</small></div></div>
       <div class="card kpi"${T('t-drag')}><span class="desc"${T('t-drag-label')}>Biggest drag</span><div class="v num"${T('t-drag-value')}>23m<small>waiting on you</small></div></div>
       <div class="card kpi"${T('t-split')}><div class="ch"><span class="desc"${T('t-split-label')}>The session's time</span><span class="r"><div class="tabs"${T('t-range')}><button class="on"${T('t-range-1')}>This session</button><button${T('t-range-2')}>Last 6h</button></div></span></div>
-        <div class="catbar" style="height:10px;margin-top:10px"${T('t-split-bar')}><i style="flex:71;background:var(--c-think)" data-tip="Claude working · 1h 12m · 71%"></i><i style="flex:23;background:var(--c-you)" data-tip="Waiting on you · 23m · 23%"></i><i class="hatch" style="flex:7" data-tip="Stalls & overhead · 7m · 7%"></i></div>
-        <div class="tleg" style="margin-top:8px"${T('t-split-legend')}><span><i style="background:var(--c-think)"></i>Claude working 1h 12m</span><span><i style="background:var(--c-you)"></i>Waiting on you 23m</span><span><i class="hatch"></i>Stalls 7m</span></div></div>
+        <div class="catbar" style="height:10px;margin-top:10px"${T('t-split-bar')}><i style="flex:71;background:var(--c-think)" data-tip="opencode working · 1h 12m · 71%"></i><i style="flex:23;background:var(--c-you)" data-tip="Waiting on you · 23m · 23%"></i><i class="hatch" style="flex:7" data-tip="Stalls & overhead · 7m · 7%"></i></div>
+        <div class="tleg" style="margin-top:8px"${T('t-split-legend')}><span><i style="background:var(--c-think)"></i>opencode working 1h 12m</span><span><i style="background:var(--c-you)"></i>Waiting on you 23m</span><span><i class="hatch"></i>Stalls 7m</span></div></div>
     </div>
     <div class="grid" style="grid-template-columns:1fr 1fr;flex:1;min-height:0">
-      <div class="card pad col" style="gap:10px"${T('t-cats')}><div class="ch"><h3${T('t-cats-title')}>Where Claude's working time went</h3><span class="r desc num"${T('t-cats-total')}>1h 12m</span></div>
+      <div class="card pad col" style="gap:10px"${T('t-cats')}><div class="ch"><h3${T('t-cats-title')}>Where opencode's working time went</h3><span class="r desc num"${T('t-cats-total')}>1h 12m</span></div>
         <div class="barlist">${cats.map(([n, m, f], i) => `<div class="bl" data-tip="<b>${esc(n)}</b> · ${m}m${CAT_TIP[n] ? `<br><span class=m>${CAT_TIP[n]}</span>` : ''}"><div class="bar"><i style="width:${m / 26 * 100}%;background:${COL[f]};opacity:.22"></i><span${T(`t-cat-${i + 1}-name`)}>${n}</span></div><b${T(`t-cat-${i + 1}-value`)}>${m}m · ${Math.round(m / 72 * 100)}%</b></div>`).join('')}</div></div>
       <div class="card pad col" style="gap:4px"${T('t-slow')}><div class="ch"><h3${T('t-slow-title')}>What slowed it down</h3><span class="r desc"${T('t-slow-order')}>biggest first</span></div>
         ${[['23m', 'Waiting on you', 'longest 9m 02s: Ask you to approve the plan', 'Answer sooner, or pre-approve with a clear spec'], ['14m', 'End-to-end runs', '6 runs · checkout.spec.ts ran 4 times', 'Run only the failing spec while fixing'], ['3m', 'Compacting context', '2 compactions', '']].map(([v, n, d, tip], i) => `
@@ -742,14 +833,14 @@ function drawerLog(o) {
 // switcher (command palette)
 // ======================================================================================================
 const GROUPS = [
-  { name: 'eap_multi_agent_backend', items: [['Admin access on production', 'asked 49h ago', 'you'], ['TRB test case documents review', 'finished 13h ago', 'idle'], ['Multi-agent API logs analysis', 'finished 14h ago', 'idle']] },
-  { name: 'shop-app', items: [['Checkout flow build', 'open now', 'live'], ['API docs refresh', 'no activity for 18m', 'grey']] },
-  { name: 'proof', items: [['Dashboard UI redesign', 'thinking', 'live'], ['Proof v0.4.0 release', 'finished 41m ago', 'idle'], ['Proof README and description improvement', 'finished 1h ago', 'idle'], ['Proof logo', 'finished 1h ago', 'idle']] },
+  { name: 'eap_multi_agent_backend', items: [['Admin access on production', 'asked 49h ago', 'you', 'claude'], ['TRB test case documents review', 'finished 13h ago', 'idle', 'claude'], ['Multi-agent API logs analysis', 'finished 14h ago', 'idle', 'cursor']] },
+  { name: 'shop-app', items: [['Checkout flow build', 'open now', 'live', 'opencode'], ['API docs refresh', 'no activity for 18m', 'grey', 'gemini']] },
+  { name: 'proof', items: [['Dashboard UI redesign', 'thinking', 'live', 'codex'], ['Proof v0.4.0 release', 'finished 41m ago', 'idle', 'claude'], ['Proof README and description improvement', 'finished 1h ago', 'idle', 'grok'], ['Proof logo', 'finished 1h ago', 'idle', 'antigravity']] },
 ];
 function switcher(o, q = '') {
   const hl = s => q ? s.replace(new RegExp(`(${q})`, 'ig'), '<mark>$1</mark>') : s;
   const groups = q ? GROUPS.filter(g => g.name.includes(q) || g.items.some(i => i[0].toLowerCase().includes(q))) : GROUPS;
-  let n = 0; const item = (it, sel) => { n++; return `<button class="it ${sel ? 'sel' : ''} ${it[2] === 'you' ? 'you' : ''}"${T(`sw-item-${n}`)}><span class="dot ${it[2]}"></span><span>${hl(it[0])}</span><span class="w">${it[1]}</span></button>`; };
+  let n = 0; const item = (it, sel) => { n++; return `<button class="it ag ${sel ? 'sel' : ''} ${it[2] === 'you' ? 'you' : ''}" data-agent="${it[3]}"${T(`sw-item-${n}`)}><span class="dot ${it[2]}"></span><span class="tt">${hl(it[0])}</span><span class="badge agent">${AGENT[it[3]]}</span><span class="w">${it[1]}</span></button>`; };
   return homeWorking(o) + `<div class="scrim"${T('scrim')}></div><div class="cmd"${T('switcher')}>
     <div class="ci"><span${T('sw-icon')}>${I.search}</span><input${T('sw-search')} placeholder="Search sessions and projects" value="${q}"><span class="kbd"${T('sw-kbd')}>Ctrl K</span></div>
     <div class="cl">
@@ -829,6 +920,7 @@ const SCREENS = [
   ['loading', 'Loading', 'First load, before the feed arrives.', o => loading(o), 'st-none'],
   ['offline', 'Offline', 'The monitor stopped. The last update stays, dimmed.', o => offline(o), 'st-none'],
   ['empty', 'Empty', 'No sessions in the window.', o => empty(o), 'st-none'],
+  ['recap--states', 'Spec · what proof caught', 'The recap card in every range and state: all time, 7 days, this session, nothing caught, reading history.', o => recapStates(o), 'st-none'],
   ['status--all', 'Spec · status card states', 'Every status the card can show, and the rules behind colour and motion.', o => statusAll(o), 'st-none'],
 ];
 const root = document.getElementById('screens');

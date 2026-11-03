@@ -127,6 +127,8 @@ code, .mono { font-family: var(--mono); font-size: 12px; }
 .badge.warn { background: var(--warn-soft); border-color: var(--warn-line); color: var(--warn-ink); }
 .badge.bad { background: var(--bad-soft); border-color: var(--bad-line); color: var(--bad-ink); }
 .badge.solid-you { background: var(--solid-you); border-color: var(--solid-you); color: var(--on-solid-you); font-weight: 600; }
+/* agent label: which coding agent a session runs in. Neutral on purpose: no logos, no vendor colour, shown for every agent */
+.badge.agent { height: 20px; padding: 0 7px; font-size: var(--fs-xs); background: var(--muted); color: var(--muted-foreground); border-color: var(--border); }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; white-space: nowrap; transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
 .btn.out { border: 1px solid var(--input); background: var(--card); box-shadow: var(--shadow-xs); }
 .btn.out:hover { background: var(--muted); }
@@ -266,6 +268,30 @@ svg text { font-family: var(--font); }
 .cmd .it .w { margin-left: auto; font-size: 12.5px; color: var(--muted-foreground); }
 .cmd .it.you .w { color: var(--you-ink); font-weight: 500; }
 .cmd mark { background: transparent; color: var(--foreground); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+/* rows with an agent column: dot · title · agent · when, so the agent column lines up and can be scanned */
+.cmd .it.ag { display: grid; grid-template-columns: 8px 1fr 96px 128px; gap: 10px; }
+.cmd .it.ag .tt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmd .it.ag .badge.agent { justify-self: start; }
+.cmd .it.ag .w { margin-left: 0; text-align: right; }
+
+/* recap: what proof caught */
+.recap { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.recap .hero { display: flex; align-items: baseline; gap: 8px; }
+.recap .hero .n { font-size: 34px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.recap .hero .l { font-size: var(--fs-md); font-weight: 500; }
+.recap .hero .s { margin-left: auto; font-size: var(--fs-sm); color: var(--muted-foreground); white-space: nowrap; }
+.rbars { display: flex; align-items: flex-end; gap: 4px; height: 48px; border-bottom: 1px solid var(--border); padding-bottom: 1px; }
+.rbars i { flex: 1; border-radius: 3px; background: var(--c-check); min-height: 3px; }
+.rbars i.z { background: var(--track); }
+.rbars-axis { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--muted-foreground); margin-top: 6px; }
+.rstats { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; border-top: 1px solid var(--border); padding-top: 4px; }
+.rstat { display: flex; align-items: center; gap: 8px; height: 32px; font-size: 13px; border-bottom: 1px solid var(--border); min-width: 0; }
+.rstat:nth-last-child(-n+2) { border-bottom: 0; }
+.rstat .k { color: var(--muted-foreground); white-space: nowrap; }
+.rstat .v { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rstat .catbar { width: 44px; height: 6px; }
+/* tight: when a banner takes height (memory warning), the card loses ~36px and keeps every piece */
+.recap.tight { gap: 7px; padding: 14px 18px; } .recap.tight .hero .n { font-size: 28px; } .recap.tight .rbars { height: 34px; } .recap.tight .rbars-axis { margin-top: 3px; } .recap.tight .rstat { height: 28px; }
 .cmd .cf { display: flex; align-items: center; gap: 14px; height: 40px; padding: 0 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted-foreground); }
 .cmd .cf span { display: inline-flex; align-items: center; gap: 6px; }
 
@@ -370,6 +396,8 @@ svg text { font-family: var(--font); }
 
   // ---- what a session's state means ----------------------------------------------------------------------------------
   const NEEDS = st => st === 'approval' || st === 'needsInput';
+  // The coding agent a session runs in, as the user reads it ("Claude", "opencode", "Gemini CLI").
+  const AG = v => (v && v.agentLabel) || 'Claude';
   const BUSY = st => st === 'working' || st === 'thinking' || st === 'agents';
   const runningJobs = v => v.now.filter(n => n.type !== 'main');
   const doneUnits = v => v.units.filter(u => !u.running);
@@ -382,7 +410,7 @@ svg text { font-family: var(--font); }
       case 'agents': return `Working: ${plural(n || s.agents || 0, 'agent')} running`;
       case 'thinking': return 'Thinking';
       case 'approval': return html`Approve a command: <code>${s.label}</code>`;
-      case 'needsInput': return s.label && /^Claude /.test(s.label) ? s.label : 'Claude asked you something';
+      case 'needsInput': return s.label && s.label.startsWith(`${AG(v)} `) ? s.label : `${AG(v)} asked you something`;
       case 'waiting': return 'Finished, waiting for your next message';
       case 'stalled': { const ms = now - s.since; return `No activity for ${ms < 3600e3 ? plural(Math.floor(ms / 60e3), 'minute') : dur(ms)}`; }
       default: {
@@ -398,7 +426,7 @@ svg text { font-family: var(--font); }
       // The gate's "Claude stopped to ask you" notice marks the moment; a failure within 2 minutes of it is why.
       const ask = v.events.find(e => e.kind === 'needsInput' && e.t >= s.since - 120e3), at = ask ? ask.t : s.since;
       const fail = v.events.find(e => e.kind === 'gateFail' && Math.abs(e.t - at) < 120e3);
-      return `${fail ? 'The gate found a failing check, so Claude stopped to ask you' : 'Claude is waiting for your answer'} · waiting ${dur(now - s.since)}`;
+      return `${fail ? `The gate found a failing check, so ${AG(v)} stopped to ask you` : `${AG(v)} is waiting for your answer`} · waiting ${dur(now - s.since)}`;
     }
     if (s.state === 'waiting') {
       const c = v.commits[0];
@@ -406,7 +434,7 @@ svg text { font-family: var(--font); }
     }
     if (s.state === 'stalled') {
       const last = v.feed.find(f => f.end);
-      return last ? html`Nothing is running and Claude isn't waiting on you. The last step was ${codey(last.desc)}, which finished ${ago(now - last.end)}.` : "Nothing is running and Claude isn't waiting on you.";
+      return last ? html`Nothing is running and ${AG(v)} isn't waiting on you. The last step was ${codey(last.desc)}, which finished ${ago(now - last.end)}.` : `Nothing is running and ${AG(v)} isn't waiting on you.`;
     }
     if (v.commits[0]) bits.push(`last commit ${ago(now - v.commits[0].t)}`);
     const g = lastEvent(v, 'gatePass');
@@ -536,7 +564,7 @@ svg text { font-family: var(--font); }
     const work = working(sc.g), wait = sc.g.you || 0, n = v.tasks.length, done = tasksDone(v);
     const units = v.units.length, unitsDone = v.units.filter(u => !u.running).length;
     return [
-      { v: work / sc.span, c: 'var(--c-think)', n: 'Claude working', val: dur(work) },
+      { v: work / sc.span, c: 'var(--c-think)', n: `${AG(v)} working`, val: dur(work) },
       { v: wait / sc.span, c: 'var(--c-you)', n: 'Waiting on you', val: dur(wait) },
       n ? { v: done / n, c: 'var(--c-work)', n: 'Tasks done', val: `${done} of ${n}` }
         : { v: units ? unitsDone / units : 0, c: 'var(--c-work)', n: 'Agents done', val: `${unitsDone} of ${units}` }];
@@ -646,7 +674,8 @@ svg text { font-family: var(--font); }
   }
 
   const RangeTabs = ({ st, set }) => html`<div class="tabs" data-testid="range">${[['hour', 'Last hour'], [null, 'Session']].map(([r, label], i) => html`<button class=${(st.r || null) === r ? 'on' : ''} data-testid=${`range-${i + 1}`} aria-pressed=${(st.r || null) === r} onClick=${() => set({ r })}>${label}</button>`)}</div>`;
-  const Head2 = ({ v, right }) => html`<div class="head"><h1 data-testid="title">${v.title}</h1><span class="meta" data-testid="meta">${v.project}${v.branch ? html` · <code>${v.branch}</code>` : null} · started ${ago(NOW() - v.start)}${v.model ? ` · ${modelName(v.model)}` : ''}</span><div class="r">${right}</div></div>`;
+  const AgentBadge = ({ v, id }) => html`<span class="badge agent" title=${`Runs in ${AG(v)}`} data-testid=${id}>${AG(v)}</span>`;
+  const Head2 = ({ v, right }) => html`<div class="head"><h1 data-testid="title">${v.title}</h1><${AgentBadge} v=${v} id="agent-badge" /><span class="meta" data-testid="meta">${v.project}${v.branch ? html` · <code>${v.branch}</code>` : null} · started ${ago(NOW() - v.start)}${v.model ? ` · ${modelName(v.model)}` : ''}</span><div class="r">${right}</div></div>`;
 
   // Home while Claude works: status rings, the run graph, KPI cards, activity.
   function HomeWorking({ v, st, set, data, banner, lastAt }) {
@@ -662,8 +691,54 @@ svg text { font-family: var(--font); }
           <${JobGraph} v=${v} h=${banner ? 168 : 190} set=${set} /></div>
       </div>
       <${Kpis} v=${v} data=${data} sc=${sc} />
-      <div class="card pad col" style="flex:1;min-height:0;gap:10px"><div class="ch"><h3 data-testid="act-title">Activity</h3><span class="desc" data-testid="act-desc">every ${sc.bucket / 60e3} minutes, all agents combined</span><span class="r"><${ActLegend} /></span></div>
-        <${ActivityChart} blocks=${blocksOf(v)} t0=${sc.from} t1=${now} bucket=${sc.bucket} id="activity" /></div>`;
+      <div class="grid" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
+        <${ActivityCard} v=${v} t0=${sc.from} t1=${now} bucket=${sc.bucket} desc=${`every ${sc.bucket / 60e3} minutes, all agents combined`} legendBelow=${true} />
+        <${RecapCard} v=${v} data=${data} tight=${banner} /></div>`;
+  }
+
+  // ---- what proof caught: from the gate's ledger (data.recap: all time and 7 days; v.recap: this session) -------------
+  // Its range tabs are its own (the page's Last hour / Session tabs don't change it); the choice is kept per browser.
+  const RECAP_KEY = 'proof-recap-range';
+  const RECAP_TABS = [['session', 'This session'], ['week', '7 days'], ['all', 'All time']];
+  const NO_RECAP = { runs: 0, caught: 0, commitsBlocked: 0, askedUser: 0, gaveUp: 0, flaky: 0, checkMs: 0, sessions: 0 };
+  const readRange = () => { try { const r = localStorage.getItem(RECAP_KEY); if (RECAP_TABS.some(t => t[0] === r)) return r; } catch {} return 'all'; };
+  const weekday = t => new Date(t).toLocaleDateString('en-GB', { weekday: 'short' });
+  function RecapCard({ v, data, tight }) {
+    const [on, setOn] = useState(readRange);
+    const pick = k => { setOn(k); try { localStorage.setItem(RECAP_KEY, k); } catch {} };
+    const rc = data.recap || {}, now = NOW(), cls = `card recap ${tight ? 'tight' : ''}`;
+    const tabs = html`<div class="ch"><h3 data-testid="recap-title">What proof caught</h3><span class="r"><div class="tabs" data-testid="recap-range">${RECAP_TABS.map(([k, n], i) => html`<button class=${k === on ? 'on' : ''} data-testid=${`recap-range-${i + 1}`} aria-pressed=${k === on} onClick=${() => pick(k)}>${n}</button>`)}</div></span></div>`;
+    if (rc.reading) {   // the first backfill is still reading Claude's past sessions
+      const { done, total } = rc.reading;
+      return html`<div class=${cls} data-testid="recap-card">${tabs}
+        <div class="hero"><span class="spin" style="align-self:center" data-testid="recap-loading-spin"></span><span class="l" data-testid="recap-loading-text">Reading past sessions…${total ? ` ${done} of ${total}` : ''}</span></div>
+        <div class="sk" style="height:76px"></div>
+        <div class="rstats">${[1, 2, 3, 4].map(() => html`<div class="rstat"><div class="sk" style="height:12px;width:100%"></div></div>`)}</div></div>`;
+    }
+    const r = (on === 'session' ? v.recap : rc[on]) || NO_RECAP;
+    const handed = (r.gaveUp || 0) + (r.askedUser || 0), bars = r.bars || [], max = Math.max(1, ...bars);
+    // Zero caught is good news, so the number goes grey. With no gate run at all, there was nothing to pass.
+    const hero = r.caught
+      ? html`<span class="n num" data-testid="recap-caught-value">${r.caught}</span><span class="l" data-testid="recap-caught-label">${r.caught === 1 ? 'failure' : 'failures'} caught before you saw ${r.caught === 1 ? 'it' : 'them'}</span>`
+      : html`<span class="n num mf" data-testid="recap-caught-value">0</span><span class="l" data-testid="recap-caught-label">${r.runs ? 'failures to catch. Every check passed' : 'failures caught. No gate runs yet'}</span>`;
+    const back = i => bars.length - 1 - i;
+    const tipOf = i => (on === 'all' ? (back(i) ? `${plural(back(i), 'week')} ago` : 'this week') : back(i) ? weekday(now - back(i) * 864e5) : 'today');
+    const axis = on === 'all' ? ['12 weeks ago', 'this week'] : [weekday(now - 6 * 864e5), 'today'];
+    const vis = on === 'session'
+      ? html`<div data-testid="recap-bars"><${Tracker} rounds=${gateRounds(v).slice(-14)} n=${14} id="recap-session-tracker" /></div><div class="rbars-axis"><span data-testid="recap-axis-start">first gate run</span><span data-testid="recap-axis-end">latest</span></div>`
+      : html`<div class="rbars" data-testid="recap-bars">${bars.map((b, i) => html`<i class=${b ? '' : 'z'} style=${`height:${b ? Math.max(14, b / max * 100) : 7}%`} data-tip=${`<b>${b} caught</b><br><span class=m>${tipOf(i)}</span>`}></i>`)}</div>
+        <div class="rbars-axis"><span data-testid="recap-axis-start">${axis[0]}</span><span data-testid="recap-axis-end">${axis[1]}</span></div>`;
+    const stat = (k, label, value, extra, tip) => html`<div class="rstat" data-tip=${tip} data-testid=${`recap-${k}`}><span class="k" data-testid=${`recap-${k}-label`}>${label}</span>${extra}<span class="v" data-testid=${`recap-${k}-value`}>${value}</span></div>`;
+    const handedBar = handed ? html`<span class="catbar" data-testid="recap-handed-bar"><i style=${`flex:${r.askedUser || .001};background:var(--c-you)`}></i><i class="hatch" style=${`flex:${r.gaveUp || .001}`}></i></span>` : null;
+    return html`<div class=${cls} data-testid="recap-card">${tabs}
+      <div class="hero">${hero}<span class="s" data-testid="recap-sessions">${on === 'session' ? 'this session' : plural(r.sessions || 0, 'session')}</span></div>
+      <div>${vis}</div>
+      <div class="rstats">
+        ${stat('blocked', 'Commits blocked', r.commitsBlocked || 0)}
+        ${stat('handed', 'Handed back to you', handed, handedBar, `<b>${handed} handed back</b><br>${r.askedUser || 0} times it asked you<br>${r.gaveUp || 0} times it gave up`)}
+        ${stat('flaky', 'Flaky checks', r.flaky || 0, null, 'Failed, then passed on a re-run with no change')}
+        ${stat('time', 'Time in checks', dur(r.checkMs || 0))}
+      </div></div>`;
   }
 
   // ---- design v2: needs you, finished, stalled ----------------------------------------------------------------------
@@ -677,7 +752,7 @@ svg text { font-family: var(--font); }
   // Bar widths in whole minutes, at least one for any time at all, so a short stall still shows.
   const mins = ms => (ms > 0 ? Math.max(1, Math.round(ms / 60e3)) : 0);
   // One row of an event list: an event, a step that finished, or an answer you gave.
-  function rowOf(x, withMs) {
+  function rowOf(x, withMs, agent = 'Claude') {
     if (x.cat) {   // a feed step
       if (x.cat === 'waitUser') {   // your answer: a turned-down plan comes back as an error
         const no = x.ok === false;
@@ -688,7 +763,7 @@ svg text { font-family: var(--font); }
     }
     const k = x.kind, t = String(x.text || '');
     const m = {
-      needsInput: ['you', I.ask, 'Claude stopped to ask you something', html`<span class="badge you">needs you</span>`],
+      needsInput: ['you', I.ask, `${agent} stopped to ask you something`, html`<span class="badge you">needs you</span>`],
       gateFail: ['bad', I.gate, `Gate failed: ${t.replace(/^proof:\s*/, '').replace(/\s+—.*$/, '')}`, 'gate'],
       gatePass: ['run', I.gate, `Gate passed: ${t.replace(/^proof\s*✓?:?\s*/, '')}`, 'gate'],
       commitBlocked: ['bad', I.gate, `Commit blocked: ${t.replace(/^proof:\s*commit (refused|blocked)\s*—\s*/, '')}`, 'gate'],
@@ -744,7 +819,7 @@ svg text { font-family: var(--font); }
       </div>
       <div class="grid" style="grid-template-columns:1.25fr 1fr 1fr">
         <div class="card pad" data-testid="led-card"><div class="ch"><h3 data-testid="led-title">What led here</h3><span class="r desc" data-testid="led-order">newest first</span></div>
-          <div class="list" style="margin-top:6px">${v.events.filter(e => e.kind !== 'gatePass').slice(0, 3).map((e, k) => html`<${Li} id=${`led-${k + 1}`} r=${rowOf(e)} />`)}</div></div>
+          <div class="list" style="margin-top:6px">${v.events.filter(e => e.kind !== 'gatePass').slice(0, 3).map((e, k) => html`<${Li} id=${`led-${k + 1}`} r=${rowOf(e, false, AG(v))} />`)}</div></div>
         <${GateKpi} v=${v} sc=${sc} />
         <${MemKpi} data=${data} w=${300} />
       </div>
@@ -754,7 +829,7 @@ svg text { font-family: var(--font); }
   function HomeFinished({ v, st, set, data }) {
     const now = NOW(), s = v.status, sc = scopeOf(v, st, now), vals = ringsOrNone(ringVals(v, sc)), g = byGroup(v.share);
     const work = working(g), you = g.you || 0, stall = g.idle || 0;
-    const rows = newestRows([...v.events.slice(0, 3).map(e => rowOf(e)), ...v.feed.filter(f => f.end && f.cat !== 'waitUser' && f.end - f.t >= 120e3).slice(0, 3).map(f => rowOf(f, true)),
+    const rows = newestRows([...v.events.slice(0, 3).map(e => rowOf(e, false, AG(v))), ...v.feed.filter(f => f.end && f.cat !== 'waitUser' && f.end - f.t >= 120e3).slice(0, 3).map(f => rowOf(f, true)),
       ...v.feed.filter(f => f.end && f.cat === 'waitUser').slice(0, 2).map(f => rowOf(f))], 4);
     // Per 10-minute slot: tool calls, commits, commit blocks, tool errors. At most 12 slots, the last 2 hours of a long
     // session (the feed keeps its newest 120 steps anyway).
@@ -784,8 +859,8 @@ svg text { font-family: var(--font); }
       </div>
       <div class="grid" style="grid-template-columns:1fr 1.4fr;flex:1;min-height:0">
         <div class="card pad col" style="gap:12px" data-testid="time-card"><div class="ch"><h3 data-testid="time-title">Where the time went</h3><button class="r btn ghost" data-testid="time-open" onClick=${() => set({ d: 'time' })}>Open in full ${I.right}</button></div>
-          <div class="catbar" style="height:10px" data-testid="time-bar"><i style=${`flex:${mins(work)};background:var(--c-think)`} data-tip=${`Claude working · ${ago2(work)}`}></i><i style=${`flex:${mins(you)};background:var(--c-you)`} data-tip=${`Waiting on you · ${ago2(you)}`}></i><i class="hatch" style=${`flex:${mins(stall)}`} data-tip=${`Stalls · ${ago2(stall)}`}></i></div>
-          <div class="desc" data-testid="time-note">Claude working ${ago2(work)} · waiting on you ${ago2(you)} · stalls ${ago2(stall)}. Includes the ${dur(now - s.since)} since it finished.</div>
+          <div class="catbar" style="height:10px" data-testid="time-bar"><i style=${`flex:${mins(work)};background:var(--c-think)`} data-tip=${`${AG(v)} working · ${ago2(work)}`}></i><i style=${`flex:${mins(you)};background:var(--c-you)`} data-tip=${`Waiting on you · ${ago2(you)}`}></i><i class="hatch" style=${`flex:${mins(stall)}`} data-tip=${`Stalls · ${ago2(stall)}`}></i></div>
+          <div class="desc" data-testid="time-note">${AG(v)} working ${ago2(work)} · waiting on you ${ago2(you)} · stalls ${ago2(stall)}. Includes the ${dur(now - s.since)} since it finished.</div>
           <div class="desc" style="font-weight:500;margin-top:4px" data-testid="longest-title">Longest single steps</div>
           <div class="barlist">${long.map((x, i) => html`<div class="bl"><div class="bar"><i style=${`width:${x.ms / top * 100}%;background:${GCOL[GROUP[x.cat]] || 'var(--c-cmd)'}`}></i><span data-testid=${`longest-${i + 1}-name`}>${x.desc}</span></div><b data-testid=${`longest-${i + 1}-time`}>${durS(x.ms)}</b></div>`)}</div></div>
         <${ActivityCard} v=${v} t0=${Math.max(v.start, v.from || 0)} t1=${now} bucket=${now - v.start < 90 * 60e3 ? 5 * 60e3 : 10 * 60e3} desc=${`every ${now - v.start < 90 * 60e3 ? 5 : 10} minutes`} legendBelow=${true} cardId="activity-card" />
@@ -796,7 +871,7 @@ svg text { font-family: var(--font); }
     const now = NOW(), s = v.status, g = byGroup(v.share), stalled = now - s.since, span = Math.max(1, now - v.start);
     const blocks = blocksOf(v);
     const beats = Array.from({ length: 60 }, (_, i) => { const t = now - (60 - i) * 60e3, b = blocks.find(x => x[0] <= t && x[1] > t); return b ? b[2] : null; });
-    const rows = newestRows([...v.feed.filter(f => f.end).slice(0, 3).map(f => rowOf(f)), ...v.events.slice(0, 3).map(e => rowOf(e))], 3);
+    const rows = newestRows([...v.feed.filter(f => f.end).slice(0, 3).map(f => rowOf(f)), ...v.events.slice(0, 3).map(e => rowOf(e, false, AG(v)))], 3);
     const done = tasksDone(v), firstOpen = v.tasks.findIndex(t => t.status !== 'completed');
     const workMs = (g.think || 0) + (g.work || 0) + (g.check || 0), cmdMs = g.cmd || 0;
     const bucket = span < 90 * 60e3 ? 5 : 10;
@@ -805,7 +880,7 @@ svg text { font-family: var(--font); }
         <div class="card pad col" style="justify-content:space-between" data-testid="status-card">
           <div class="ch"><span class="badge" data-testid="status-badge">${I.clock} Stalled</span><span class="r timer lg num" data-testid="status-timer">${timer(stalled)}</span></div>
           <div><div class="big" style="font-size:30px;font-weight:600;letter-spacing:-.03em" data-testid="status-title">${statusText(v, now)}</div>
-            <div class="desc" style="margin-top:6px;max-width:620px" data-testid="status-sub">${(last => (last ? html`Nothing is running and Claude isn't waiting on you. The last step was ${codey(last.desc)}, which finished ${ago(now - last.end)}.` : "Nothing is running and Claude isn't waiting on you."))(v.feed.find(f => f.end))}</div></div>
+            <div class="desc" style="margin-top:6px;max-width:620px" data-testid="status-sub">${statusSub(v, now)}</div></div>
           <div style="display:flex;align-items:center;gap:12px"><span class="desc" data-testid="beat-label">last hour</span>
             <svg width="640" height="30" data-testid="heartbeat">${beats.map((f, i) => { const on = f && f !== 'idle'; return html`<rect x=${i * 10.6} y=${on ? 2 : 13} width="5" height=${on ? 26 : 4} rx="2" fill=${on ? GCOL[f] : 'var(--border)'} data-tip=${`${clock(now - (60 - i) * 60e3)} · ${on ? GNAME[f] : 'nothing running'}`} />`; })}</svg>
             <span class="desc" data-testid="beat-now">now</span></div></div>
@@ -817,7 +892,7 @@ svg text { font-family: var(--font); }
           <div style="margin-top:6px">${v.tasks.length ? v.tasks.slice(0, 6).map((t, i) => { const d = t.status === 'completed'; return html`<div class=${`check ${d ? 'done' : ''}`}><span class=${`cb ${d ? 'on' : i === firstOpen ? 'cur' : ''}`} data-testid=${`plan-${i + 1}-box`}>${d ? I.check : null}</span><span class="ct" data-testid=${`plan-${i + 1}-name`}>${t.subject}</span></div>`; }) : html`<div class="desc">No task list in this session.</div>`}</div></div>
         <div class="card kpi" data-testid="kpi-idle"><div class="ch"><span class="desc" data-testid="kpi-idle-label">Stalled</span><span class="r badge" data-testid="kpi-idle-badge">${pct(stalled / span * 100)} of the session</span></div>
           <div class="v num" data-testid="kpi-idle-value">${dur(stalled)}<small>of ${dur(span)}</small></div>
-          <div class="foot"><div class="catbar" style="height:10px" data-testid="kpi-idle-bar"><i style=${`flex:${workMs};background:var(--c-work)`} data-tip=${`Claude working · ${ago2(workMs)}`}></i><i style=${`flex:${cmdMs};background:var(--c-cmd)`} data-tip=${`Commands · ${ago2(cmdMs)}`}></i><i class="hatch" style=${`flex:${stalled}`} data-tip=${`Stalls · ${ago2(stalled)}`}></i></div></div></div>
+          <div class="foot"><div class="catbar" style="height:10px" data-testid="kpi-idle-bar"><i style=${`flex:${workMs};background:var(--c-work)`} data-tip=${`${AG(v)} working · ${ago2(workMs)}`}></i><i style=${`flex:${cmdMs};background:var(--c-cmd)`} data-tip=${`Commands · ${ago2(cmdMs)}`}></i><i class="hatch" style=${`flex:${stalled}`} data-tip=${`Stalls · ${ago2(stalled)}`}></i></div></div></div>
         <${MemKpi} data=${data} w=${300} />
       </div>
       <${ActivityCard} v=${v} t0=${Math.max(v.start, v.from || 0)} t1=${now} bucket=${bucket * 60e3} desc=${`every ${bucket} minutes · the hatched end is the stall`} />`;
@@ -914,7 +989,7 @@ svg text { font-family: var(--font); }
     };
     const hl = s => { const t = String(s); if (!q) return t; const i = t.toLowerCase().indexOf(q); return i < 0 ? t : html`${t.slice(0, i)}<mark>${t.slice(i, i + q.length)}</mark>${t.slice(i + q.length)}`; };
     let n = 0;
-    const item = x => { const k = n++; return html`<button class=${`it ${k === cur ? 'sel' : ''} ${NEEDS(x.status.state) ? 'you' : ''}`} data-testid=${`sw-item-${k + 1}`} onMouseEnter=${() => setCur(k)} onClick=${() => open(x)}><span class=${`dot ${dotOf(x)}`}></span><span>${hl(x.title)}</span><span class="w">${when(x)}</span></button>`; };
+    const item = x => { const k = n++; return html`<button class=${`it ag ${k === cur ? 'sel' : ''} ${NEEDS(x.status.state) ? 'you' : ''}`} data-agent=${x.agent || 'claude'} data-testid=${`sw-item-${k + 1}`} onMouseEnter=${() => setCur(k)} onClick=${() => open(x)}><span class=${`dot ${dotOf(x)}`}></span><span class="tt">${hl(x.title)}</span><${AgentBadge} v=${x} /><span class="w">${when(x)}</span></button>`; };
     const onKey = e => {
       if (e.key === 'ArrowDown') { e.preventDefault(); setCur(c => Math.min(order.length - 1, c + 1)); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); setCur(c => Math.max(0, c - 1)); }
@@ -992,11 +1067,11 @@ svg text { font-family: var(--font); }
         <div class="card kpi" data-testid="t-work"><span class="desc" data-testid="t-work-label">Work done, in parallel</span><div class="v num" data-testid="t-work-value">${dur((v.busyMs || 0) * (v.parallel || 1))}<small>${(v.parallel || 1).toFixed(1)}×</small></div></div>
         <div class="card kpi" data-testid="t-drag"><span class="desc" data-testid="t-drag-label">Biggest drag</span><div class="v num" data-testid="t-drag-value">${slow.length ? html`${dur(slow[0][1])}<small>${lcfirst(slow[0][2])}</small>` : html`–<small>nothing stood out</small>`}</div></div>
         <div class="card kpi" data-testid="t-split"><div class="ch"><span class="desc" data-testid="t-split-label">The session's time</span><span class="r"><div class="tabs" data-testid="t-range"><button class=${st.tr !== '6h' ? 'on' : ''} data-testid="t-range-1" onClick=${() => set({ tr: null })}>This session</button><button class=${st.tr === '6h' ? 'on' : ''} data-testid="t-range-2" onClick=${() => set({ tr: '6h' })}>Last 6h</button></div></span></div>
-          <div class="catbar" style="height:10px;margin-top:10px" data-testid="t-split-bar"><i style=${`flex:${pc(work)};background:var(--c-think)`} data-tip=${`Claude working · ${dur(work)} · ${pc(work)}%`}></i><i style=${`flex:${pc(you)};background:var(--c-you)`} data-tip=${`Waiting on you · ${dur(you)} · ${pc(you)}%`}></i><i class="hatch" style=${`flex:${pc(stall)}`} data-tip=${`Stalls & overhead · ${dur(stall)} · ${pc(stall)}%`}></i></div>
-          <div class="tleg" style="margin-top:8px" data-testid="t-split-legend"><span><i style="background:var(--c-think)"></i>Claude working ${dur(work)}</span><span><i style="background:var(--c-you)"></i>Waiting on you ${dur(you)}</span><span><i class="hatch"></i>Stalls ${dur(stall)}</span></div></div>
+          <div class="catbar" style="height:10px;margin-top:10px" data-testid="t-split-bar"><i style=${`flex:${pc(work)};background:var(--c-think)`} data-tip=${`${AG(v)} working · ${dur(work)} · ${pc(work)}%`}></i><i style=${`flex:${pc(you)};background:var(--c-you)`} data-tip=${`Waiting on you · ${dur(you)} · ${pc(you)}%`}></i><i class="hatch" style=${`flex:${pc(stall)}`} data-tip=${`Stalls & overhead · ${dur(stall)} · ${pc(stall)}%`}></i></div>
+          <div class="tleg" style="margin-top:8px" data-testid="t-split-legend"><span><i style="background:var(--c-think)"></i>${AG(v)} working ${dur(work)}</span><span><i style="background:var(--c-you)"></i>Waiting on you ${dur(you)}</span><span><i class="hatch"></i>Stalls ${dur(stall)}</span></div></div>
       </div>
       <div class="grid" style="grid-template-columns:1fr 1fr;flex:1;min-height:0">
-        <div class="card pad col" style="gap:10px" data-testid="t-cats"><div class="ch"><h3 data-testid="t-cats-title">Where Claude's working time went</h3><span class="r desc num" data-testid="t-cats-total">${dur(work)}</span></div>
+        <div class="card pad col" style="gap:10px" data-testid="t-cats"><div class="ch"><h3 data-testid="t-cats-title">Where ${AG(v)}'s working time went</h3><span class="r desc num" data-testid="t-cats-total">${dur(work)}</span></div>
           <div class="barlist">${cats.map(([n, ms, c], i) => html`<div class="bl" data-tip=${`<b>${esc(n)}</b> · ${dur(ms)}${tip(n)}`}><div class="bar"><i style=${`width:${ms / top * 100}%;background:${GCOL[c]};opacity:.22`}></i><span data-testid=${`t-cat-${i + 1}-name`}>${n}</span></div><b data-testid=${`t-cat-${i + 1}-value`}>${dur(ms)} · ${Math.round(ms / Math.max(1, work) * 100)}%</b></div>`)}</div></div>
         <div class="card pad col" style="gap:4px" data-testid="t-slow"><div class="ch"><h3 data-testid="t-slow-title">What slowed it down</h3><span class="r desc" data-testid="t-slow-order">biggest first</span></div>
           ${slow.length ? slow.map(([, ms, n, d, adv], i) => html`<div style="display:grid;grid-template-columns:64px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:20px;font-weight:600;letter-spacing:-.02em" data-testid=${`slow-${i + 1}-value`}>${dur(ms)}</div>
@@ -1014,7 +1089,7 @@ svg text { font-family: var(--font); }
       : tab === 4 ? v.events.filter(e => PROBLEM.has(e.kind)) : calls).slice().sort((a, b) => b.t - a.t);
     const row = x => {
       if (x.call) { const run = x.end == null; return { t: x.t, cls: run ? 'run' : x.ok === false ? 'bad' : GROUP[x.cat] === 'work' ? 'work' : '', ico: run ? html`<span class="spin" style="width:10px;height:10px;border-width:1.5px"></span>` : x.ok === false ? I.x : GROUP[x.cat] === 'work' ? I.edit : I.shell, text: codey(x.desc), kind: run ? 'running' : x.cat }; }
-      const r = rowOf(x); return { ...r, kind: KIND[x.kind] || 'error' };
+      const r = rowOf(x, false, AG(v)); return { ...r, kind: KIND[x.kind] || 'error' };
     };
     return html`<div class="ch"><div class="tabs" data-testid="log-tabs">${['Events', 'Gate', 'Commits', 'Problems', 'Every tool call'].map((n, i) => html`<button class=${tab === i + 1 ? 'on' : ''} data-testid=${`log-tab-${i + 1}`} aria-pressed=${tab === i + 1} onClick=${() => { setShown(10); set({ lt: i ? String(i + 1) : null }); }}>${n}${i === 3 && (fails || problems) ? html` <span class="badge bad" style="height:18px">${fails || problems}</span>` : null}</button>`)}</div><span class="r desc" data-testid="log-count">Showing ${Math.min(shown, list.length)} of ${list.length}</span></div>
       <div class="card" style="padding:0 16px;flex:1;min-height:0;overflow:auto" data-testid="log-card"><table class="tbl"><thead><tr><th style="width:70px" data-testid="log-h-time">Time</th><th data-testid="log-h-event">Event</th><th style="width:180px" data-testid="log-h-who">Who</th><th style="width:110px" class="rt" data-testid="log-h-kind">Kind</th></tr></thead><tbody>

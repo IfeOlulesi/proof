@@ -899,6 +899,328 @@
       "easing": "cubic-bezier(0.2, 0, 0, 1)",
       "delay_ms": 0,
       "reduced_motion": "no fade; colour still shows live or offline"
+    },
+    {
+      "element": "recap-range-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "scope the recap to this session: the hero counts this session's catches, the bars become this session's gate runs (tracker, caught runs red); the right label reads 'this session'. Independent of the page's range tabs (range-1/2)",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "recap-range-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "scope the recap to the last 7 days: counts recompute from the gate-run history, one bar per day (oldest left, today right), the right label reads '<n> sessions'",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "recap-range-3",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "scope the recap to all time (the default on first open; the choice is remembered per browser): one bar per week for the last 12 weeks",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "recap-bars",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "each bar shows how many failures were caught that day or week, and which day or week",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "recap-session-tracker",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "each block shows passed/failed, time and the checks that ran (same as kpi-gate-tracker)",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "recap-handed",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "tooltip splits the handed-back count: times it asked you, times it gave up",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "recap-flaky",
+      "trigger": "hover",
+      "states": [
+        "default",
+        "hover"
+      ],
+      "effect": "tooltip explains flaky: failed, then passed on a re-run with no change",
+      "duration_ms": 120,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-all-range-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-1",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-all-range-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-2",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-all-range-3",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-3",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-week-range-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-1",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-week-range-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-2",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-week-range-3",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-3",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-session-range-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-1",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-session-range-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-2",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-session-range-3",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-3",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-none-range-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-1",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-none-range-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-2",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-none-range-3",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-3",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-loading-range-1",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-1",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-loading-range-2",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-2",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
+    },
+    {
+      "element": "rs-loading-range-3",
+      "trigger": "click",
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected"
+      ],
+      "effect": "spec-sheet copy: same as recap-range-3",
+      "duration_ms": 200,
+      "easing": "cubic-bezier(0.2, 0, 0, 1)",
+      "delay_ms": 0,
+      "reduced_motion": "no transition; state changes instantly"
     }
   ]
 }

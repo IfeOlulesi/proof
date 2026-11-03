@@ -238,6 +238,7 @@ with the agent's name.
   ("no" in the table). Gemini CLI is built from its docs like the others until it's signed in on this machine.
 - 2026-11-03 — `main` moved to the v2 "Pulse" dashboard (0.7.0) while this branch was open. The agent label and the
   recap card are designed on v2; this branch merges `main` before they're built, as part of the final commit.
+- 2026-11-03 — The agent badge and the "What proof caught" card are approved as mocked up (catch bars in the checks colour, the card defaults to all time); the user said to continue in reply to the approval question.
 
 ## Open questions
 - Antigravity: only the `agy` CLI is in scope, because hooks are documented for the CLI and the desktop IDE's

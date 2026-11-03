@@ -203,10 +203,31 @@
       }
     },
     {
-      "id": "meta",
-      "text": "shop-app \u00b7 docs/api \u00b7 started 52m ago",
+      "id": "agent-badge",
+      "text": "Gemini CLI",
       "box": {
         "x": 187,
+        "y": 83,
+        "w": 74,
+        "h": 20
+      },
+      "style": {
+        "font": "Geist 500 11.5px/16.675px",
+        "color": "rgb(99, 99, 107)",
+        "bg": "rgb(244, 244, 245)",
+        "radius": "6px",
+        "shadow": "none"
+      },
+      "motion": {
+        "transition": "all",
+        "animation": "none 0s ease 0s 1 normal none running"
+      }
+    },
+    {
+      "id": "meta",
+      "text": "shop-app · docs/api · started 52m ago",
+      "box": {
+        "x": 272,
         "y": 84,
         "w": 231,
         "h": 19
@@ -372,7 +393,7 @@
     },
     {
       "id": "status-sub",
-      "text": "Nothing is running and Claude isn't waiting on you. The last step was pnpm docs:build, which finished 18m ago.",
+      "text": "Nothing is running and Gemini CLI isn't waiting on you. The last step was pnpm docs:build, which finished 18m ago.",
       "box": {
         "x": 45,
         "y": 260,
@@ -1191,7 +1212,7 @@
     },
     {
       "id": "act-desc",
-      "text": "every 5 minutes \u00b7 the hatched end is the stall",
+      "text": "every 5 minutes · the hatched end is the stall",
       "box": {
         "x": 103,
         "y": 590,

@@ -3,9 +3,11 @@
 // page draws. The live monitor (monitor.mjs) calls board() on every refresh. On its own, it replays a past build up to
 // a moment and writes a self-contained page (handy for reviewing a past build, or for working on the page itself):
 //   node dashboard.mjs --logs <project-dir> [--session <id-prefix>] [--at <ISO time>] [--window 6h] --out page.html
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { backfillDone, markerPath, progressPath } from './backfill.mjs';
+import { ledgerPath, readLedger, tally } from './ledger.mjs';
 import { CATEGORIES, intervals, loadSessions, normCmd, sessionEnd, simplify, sweep } from './timeline.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -141,11 +143,57 @@ export function sessionView(s, now, windowMs) {
 
 export function board(sessions, { now = Date.now(), windowMs = 6 * 3600e3, machine = null, replay = null, live = true } = {}) {
   const views = sessions.map(s => sessionView(s, now, windowMs)).sort((a, b) => rank(b, now) - rank(a, now));
+  const rc = recapOf(now);
+  for (const v of views) v.recap = rc.session(v.id);
   return {
     version: VERSION, now, windowMs, replay, live,
     categories: Object.fromEntries(Object.entries(CATEGORIES).map(([k, v]) => [k, v.label])),
     machine,
+    recap: rc.data,
     sessions: views,
+  };
+}
+
+// ---- what proof caught (the "What proof caught" card), from the ledger ------------------------------------------------
+// All time, the last 7 days (calendar days, today last) and each session. The bars: catches per week for the last 12
+// weeks (7-day spans ending now) and per day for the 7 days. The monitor asks every 2 seconds, so the ledger is read
+// and tallied at most every 30 seconds. While the first backfill is still reading Claude's logs, `reading` says how far
+// it got and the card shows that instead.
+const RECAP_MS = 30e3, DAY = 864e5, WEEK = 7 * DAY;
+let recapMemo = null;
+const recapNums = t => ({ runs: t.runs, caught: t.caught, commitsBlocked: t.commitsBlocked, askedUser: t.askedUser, gaveUp: t.gaveUp, flaky: t.flaky, checkMs: t.checkMs, sessions: t.sessions });
+
+function backfillReading() {
+  if (backfillDone()) return null;
+  try { if (Date.now() - statSync(`${markerPath()}.lock`).mtimeMs > 600e3) return null; } catch { return null; }   // none running
+  try { const p = JSON.parse(readFileSync(progressPath(), 'utf8')); return { done: Number(p.done) || 0, total: Number(p.total) || 0 }; } catch { return { done: 0, total: 0 }; }
+}
+
+export function recapOf(now = Date.now(), { path = ledgerPath() } = {}) {
+  const reading = backfillReading();
+  const stale = !recapMemo || recapMemo.path !== path || now < recapMemo.at || now - recapMemo.at >= RECAP_MS || (recapMemo.reading && !reading);
+  if (stale) {
+    const entries = readLedger({ path }).filter(e => e.t <= now);
+    const upTo = end => entries.filter(e => e.t < end);
+    const today = new Date(now); today.setHours(0, 0, 0, 0);
+    const dayStart = i => { const d = new Date(today); d.setDate(d.getDate() - i); return d.getTime(); };   // DST-safe
+    const weeks = Array.from({ length: 12 }, (_, i) => tally(upTo(now - (11 - i) * WEEK + (i === 11 ? 1 : 0)), { from: now - (12 - i) * WEEK }).caught);
+    const days = Array.from({ length: 7 }, (_, i) => tally(upTo(i === 6 ? now + 1 : dayStart(5 - i)), { from: dayStart(6 - i) }).caught);
+    const bySession = new Map();
+    for (const e of entries) if (e.session) { if (!bySession.has(e.session)) bySession.set(e.session, []); bySession.get(e.session).push(e); }
+    recapMemo = { at: now, path, bySession, per: new Map(), data: {
+      all: { ...recapNums(tally(entries)), bars: weeks },
+      week: { ...recapNums(tally(entries, { from: dayStart(6) })), bars: days },
+    } };
+  }
+  recapMemo.reading = reading;
+  const memo = recapMemo;
+  return {
+    data: { ...memo.data, reading },
+    session: id => {
+      if (!memo.per.has(id)) memo.per.set(id, recapNums(tally(memo.bySession.get(id) || [])));
+      return memo.per.get(id);
+    },
   };
 }
 

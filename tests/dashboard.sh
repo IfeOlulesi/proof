@@ -155,6 +155,48 @@ sleep 2; curl -s 'http://127.0.0.1:47398/data.json?hours=2' > "$T/mix2.json"
 expect "a gate killed by the agent's timeout shows as timed out" "node -e 'const v=require(\"$T/mix2.json\").sessions.find(s=>s.id===\"ses_oc\");process.exit(v.events.some(e=>/proof gate timed out: opencode stopped it/.test(e.text))?0:1)'"
 node "$S/monitor.mjs" --stop >/dev/null; sleep 0.5
 
+echo "== what proof caught: the recap card's numbers from the ledger, per range"
+# A known ledger: session s1 (today: a catch, a flaky commit check, a blocked commit, asked you), old1 (3 days ago: a
+# catch, then gave up), older (20 days ago: a catch) and ancient (100 days ago: a catch, before the 12 weeks of bars).
+mkdir -p "$T/rc"; export PROOF_LEDGER="$T/rc/ledger.jsonl"
+NOW=$(now_ms)
+node - "$PROOF_LEDGER" "$NOW" <<'EOF'
+const [file, now] = [process.argv[2], Number(process.argv[3])], M = 60e3, D = 864e5;
+const e = (session, t, outcome, tree, checks, ms) => JSON.stringify({ v: 1, t, agent: 'claude', session, root: '/r', mode: /^commit/.test(outcome) ? 'commit' : 'stop', outcome, tree, checks, ...(ms != null ? { ms } : {}) });
+const fail = n => [{ name: n, ok: false }], ok = n => [{ name: n, ok: true }];
+const at = Math.min(now - 2 * M, Math.max(now - 10 * M, new Date(now).setHours(0, 0, 0, 0) + M));   // today, even just after midnight
+require('fs').writeFileSync(file, [
+  e('s1', at - 5e3, 'block', 'a', fail('unit'), 60000), e('s1', at - 4e3, 'pass', 'b', ok('unit'), 30000),
+  e('s1', at - 3e3, 'commitBlocked', 'b', fail('lint'), 10000), e('s1', at - 2e3, 'commitAllowed', 'b', ok('lint'), 10000),
+  e('s1', at - 1e3, 'askedUser', 'c', fail('unit'), 5000),
+  e('old1', now - 3 * D, 'block', 'x', fail('e2e'), 20000), e('old1', now - 3 * D + M, 'pass', 'y', ok('e2e'), 20000), e('old1', now - 3 * D + 2 * M, 'gaveUp', 'y', fail('unit'), 20000),
+  e('older', now - 20 * D, 'block', 'p', fail('unit')), e('older', now - 20 * D + M, 'pass', 'q', ok('unit')),
+  e('ancient', now - 100 * D, 'block', 'p', fail('unit')), e('ancient', now - 100 * D + M, 'pass', 'q', ok('unit')),
+].join('\n') + '\n');
+EOF
+rc() { node --input-type=module -e "import { loadSessions } from '$S/timeline.mjs'; import { board } from '$S/dashboard.mjs'; const s = loadSessions(['$T/l1']); const d = board(s, { now: $NOW, windowMs: 24 * 3600e3 }); console.log(JSON.stringify({ ...d.recap, s1: d.sessions[0].recap }))"; }
+r=$(rc)
+expect "all time: 4 caught across 4 sessions, 12 gate runs" "[ \$(field '[v.all.caught, v.all.sessions, v.all.runs].join()' <<<\"\$r\") = '\"4,4,12\"' ]"
+expect "all time: 1 flaky, 1 commit blocked, asked you 1, gave up 1, 2m 55s in checks" "[ \$(field '[v.all.flaky, v.all.commitsBlocked, v.all.askedUser, v.all.gaveUp, v.all.checkMs].join()' <<<\"\$r\") = '\"1,1,1,1,175000\"' ]"
+expect "all time bars: catches per week for 12 weeks, this week last (the 100-day-old catch is before them)" "[ \$(field 'v.all.bars.join()' <<<\"\$r\") = '\"0,0,0,0,0,0,0,0,0,1,0,2\"' ]"
+expect "7 days: 2 caught across 2 sessions, 8 gate runs, gave up 1" "[ \$(field '[v.week.caught, v.week.sessions, v.week.runs, v.week.gaveUp].join()' <<<\"\$r\") = '\"2,2,8,1\"' ]"
+expect "7 days bars: per day, today last" "[ \$(field 'v.week.bars.join()' <<<\"\$r\") = '\"0,0,0,1,0,0,1\"' ]"
+expect "this session (s1): 1 caught, 1 flaky, 1 blocked, asked you once, 1m 55s in checks" "[ \$(field '[v.s1.caught, v.s1.flaky, v.s1.commitsBlocked, v.s1.askedUser, v.s1.gaveUp, v.s1.checkMs, v.s1.runs].join()' <<<\"\$r\") = '\"1,1,1,1,0,115000,5\"' ]"
+expect "no backfill running: not reading" "[ \$(field 'v.reading' <<<\"\$r\") = null ]"
+cache=$(node --input-type=module -e "
+import { appendFileSync } from 'node:fs'; import { recapOf } from '$S/dashboard.mjs';
+const a = recapOf($NOW).data.all.caught;
+appendFileSync(process.env.PROOF_LEDGER, JSON.stringify({ v: 1, t: $NOW - 1000, session: 'n', root: '/r', outcome: 'block', tree: 'a', checks: [{ name: 'u', ok: false }] }) + '\n' + JSON.stringify({ v: 1, t: $NOW - 500, session: 'n', root: '/r', outcome: 'pass', tree: 'b', checks: [{ name: 'u', ok: true }] }) + '\n');
+console.log([a, recapOf($NOW + 2000).data.all.caught, recapOf($NOW + 31000).data.all.caught].join())")
+expect "the ledger is read at most every 30 seconds (4, still 4 two seconds later, 5 after 31)" "[ '$cache' = '4,4,5' ]"
+touch "$T/rc/backfill.json.lock"; printf '{"done":23,"total":64}' > "$T/rc/backfill.progress.json"
+expect "while the first backfill runs, the card says how far it got" "[ \$(rc | field 'v.reading.done + \"/\" + v.reading.total') = '\"23/64\"' ]"
+touch -t 202001010000 "$T/rc/backfill.json.lock"
+expect "a lock left by a backfill that died isn't reading" "[ \$(rc | field 'v.reading') = null ]"
+touch "$T/rc/backfill.json.lock"; echo '{}' > "$T/rc/backfill.json"
+expect "once the backfill is done, not reading" "[ \$(rc | field 'v.reading') = null ]"
+unset PROOF_LEDGER
+
 echo "== the page"
 H="$S/dashboard.html"
 expect "keeps its title and the replay placeholder" "grep -q '<title>proof · live</title>' '$H' && grep -q '/\*__PROOF_DATA__\*/' '$H'"

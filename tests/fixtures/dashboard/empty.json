@@ -764,5 +764,51 @@
   },
   "asleep": []
  },
+ "recap": {
+  "all": {
+   "runs": 929,
+   "caught": 16,
+   "commitsBlocked": 11,
+   "askedUser": 46,
+   "gaveUp": 5,
+   "flaky": 24,
+   "checkMs": 14700000,
+   "sessions": 64,
+   "bars": [
+    0,
+    1,
+    0,
+    2,
+    1,
+    0,
+    3,
+    1,
+    2,
+    0,
+    4,
+    2
+   ]
+  },
+  "week": {
+   "runs": 140,
+   "caught": 4,
+   "commitsBlocked": 3,
+   "askedUser": 8,
+   "gaveUp": 1,
+   "flaky": 5,
+   "checkMs": 2280000,
+   "sessions": 11,
+   "bars": [
+    0,
+    1,
+    0,
+    2,
+    0,
+    1,
+    0
+   ]
+  },
+  "reading": null
+ },
  "sessions": []
 }
