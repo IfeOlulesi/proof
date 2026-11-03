@@ -14,7 +14,7 @@ thinking → reading/editing → commands → checks.
 | 0 | Contract: mockup, inventories, routes, tags | - | done |
 | 1 | Foundation: tokens, Geist fonts embedded, top bar, footer bar, card/badge/tabs/kbd | - | done |
 | 2 | Home, working: rings, agent graph, KPI cards, activity chart | home--working (+ dark) | done |
-| 3 | Needs you, finished, stalled | 3 × 2 | |
+| 3 | Needs you, finished, stalled | 3 × 2 | done (1 copy item for sign-off) |
 | 4 | Memory banner and memory view | 2 × 2 | |
 | 5 | Agent drill-down | job (+ dark) | |
 | 6 | Drawers as a bottom sheet: timeline, time, log | 3 × 2 | |
@@ -78,6 +78,41 @@ Playwright: `npm i --no-save --no-package-lock playwright@1.56.1` (matches the c
   the session chart starts at the data window (a 30 h session drew 180 bars, now 11) and its labels keep 48 px apart;
   a stalled session with leftover agents isn't shown as working; "Room for N" never goes negative.
 - Screen judge: 0 fails, light and dark.
+
+## v2 unit 3. Needs you, finished, stalled
+
+- Fixtures: the mockup's AD, RL and DC seeded segments ported in order (checked equal to the mockup's own lines).
+  Admin, release and docs sessions carry rows, share, gate rounds, steps and events for their screens.
+- Page: `HomeNeedsYou` (coral card, rings, where to answer with Copy path → "Copied" for 1.5 s, what led here, gate
+  and memory KPIs, the hour of work before it stopped), `HomeFinished` (rings, what happened = recent events, steps
+  over 2 minutes and answers you gave, four KPI cards with per-10-minute bars, where the time went, longest steps,
+  activity), `HomeStalled` (timer, last step, a one-hour heartbeat, last activity, plan, stalled share, memory,
+  activity with the hatched stall). Event rows share one `rowOf`; commands and paths read as code.
+- Feed: a plan with a heading is named by it ("# Release plan" → "Ask you to approve the release plan"), so an answered
+  approval reads "You approved the release plan". Red then green in `tests/dashboard.sh` (15 → 16 passed).
+- Rules chosen: "the gate found a failing check" is anchored on the gate's "Claude stopped to ask you" notice (within
+  2 minutes), not the question's start; the gate badge reads "N failing in <worktree>" for an agent's failure, "Last
+  round failed" for the main thread's; activity uses 5-minute bars under 90 minutes. Rings animate in on the live page
+  only: frozen pages (fixtures, replays) draw them at their value, because the kit captures the instant the page shows.
+  Checked with document.getAnimations(): live 3, frozen 0, reduced motion 0.
+- Checks: verify-screen ALL PASS for home--needs-you and home--stalled (light and dark), and home--working still ALL
+  PASS. home--finished (light and dark): every item passes except `kpi-errors-value`.
+- Screen judge: needs-you passes; time-bar stall cap fixed (bars now in whole minutes, at least one). Left as they
+  are, with reasons: the finished commit and block bars sit in the slot of their real time (13:56, the time the
+  mockup's own "What happened" list shows); the mockup's dark stall hatch is light because its light and dark frames
+  share one SVG pattern id, so dark borrows the light pattern; the app draws it with dark tokens.
+- Contract copy that a real feed can't produce (for the user's sign-off; the mockup and inventories are unchanged):
+  1. finished `kpi-errors-value` "a CI wait timed out once": the feed counts tool errors but doesn't describe them;
+     the page says "<failed step> failed once" ("check the CI run failed once" in the fixture).
+  2. Event clock labels on needs-you (13:02), finished (13:56) and stalled (14:16) were kept from v1's clock (14:37),
+     so they sit 3 minutes off the waits shown beside them. The fixture places each at its label.
+- Used in Playwright: tab switching into each state, copy path and its reset, time-open opens the time drawer,
+  tooltips on the time bar and heartbeat, range tabs on stalled; no page errors.
+- Verifier: 4 gaps, all fixed. The plan-name rule only takes a first-line heading of the form "<name> plan"
+  (markdown stripped, acronyms keep their case; everything else is "the plan"; red then green, 17 passed); a
+  turned-down plan reads "You turned down the release plan" and isn't a tool error; the finished bars keep to 12
+  slots, the last 2 hours of a long session (a 49 h session drew 294 invisible bars); longest steps leave out waits on
+  you and whole subagent runs.
 
 # Dashboard v1 build: progress
 

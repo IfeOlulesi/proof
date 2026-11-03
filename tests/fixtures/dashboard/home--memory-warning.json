@@ -2241,10 +2241,10 @@
    "project": "eap_multi_agent_backend",
    "branch": "feat/langfuse-tracing",
    "model": null,
-   "start": 1792061940000,
+   "start": 1792060260000,
    "last": 1792244040000,
    "to": 1792244040000,
-   "from": 1792061940000,
+   "from": 1792060260000,
    "status": {
     "state": "needsInput",
     "since": 1792065540000,
@@ -2259,12 +2259,207 @@
      "label": "Claude asked you something"
     }
    ],
-   "rows": [],
+   "rows": [
+    {
+     "key": "main",
+     "label": "Main thread",
+     "sub": "orchestrates, talks to you",
+     "lane": [
+      [
+       1792062420000,
+       1792062446244.3281,
+       "model"
+      ],
+      [
+       1792062446244.3281,
+       1792062493638.375,
+       "shell"
+      ],
+      [
+       1792062493638.375,
+       1792062556442.4028,
+       "shell"
+      ],
+      [
+       1792062556442.4028,
+       1792062605552.004,
+       "edit"
+      ],
+      [
+       1792062605552.004,
+       1792062749343.1306,
+       "test"
+      ],
+      [
+       1792062770718.023,
+       1792062914411.187,
+       "test"
+      ],
+      [
+       1792062927673.5151,
+       1792062972660.7163,
+       "edit"
+      ],
+      [
+       1792062979834.2205,
+       1792063107427.5076,
+       "model"
+      ],
+      [
+       1792063122586.1472,
+       1792063257307.346,
+       "edit"
+      ],
+      [
+       1792063257307.346,
+       1792063397339.0962,
+       "model"
+      ],
+      [
+       1792063402055.7666,
+       1792063479544.2312,
+       "shell"
+      ],
+      [
+       1792063479544.2312,
+       1792063558737.928,
+       "edit"
+      ],
+      [
+       1792063558737.928,
+       1792063677297.4272,
+       "model"
+      ],
+      [
+       1792063694715.5308,
+       1792063731683.51,
+       "model"
+      ],
+      [
+       1792063731683.51,
+       1792063822472.0571,
+       "model"
+      ],
+      [
+       1792063822472.0571,
+       1792063970771.2979,
+       "edit"
+      ],
+      [
+       1792063970771.2979,
+       1792064104749.798,
+       "edit"
+      ],
+      [
+       1792064104749.798,
+       1792064234466.8662,
+       "edit"
+      ],
+      [
+       1792064234466.8662,
+       1792064303367.2234,
+       "model"
+      ],
+      [
+       1792064303367.2234,
+       1792064338084.7896,
+       "model"
+      ],
+      [
+       1792064346734.0652,
+       1792064470743.7737,
+       "model"
+      ],
+      [
+       1792064470743.7737,
+       1792064532286.5938,
+       "edit"
+      ],
+      [
+       1792064537922.624,
+       1792064558605.9443,
+       "test"
+      ],
+      [
+       1792064558605.9443,
+       1792064610735.6304,
+       "edit"
+      ],
+      [
+       1792064610735.6304,
+       1792064662985.0676,
+       "edit"
+      ],
+      [
+       1792064662985.0676,
+       1792064701598.608,
+       "shell"
+      ],
+      [
+       1792064701598.608,
+       1792064820000,
+       "edit"
+      ],
+      [
+       1792064820000,
+       1792064952173.2397,
+       "test"
+      ],
+      [
+       1792064952173.2397,
+       1792065069683.7517,
+       "test"
+      ],
+      [
+       1792065069683.7517,
+       1792065219013.4614,
+       "test"
+      ],
+      [
+       1792065219013.4614,
+       1792065284451.918,
+       "model"
+      ],
+      [
+       1792065284451.918,
+       1792065419243.3564,
+       "test"
+      ],
+      [
+       1792065419243.3564,
+       1792065420000,
+       "test"
+      ],
+      [
+       1792065420000,
+       1792065540000,
+       "test"
+      ],
+      [
+       1792065540000,
+       1792066020000,
+       "waitUser"
+      ]
+     ]
+    }
+   ],
    "asleep": [],
-   "share": {},
+   "share": {
+    "model": 1200000,
+    "edit": 1080000,
+    "test": 720000,
+    "shell": 480000,
+    "waitUser": 178500000
+   },
    "busyMs": 0,
    "parallel": 1,
-   "windowShare": {},
+   "windowShare": {
+    "model": 1200000,
+    "edit": 1080000,
+    "test": 720000,
+    "shell": 480000,
+    "waitUser": 178500000
+   },
    "tasks": [],
    "units": [],
    "unitsDone": 0,
@@ -2272,22 +2467,40 @@
    "commits": [],
    "events": [
     {
-     "t": 1792065540000,
+     "t": 1792065740000,
      "kind": "needsInput",
      "text": "Claude stopped to ask you something",
      "who": "Main thread"
     },
     {
-     "t": 1792065539000,
+     "t": 1792065730000,
      "kind": "gateFail",
      "text": "proof: test still failing — Claude stopped to ask you something.",
      "who": "proof gate"
     },
     {
-     "t": 1792065480000,
+     "t": 1792065680000,
      "kind": "memory",
      "text": "proof memory: didn't start this test run. The Mac is at 85% and the run needs about 1.5 GB",
      "who": "Main thread"
+    },
+    {
+     "t": 1792064700000,
+     "kind": "gatePass",
+     "text": "proof ✓ types, lint, test",
+     "who": "proof gate"
+    },
+    {
+     "t": 1792064040000,
+     "kind": "gatePass",
+     "text": "proof ✓ types, lint, test",
+     "who": "proof gate"
+    },
+    {
+     "t": 1792063140000,
+     "kind": "gatePass",
+     "text": "proof ✓ types, lint",
+     "who": "proof gate"
     }
    ],
    "feed": [],
@@ -2428,7 +2641,60 @@
      "label": "Finished — waiting for your next message"
     }
    ],
-   "rows": [],
+   "rows": [
+    {
+     "key": "main",
+     "label": "Main thread",
+     "sub": "orchestrates, talks to you",
+     "lane": [
+      [
+       1792240140000,
+       1792240203305.5088,
+       "edit"
+      ],
+      [
+       1792240203305.5088,
+       1792240320000,
+       "edit"
+      ],
+      [
+       1792240320000,
+       1792241940000,
+       "waitUser"
+      ],
+      [
+       1792241100000,
+       1792241296000,
+       "shell"
+      ],
+      [
+       1792241296000,
+       1792241400000,
+       "shell"
+      ],
+      [
+       1792241400000,
+       1792241465021.251,
+       "edit"
+      ],
+      [
+       1792241472559.2488,
+       1792241579327.7004,
+       "model"
+      ],
+      [
+       1792241579327.7004,
+       1792241580000,
+       "model"
+      ],
+      [
+       1792241580000,
+       1792244040000,
+       "waitUser"
+      ]
+     ]
+    }
+   ],
    "asleep": [],
    "share": {
     "model": 120000,
@@ -2450,7 +2716,7 @@
    "features": null,
    "commits": [
     {
-     "t": 1792241578000,
+     "t": 1792241770000,
      "sha": "1a27553e",
      "msg": "proof 0.4.0: first public release",
      "who": "Main thread"
@@ -2458,19 +2724,83 @@
    ],
    "events": [
     {
-     "t": 1792241578000,
+     "t": 1792241770000,
      "kind": "commit",
      "text": "1a27553 proof 0.4.0: first public release",
      "who": "Main thread"
     },
     {
-     "t": 1792241573000,
+     "t": 1792241765000,
      "kind": "commitBlocked",
      "text": "proof: commit refused — the command edits files before committing",
      "who": "proof gate"
     }
    ],
    "feed": [
+    {
+     "t": 1792243300000,
+     "end": 1792243304000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792243250000,
+     "end": 1792243254000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792243200000,
+     "end": 1792243204000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242600000,
+     "end": 1792242604000,
+     "cat": "shell",
+     "desc": "Check the CI run",
+     "ok": false,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242150000,
+     "end": 1792242154000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242100000,
+     "end": 1792242104000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242050000,
+     "end": 1792242054000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792242000000,
+     "end": 1792242004000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
     {
      "t": 1792241480000,
      "end": 1792241616364,
@@ -2480,10 +2810,74 @@
      "who": "Main thread"
     },
     {
+     "t": 1792241450000,
+     "end": 1792241454000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792241000000,
+     "end": 1792241004000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240950000,
+     "end": 1792240954000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240900000,
+     "end": 1792240904000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240850000,
+     "end": 1792240854000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
      "t": 1792240802000,
      "end": 1792240885584,
      "cat": "shell",
      "desc": "Wait for the tag's CI run to finish",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240300000,
+     "end": 1792240304000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240250000,
+     "end": 1792240254000,
+     "cat": "read",
+     "desc": "Read CHANGELOG.md",
+     "ok": true,
+     "who": "Main thread"
+    },
+    {
+     "t": 1792240160000,
+     "end": 1792240270000,
+     "cat": "waitUser",
+     "desc": "Ask you to approve the release plan",
      "ok": true,
      "who": "Main thread"
     }

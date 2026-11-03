@@ -34,6 +34,12 @@ CK.gates = [[at(13, 12), 1, 'types, lint, test'], [at(13, 31), 1, 'types, lint, 
 CK.commits = [at(13, 24), at(13, 29), at(13, 36), at(13, 40), at(13, 47), at(13, 55), at(14, 2), at(14, 9), at(14, 13), at(14, 19), at(14, 25), at(14, 25, 30), at(14, 29), at(14, 33)];
 const memSeries = (base, end) => { const out = []; let v = base; for (let t = NOW - 6 * H; t <= NOW; t += 2 * M) { v += (rnd() - .5) * 2.2 + (end - v) * .012; out.push([t, Math.max(40, Math.min(95, v))]); } out[out.length - 1][1] = end; return out; };
 const MEM_OK = memSeries(58, 68), MEM_HI = memSeries(70, 85);
+const AD = { start: at(12, 31) - 49 * H, ask: NOW - (49 * H + 35 * M) };
+AD.segs = [...fill(AD.ask - 52 * M, AD.ask - 12 * M, W_BUILD), ...fill(AD.ask - 12 * M, AD.ask - 2 * M, W_TEST), [AD.ask - 2 * M, AD.ask, 'check'], [AD.ask, AD.ask + 8 * M, 'you']];
+const RL = { start: NOW - 65 * M, end: NOW - 41 * M };
+RL.segs = [...fill(RL.start, RL.start + 3 * M, W_READ), [RL.start + 3 * M, RL.start + 30 * M, 'you'], ...fill(RL.start + 30 * M, RL.end - 8 * M, W_BUILD), [RL.end - 8 * M, RL.end - 5 * M + 16e3, 'cmd'], [RL.end - 5 * M + 16e3, RL.end - 3 * M, 'cmd'], ...fill(RL.end - 3 * M, RL.end, W_BUILD), [RL.end, NOW, 'you']];
+const DC = { start: NOW - 52 * M, last: NOW - 18 * M - 4e3 };
+DC.segs = [...fill(DC.start, DC.last - 2 * M, { think: 3, work: 6, cmd: 1 }), [DC.last - 2 * M, DC.last, 'cmd'], [DC.last, NOW, 'idle']];
 // The mockup's six activity groups as feed categories (the page groups them back the same way).
 const FEED_CAT = { think: 'model', work: 'edit', cmd: 'shell', check: 'test', you: 'waitUser', idle: 'idle' };
 const asBlocks = segs => segs.map(([a, b, c]) => [a, b, FEED_CAT[c]]);
@@ -140,33 +146,45 @@ const checkout = () => {
   });
 };
 
-const admin = () => {
-  const since = NOW - min(2975);
-  return session({
-    id: 'admin', title: 'Admin access on production', project: 'eap_multi_agent_backend', branch: 'feat/langfuse-tracing', start: since - min(60),
-    status: { state: 'needsInput', since, label: 'Claude asked you something' },
-    events: [
-      { t: since, kind: 'needsInput', text: 'Claude stopped to ask you something', who: 'Main thread' },
-      { t: since - sec(1), kind: 'gateFail', text: 'proof: test still failing — Claude stopped to ask you something.', who: 'proof gate' },
-      { t: since - sec(60), kind: 'memory', text: "proof memory: didn't start this test run. The Mac is at 85% and the run needs about 1.5 GB", who: 'Main thread' },
-    ],
-  });
-};
+// The mockup's event clock labels (13:02, 13:56, 14:16) were kept from v1's clock (now 14:37), so they sit a few
+// minutes off the waits the same screens show ("waiting 49h 35m", "Idle 41m", "18:04"). The fixture places each
+// event at its label and each status at its wait.
+const twoDaysAgo = (h, m, s = 0) => at(h, m, s) - 48 * H;
+const admin = () => session({
+  id: 'admin', title: 'Admin access on production', project: 'eap_multi_agent_backend', branch: 'feat/langfuse-tracing', start: AD.start,
+  status: { state: 'needsInput', since: AD.ask, label: 'Claude asked you something' },
+  rows: [{ key: 'main', label: 'Main thread', sub: 'orchestrates, talks to you', lane: asBlocks(AD.segs) }],
+  share: { model: min(20), edit: min(18), test: min(12), shell: min(8), waitUser: 49 * H + 35 * M },
+  events: [
+    { t: twoDaysAgo(13, 2, 20), kind: 'needsInput', text: 'Claude stopped to ask you something', who: 'Main thread' },
+    { t: twoDaysAgo(13, 2, 10), kind: 'gateFail', text: 'proof: test still failing — Claude stopped to ask you something.', who: 'proof gate' },
+    { t: twoDaysAgo(13, 1, 20), kind: 'memory', text: "proof memory: didn't start this test run. The Mac is at 85% and the run needs about 1.5 GB", who: 'Main thread' },
+    { t: AD.ask - 14 * M, kind: 'gatePass', text: 'proof ✓ types, lint, test', who: 'proof gate' },
+    { t: AD.ask - 25 * M, kind: 'gatePass', text: 'proof ✓ types, lint, test', who: 'proof gate' },
+    { t: AD.ask - 40 * M, kind: 'gatePass', text: 'proof ✓ types, lint', who: 'proof gate' },
+  ],
+});
 
 const release = () => {
-  const since = NOW - min(41);
+  const since = RL.end, slot = i => RL.start + i * 10 * M;
+  // 18 tool calls, as the mockup's bars spread them over the session: 3, 5, 2, 4, 1, 3 per 10 minutes.
+  const named = [
+    { t: at(13, 51, 20), end: at(13, 51, 20) + 136364, cat: 'shell', desc: 'Wait for both CI runs to finish', ok: true, who: 'Main thread' },
+    { t: at(13, 40, 2), end: at(13, 40, 2) + 83584, cat: 'shell', desc: "Wait for the tag's CI run to finish", ok: true, who: 'Main thread' },
+    { t: at(13, 29, 20), end: at(13, 31, 10), cat: 'waitUser', desc: 'Ask you to approve the release plan', ok: true, who: 'Main thread' },
+  ];
+  const per = [3, 5, 2, 4, 1, 3], fill18 = [];
+  per.forEach((n, i) => { const have = named.filter(f => f.t >= slot(i) && f.t < slot(i + 1)).length; for (let k = have; k < n; k++) fill18.push({ t: slot(i) + 60e3 + k * 50e3, end: slot(i) + 60e3 + k * 50e3 + 4e3, cat: i === 4 ? 'shell' : 'read', desc: i === 4 ? 'Check the CI run' : 'Read CHANGELOG.md', ok: i !== 4, who: 'Main thread' }); });
   return session({
-    id: 'release', title: 'Proof v0.4.0 release', project: 'proof', model: 'claude-opus-5-5', start: NOW - min(65),
+    id: 'release', title: 'Proof v0.4.0 release', project: 'proof', model: 'claude-opus-5-5', start: RL.start,
     status: { state: 'waiting', since, label: 'Finished — waiting for your next message' },
-    commits: [{ t: since - sec(2), sha: '1a27553e', msg: 'proof 0.4.0: first public release', who: 'Main thread' }],
+    rows: [{ key: 'main', label: 'Main thread', sub: 'orchestrates, talks to you', lane: asBlocks(RL.segs) }],
+    commits: [{ t: at(13, 56, 10), sha: '1a27553e', msg: 'proof 0.4.0: first public release', who: 'Main thread' }],
     events: [
-      { t: since - sec(2), kind: 'commit', text: '1a27553 proof 0.4.0: first public release', who: 'Main thread' },
-      { t: since - sec(7), kind: 'commitBlocked', text: 'proof: commit refused — the command edits files before committing', who: 'proof gate' },
+      { t: at(13, 56, 10), kind: 'commit', text: '1a27553 proof 0.4.0: first public release', who: 'Main thread' },
+      { t: at(13, 56, 5), kind: 'commitBlocked', text: 'proof: commit refused — the command edits files before committing', who: 'proof gate' },
     ],
-    feed: [
-      { t: at(13, 51, 20), end: at(13, 51, 20) + 136364, cat: 'shell', desc: 'Wait for both CI runs to finish', ok: true, who: 'Main thread' },
-      { t: at(13, 40, 2), end: at(13, 40, 2) + 83584, cat: 'shell', desc: "Wait for the tag's CI run to finish", ok: true, who: 'Main thread' },
-    ],
+    feed: [...named, ...fill18].sort((a, b) => b.t - a.t),
     share: { model: min(2), shell: min(4), waitUser: min(58), idle: sec(20) },
     counts: { toolCalls: 18, commitBlocks: 1, toolErrors: 1 },
     findings: { longest: [
@@ -177,24 +195,23 @@ const release = () => {
   });
 };
 
-const docs = () => {
-  const since = NOW - sec(1084);
-  return session({
-    id: 'docs', title: 'API docs refresh', project: 'shop-app', branch: 'docs/api', start: NOW - min(52),
-    status: { state: 'stalled', since, label: 'No activity for a while' },
-    feed: [
-      { t: since - sec(8), end: since, cat: 'build', desc: 'pnpm docs:build', ok: true, who: 'Main thread' },
-      { t: at(14, 18, 30), end: at(14, 18, 31), cat: 'edit', desc: 'Edit docs/api/orders.md', ok: true, who: 'Main thread' },
-    ],
-    commits: [{ t: at(14, 16, 5), sha: '7c1e0b29', msg: 'docs: order endpoints', who: 'Main thread' }],
-    events: [{ t: at(14, 16, 5), kind: 'commit', text: '7c1e0b2 docs: order endpoints', who: 'Main thread' }],
-    tasks: [
-      { id: '1', subject: 'Audit endpoints against code', status: 'completed' },
-      { id: '2', subject: 'Rewrite order endpoints', status: 'completed' },
-      { id: '3', subject: 'Rewrite payment endpoints', status: 'pending' },
-    ],
-  });
-};
+const docs = () => session({
+  id: 'docs', title: 'API docs refresh', project: 'shop-app', branch: 'docs/api', start: DC.start,
+  status: { state: 'stalled', since: DC.last, label: 'No activity for a while' },
+  rows: [{ key: 'main', label: 'Main thread', sub: 'orchestrates, talks to you', lane: asBlocks(DC.segs) }],
+  share: { model: min(12), edit: min(19), shell: min(3), idle: min(18) },
+  feed: [
+    { t: at(14, 16), end: at(14, 16), cat: 'build', desc: 'pnpm docs:build', ok: true, who: 'Main thread' },
+    { t: at(14, 15, 30), end: at(14, 15, 31), cat: 'edit', desc: 'Edit docs/api/orders.md', ok: true, who: 'Main thread' },
+  ],
+  commits: [{ t: at(14, 13, 5), sha: '7c1e0b29', msg: 'docs: order endpoints', who: 'Main thread' }],
+  events: [{ t: at(14, 13, 5), kind: 'commit', text: '7c1e0b2 docs: order endpoints', who: 'Main thread' }],
+  tasks: [
+    { id: '1', subject: 'Audit endpoints against code', status: 'completed' },
+    { id: '2', subject: 'Rewrite order endpoints', status: 'completed' },
+    { id: '3', subject: 'Rewrite payment endpoints', status: 'pending' },
+  ],
+});
 
 const brief = (id, title, project, state, ago, extra = {}) => session({ id, title, project, start: NOW - ago - min(30), status: { state, since: NOW - ago, label: '' }, ...extra });
 const others = () => [
