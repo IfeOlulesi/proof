@@ -138,3 +138,11 @@ frame with `fidelity/verify-screen.mjs <screen>` (see PROGRESS.md on the branch 
 6. **Tokens and cost per session** from the usage recorded in the logs.
 7. **All sessions on one screen.** A compact strip per session above the detail view.
 8. **Controls.** Stop a run, open a trace, open the worktree in the editor. Each action needs the monitor's token, so a web page can't trigger it.
+9. **Agent tree.** Show who launched whom: the main thread, its subagents, and any subagent that launched its own.
+   - The data already has the links. `timeline.mjs` reads each subagent's parent session and `spawnDepth` (around line 429), but `units` drops them. Add `parent` (the launching agent's id, or `main`) and `depth` to each unit, and to `now[]`.
+   - Draw a tree with the launching tool call on each edge, in the agent drill-down, with the run graph kept as the flat overview.
+   - Check: a fixture with a subagent that launches a subagent renders three levels, and the drill-down of the inner one names its parent.
+10. **Responsive layout.** The page has no width breakpoints. Its only `@media` rules are for dark mode and reduced motion. The grids use fixed or fractional columns inline (for example `420px 1fr`, `520px 1fr`, `440px` and `1.25fr 1fr 1fr`), and the run graph uses a fixed main-node width (`mainW = 210`), so a narrow window squeezes or overflows.
+   - Below about 1024 px, stack the grids to one column. Use `minmax(0, …)` columns so nothing forces the width, and let the run graph scroll sideways instead of shrinking its nodes.
+   - Check: the existing fidelity frames at 1440 px stay the same, and the page is checked at 390 px and 768 px with Playwright, with no horizontal page scroll.
+   - The design source is `mockup/app.html`. Responsive rules need a matching frame there, so the mockup stays the reference.
