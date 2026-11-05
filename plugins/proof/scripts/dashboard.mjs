@@ -11,6 +11,35 @@ import { CATEGORIES, intervals, loadSessions, normCmd, sessionEnd, simplify, swe
 const here = dirname(fileURLToPath(import.meta.url));
 export const VERSION = '0.4.0';
 const REVIEW = /verifier|judge|review/i;
+const BUSY_STATES = new Set(['working', 'thinking', 'agents']);
+
+// Who launched whom. An agent's meta names the Agent or Task call that launched it (toolUseId), and that call sits in
+// the main log or in another agent's log. The owner of the call is the launching thread. When the call isn't found,
+// the parent is the main thread and the depth falls back to the agent's spawnDepth (1 if it has none).
+// Not tested against real nested logs yet: the monitor only lists <session>/subagents/*.jsonl, so a nested agent
+// is read only if its log is there.
+export function lineage(s, agents) {
+  const owner = new Map();
+  for (const t of s.tools) if (t.id) owner.set(t.id, 'main');
+  for (const a of agents) for (const t of a.tools) if (t.id) owner.set(t.id, a.id);
+  const byAgentId = new Map(agents.map(a => [a.id, a]));
+  const linkOf = a => owner.get(a.agent?.toolUseId) || null;
+  const parentOf = a => { const p = linkOf(a); return p && p !== a.id ? p : 'main'; };
+  const depthOf = a => {
+    let d = 1, cur = a;
+    const seen = new Set([a.id]);
+    for (;;) {
+      const p = linkOf(cur);
+      if (!p) return a.agent?.depth || d;
+      if (p === 'main') return d;
+      const next = byAgentId.get(p);
+      if (!next || seen.has(p)) return a.agent?.depth || d;
+      seen.add(p); cur = next; d++;
+    }
+  };
+  const callOf = id => (id && (s.byId.get(id) || agents.map(a => a.byId.get(id)).find(Boolean))) || null;
+  return { parentOf, depthOf, callOf };
+}
 
 // ---- one session ----------------------------------------------------------------------------------------------------
 
@@ -44,6 +73,7 @@ export function sessionView(s, now, windowMs) {
   const from = Math.max(s.start, to - windowMs);
   const minSeg = Math.max(1000, (to - from) / 1400);
   const agents = [...s.subagents.values()];
+  const { parentOf, depthOf, callOf } = lineage(s, agents);
   const iv = intervals(s, now);
   const whole = sweep(iv, s.start, to);
   const win = sweep(iv, from, to);
@@ -72,7 +102,7 @@ export function sessionView(s, now, windowMs) {
   const nowList = [{ who: 'Main thread', type: 'main', ...status }];
   for (const a of s.activeAgents(now)) {
     const st = a.status(now);
-    nowList.push({ who: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', where: nameOf(workspaceOf(a, s.cwd)), start: a.start, ...st });
+    nowList.push({ who: a.agent?.description || a.id, id: a.id, parent: parentOf(a), depth: depthOf(a), type: a.agent?.agentType || 'agent', where: nameOf(workspaceOf(a, s.cwd)), start: a.start, ...st });
   }
 
   // Recent tool calls across the main thread and agents.
@@ -111,8 +141,12 @@ export function sessionView(s, now, windowMs) {
   // list still shows its units this way.
   const activeIds = new Set(s.activeAgents(now).map(a => a.id));
   const units = agents.filter(a => !REVIEW.test(a.agent?.agentType || '') && a.start <= now)
-    .map(a => ({ desc: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', prompt: s.byId.get(a.agent?.toolUseId)?.agentPrompt || '', result: activeIds.has(a.id) ? '' : String(a.lastText || '').trim().slice(0, 400), where: nameOf(workspaceOf(a, s.cwd)), start: a.start, end: activeIds.has(a.id) ? null : a.end, running: activeIds.has(a.id), commits: a.commits.length, errors: a.counts.toolErrors }))
+    .map(a => ({ id: a.id, parent: parentOf(a), depth: depthOf(a), desc: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', prompt: callOf(a.agent?.toolUseId)?.agentPrompt || '', result: activeIds.has(a.id) ? '' : String(a.lastText || '').trim().slice(0, 400), where: nameOf(workspaceOf(a, s.cwd)), start: a.start, end: activeIds.has(a.id) ? null : a.end, running: activeIds.has(a.id), commits: a.commits.length, errors: a.counts.toolErrors }))
     .sort((x, y) => (y.running - x.running) || y.start - x.start);
+  // The whole launch tree, reviews included, so a child of a verifier still has its parent in the list.
+  const tree = [{ id: 'main', parent: null, depth: 0, name: 'Main thread', type: 'main', running: BUSY_STATES.has(status.state), start: s.start, end: null, commits: s.commits.length }]
+    .concat(agents.map(a => ({ id: a.id, parent: parentOf(a), depth: depthOf(a), name: a.agent?.description || a.id, type: a.agent?.agentType || 'agent', running: activeIds.has(a.id), start: a.start, end: activeIds.has(a.id) ? null : a.end, commits: a.commits.length })))
+    .sort((x, y) => x.depth - y.depth || x.start - y.start);
 
   return {
     id: s.id, title: s.title || 'Untitled session', cwd: s.cwd, project: nameOf(s.cwd), branch: s.branch, model: s.model,
@@ -120,7 +154,7 @@ export function sessionView(s, now, windowMs) {
     status, now: nowList,
     rows, asleep,
     share: whole.share, busyMs: whole.busyMs, parallel: whole.parallel, windowShare: win.share,
-    tasks, units: units.slice(0, 60), unitsDone: units.filter(u => !u.running).length, commits: commits.slice(0, 40), events: events.slice(0, 120), feed: feed.slice(0, 120),
+    tasks, units: units.slice(0, 60), unitsDone: units.filter(u => !u.running).length, tree, commits: commits.slice(0, 40), events: events.slice(0, 120), feed: feed.slice(0, 120),
     prompts: s.prompts.slice(-6).map(p => ({ t: p.t, text: p.text })), away: s.away,
     agents: { total: agents.length, active: nowList.length - 1, byType },
     counts,

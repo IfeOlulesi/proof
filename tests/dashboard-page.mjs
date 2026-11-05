@@ -134,6 +134,32 @@ await rm.goto(`${PAGE}?data=/tests/fixtures/dashboard/home--working.json`);
 await rm.locator('[data-testid="title"]').waitFor();
 await expect('no pulse, spin, wire flow or ring animation', async () => (await rm.evaluate(() => document.getAnimations().length)) === 0);
 
+console.log('== agent tree');
+await open('', 'job--nested');
+await page.evaluate(() => { location.hash = 'v=job&j=' + encodeURIComponent('Lane A unit 2: cart'); });
+await expect('a three-level build shows the agent tree', async () => (await count('tree-card')) === 1);
+await expect('the tree lists the main thread and every agent, reviews included', async () => (await count('tree-main')) === 1 && (await count('tree-v1')) === 1 && (await count('tree-a2')) === 1);
+await expect('the open agent is marked in the tree', async () => (await page.locator('[data-testid="tree-a2"]').getAttribute('class')).includes('on'));
+await id('tree-a1').click();
+await expect('clicking an agent in the tree opens it', async () => (await text('title')).includes('Lane A: cart and checkout'));
+await open('', 'home--working');
+await page.evaluate(() => { location.hash = 'v=job&j=' + encodeURIComponent('Lane B unit 13: payment screen'); });
+await expect('a flat build (no nesting) shows no tree card', async () => (await count('tree-card')) === 0 && (await count('activity-card')) === 1);
+
+console.log('== responsive layout');
+for (const [w, h] of [[390, 844], [768, 1024]]) {
+  for (const [name, fixture, hash] of [['home', 'home--working', ''], ['job', 'job--nested', '#v=job&j=' + encodeURIComponent('Lane A unit 2: cart')]]) {
+    const m = await browser.newPage({ viewport: { width: w, height: h } });
+    await m.goto(`${PAGE}?data=/tests/fixtures/dashboard/${fixture}.json&theme=light${hash}`);
+    await m.locator('[data-testid="title"]').waitFor();
+    await m.waitForTimeout(400);
+    await expect(`${name} at ${w}px: no horizontal page scroll`, async () => (await m.evaluate(() => document.documentElement.scrollWidth)) <= w);
+    await expect(`${name} at ${w}px: every chart and graph has a height`, async () => (await m.evaluate(() => [...document.querySelectorAll('.main svg')].every(s => s.getBoundingClientRect().height > 0))));
+    await expect(`${name} at ${w}px: the run graph keeps its width and scrolls inside its box`, async () => (await m.evaluate(() => { const g = document.querySelector('.graph-wrap'); return !g || (getComputedStyle(g).overflowX === 'auto' && g.firstElementChild.getBoundingClientRect().width >= 560); })));
+    await m.close();
+  }
+}
+
 await expect('no page errors', async () => errors.length === 0);
 if (errors.length) console.log(errors);
 await browser.close();
