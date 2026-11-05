@@ -74,6 +74,28 @@ v=$(view "$L")
 expect "a gate round in an agent's log is an event, named for that agent" "field 'v.events.filter(e=>e.kind===\"gateFail\").map(e=>e.who)' <<<\"\$v\" | grep -q 'Lane B unit 13: payment screen'"
 expect "a running agent in now[] carries when it started, not just its current step" "[ \$(field 'Math.round((Date.now() - v.now.find(n=>n.type!==\"main\").start)/60e3)' <<<\"\$v\") -ge 17 ]"
 
+echo "== the agent tree: an agent that launches an agent"
+mkdir -p "$T/l5/s1/subagents"; L5="$T/l5/s1.jsonl"
+ask "$L5" 20 'build the checkout'
+call "$L5" 19 Agent 1 '{"description":"Lane A","subagent_type":"general-purpose","prompt":"Lane A","run_in_background":true}'
+result "$L5" 19 1 '"Async agent launched"'
+A1="$T/l5/s1/subagents/agent-a1.jsonl"
+printf '{"agentType":"general-purpose","description":"Lane A","toolUseId":"t1","spawnDepth":1}' > "$T/l5/s1/subagents/agent-a1.meta.json"
+call "$A1" 18 Agent 2 '{"description":"Lane A unit 2: cart","subagent_type":"general-purpose","prompt":"Build the cart.","run_in_background":true}'
+result "$A1" 18 2 '"Async agent launched"'
+A2="$T/l5/s1/subagents/agent-a2.jsonl"
+printf '{"agentType":"general-purpose","description":"Lane A unit 2: cart","toolUseId":"t2","spawnDepth":2}' > "$T/l5/s1/subagents/agent-a2.meta.json"
+call "$A2" 17 Edit 3 '{"file_path":"/tmp/app/src/cart.ts"}'
+result "$A2" 17 3 '"ok"'
+v=$(view "$L5")
+top=$(field 'v.units.find(u => u.desc === "Lane A").parent' <<<"$v")
+top_depth=$(field 'v.units.find(u => u.desc === "Lane A").depth' <<<"$v")
+inner=$(field 'v.units.find(u => u.desc === "Lane A unit 2: cart").parent' <<<"$v")
+inner_depth=$(field 'v.units.find(u => u.desc === "Lane A unit 2: cart").depth' <<<"$v")
+expect "a top-level agent is launched by the main thread, at depth 1" "[ \"\$top\" = '\"main\"' ] && [ \"\$top_depth\" = 1 ]"
+expect "an agent launched by another agent names that agent as its parent, at depth 2" "[ \"\$inner\" = '\"a1\"' ] && [ \"\$inner_depth\" = 2 ]"
+expect "the tree lists the main thread at depth 0 and every agent, once" "[ \$(field 'v.tree.length' <<<\"\$v\") = 3 ] && field 'v.tree[0].id' <<<\"\$v\" | grep -q main"
+
 echo "== the page"
 H="$S/dashboard.html"
 expect "keeps its title and the replay placeholder" "grep -q '<title>proof · live</title>' '$H' && grep -q '/\*__PROOF_DATA__\*/' '$H'"
