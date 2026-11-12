@@ -289,6 +289,33 @@ svg text { font-family: var(--font); }
 .pinned-tip .m { color: #a1a1aa; }
 .pinned-tip code { color: #e4e4e7; }
 }
+
+/* The launch tree: one agent per row, indented by depth (the indent is an inline padding). */
+.tree-row { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 30px; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 13px; text-align: left; color: var(--foreground); }
+.tree-row:hover, .tree-row.on { background: var(--muted); }
+.tree-row .tree-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tree-row .desc { min-width: 0; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Narrow screens (phones and small tablets): one column that scrolls, instead of squeezed or cut-off columns. The
+   inline grid columns and heights are overridden with !important, which beats an inline style. Nothing here applies
+   above 1024px, so the desktop layout is unchanged. */
+@media (max-width: 1024px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .main { min-height: 0; padding: 16px 16px 0; }
+  .top { height: auto; overflow-x: auto; flex-wrap: nowrap; padding: 10px 16px; }
+  .top > * { flex-shrink: 0; }
+  .grid { grid-template-columns: minmax(0, 1fr) !important; height: auto !important; flex: none !important; }
+  .grid.kpi4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .status, .status.wide { grid-template-columns: minmax(0, 1fr); }
+  .answer { min-width: 0; }
+  .cmd { width: min(620px, calc(100vw - 32px)); }
+  .foot-bar { margin: auto -16px 0; overflow-x: auto; }
+  .card { min-width: 0; }
+  .ch, .head { flex-wrap: wrap; }
+  /* The run graph keeps its width and scrolls sideways; the padding keeps the nodes' edges inside the clip. */
+  .graph-wrap { overflow-x: auto; padding: 4px 0; margin: 10px 0 -4px; }
+}
 </style>
 </head>
 <body>
@@ -571,10 +598,11 @@ svg text { font-family: var(--font); }
     const rounds = gateRounds(v), passed = rounds.filter(r => r[1]).length, gfail = rounds.length && !rounds[rounds.length - 1][1];
     const mainJob = v.now.find(n => n.type === 'main');
     const mainBadge = running.length ? `waiting on ${running.length}` : v.status.state === 'thinking' ? 'thinking' : shortStep(mainJob && mainJob.label) || 'idle';
-    const mainW = 210, gateW = 124, x = mainW + 64, gateX = W - gateW, nodeW = gateX - 64 - x, gy = h / 2;
+    // Laid out at no less than 560px, so the nodes keep their width on a phone; the outer box scrolls sideways instead.
+    const mainW = 210, gateW = 124, EW = Math.max(W, 560), x = mainW + 64, gateX = EW - gateW, nodeW = gateX - 64 - x, gy = h / 2;
     const nh = agents.length && h / agents.length > 38 ? 34 : 30, stepY = (h - nh) / Math.max(1, agents.length - 1);
-    return html`<div ref=${ref} style=${`position:relative;height:${h}px;margin-top:14px`}>${W ? html`
-      <svg width=${W} height=${h} style="position:absolute;inset:0;overflow:visible" data-testid="graph-wires">${agents.map((a, i) => {
+    return html`<div ref=${ref} class="graph-wrap" style="margin-top:14px"><div style=${`position:relative;height:${h}px;width:${EW}px`}>${W ? html`
+      <svg width=${EW} height=${h} style="position:absolute;inset:0;overflow:visible" data-testid="graph-wires">${agents.map((a, i) => {
         const y1 = i * stepY + nh / 2;
         return html`<path d=${`M${mainW} ${gy} C ${mainW + 34} ${gy}, ${x - 34} ${y1}, ${x} ${y1}`} stroke=${a.run ? 'var(--run)' : 'var(--border)'} stroke-width=${a.run ? 1.8 : 1.5} fill="none" stroke-dasharray=${a.run ? '5 4' : null} class=${a.run ? 'flow' : null} /><path d=${`M${x + nodeW} ${y1} C ${x + nodeW + 34} ${y1}, ${gateX - 34} ${gy}, ${gateX} ${gy}`} stroke="var(--border)" stroke-width="1.5" fill="none" />`;
       })}</svg>
@@ -586,7 +614,7 @@ svg text { font-family: var(--font); }
           data-tip=${`<b>${esc(a.name)}</b><br><span class=m>${esc(a.type)} · ${a.run ? esc(a.now) : 'done'} · ${dur(d)}</span><br><span class=m>worktree ${esc(a.where || 'main')} · ${plural(a.commits || 0, 'commit')}</span>`}>${a.run ? html`<span class="spin"></span>` : html`<span class="ck">${I.check}</span>`}<span class="nm">${a.name}</span>${a.run ? html`<span class="mf" style="font-weight:400;overflow:hidden;text-overflow:ellipsis;margin-left:6px">· ${a.now}</span>` : null}<span class="d">${a.run && d < 10 * 60e3 ? timer(d) : dur(d)}</span></button>`;
       })}
       <div class=${`jn ${gfail ? 'fail' : ''}`} style=${`left:${gateX}px;top:${gy - 17}px;width:${gateW}px`} data-tip=${`<b>Gate</b> · ${passed} of ${rounds.length} rounds passed`} data-testid="node-gate"><span class=${`ck ${gfail ? 'bad' : ''}`}>${gfail ? I.x : I.check}</span>Gate<span class="d">${passed}/${rounds.length}</span></div>` : null}
-    </div>`;
+    </div></div>`;
   }
 
   // Stacked activity bars per time slot (Tremor BarChart, stacked).
@@ -633,7 +661,7 @@ svg text { font-family: var(--font); }
   function Kpis({ v, data, sc }) {
     const n = v.tasks.length, done = tasksDone(v), next = v.tasks.find(t => t.status === 'in_progress') || v.tasks.find(t => t.status === 'pending');
     const f = v.features;
-    return html`<div class="grid" style="grid-template-columns:repeat(4,1fr)">
+    return html`<div class="grid kpi4" style="grid-template-columns:repeat(4,1fr)">
       <div class="card kpi" data-testid="kpi-tasks"><div class="ch"><span class="desc" data-testid="kpi-tasks-label">Tasks</span>${next ? html`<span class="r desc" data-testid="kpi-tasks-next">next: ${next.subject}</span>` : null}</div>
         <div class="v num" data-testid="kpi-tasks-value">${done}<small>${n ? `of ${n} done` : 'no task list yet'}</small></div>
         <div class="foot"><div class="catbar" data-testid="kpi-tasks-bar">${v.tasks.map(t => html`<i style=${`flex:1;background:${t.status === 'completed' ? 'var(--c-work)' : t.status === 'in_progress' ? 'color-mix(in srgb, var(--c-work) 35%, var(--track))' : 'var(--track)'}`} data-tip=${`<b>${esc(t.subject)}</b><br><span class=m>${t.status === 'completed' ? 'done' : t.status === 'in_progress' ? `in progress${t.owner ? ` · ${esc(t.owner)}` : ''}` : 'not started'}</span>`}></i>`)}</div></div></div>
@@ -778,7 +806,7 @@ svg text { font-family: var(--font); }
         <div class="card pad" data-testid="happened-card"><div class="ch"><h3 data-testid="happened-title">What happened</h3><span class="r desc" data-testid="happened-scope">this session</span></div>
           <div class="list" style="margin-top:6px">${rows.map((r, k) => html`<${Li} id=${`ev-${k + 1}`} r=${r} />`)}</div></div>
       </div>
-      <div class="grid" style="grid-template-columns:repeat(4,1fr)">${kpis.map(([k, l, val, small, c, bars]) => html`
+      <div class="grid kpi4" style="grid-template-columns:repeat(4,1fr)">${kpis.map(([k, l, val, small, c, bars]) => html`
         <div class="card kpi" data-testid=${`kpi-${k}`}><span class="desc" data-testid=${`kpi-${k}-label`}>${l}</span><div class="v num" data-testid=${`kpi-${k}-value`}>${val}${small ? html`<small>${small}</small>` : null}</div>
           <div class="foot"><div class="tracker sm" data-testid=${`kpi-${k}-bars`}>${bars.map((b, i) => html`<i style=${`background:${b ? c : 'var(--track)'};opacity:${b ? .35 + Math.min(b, 5) * .13 : 1}`} data-tip=${`${clock(s0 + i * 600e3)} · ${b} ${l.toLowerCase()}`}></i>`)}</div></div></div>`)}
       </div>
@@ -825,6 +853,15 @@ svg text { font-family: var(--font); }
 
   // ---- design v2: one agent, or the main thread, on its own ------------------------------------------------------------
   const STEP_NAME = { read: 'Reading & searching', edit: 'Editing code', test: 'Tests', git: 'Git', gate: 'proof gate', typecheck: 'Type checks & lint', build: 'Builds', shell: 'Commands', model: 'Thinking', web: 'Web lookups', fidelity: 'Screens & browser', waitUser: 'Waiting on you' };
+  // The launch tree, depth-first: each agent under the one that launched it. Rows are indented by depth.
+  function treeRows(v) {
+    const tree = v.tree || [], kids = new Map();   // a feed from before the tree existed has none
+    for (const n of tree) if (n.parent != null) kids.set(n.parent, [...(kids.get(n.parent) || []), n]);
+    const out = [], walk = (n, d) => { out.push({ ...n, d }); for (const c of kids.get(n.id) || []) walk(c, d + 1); };
+    const root = tree.find(n => n.id === 'main');
+    if (root) walk(root, 0);
+    return out;
+  }
   function Job({ v, who, st, set }) {
     const now = NOW(), main = who === 'Main thread', job = v.now.find(n => n.who === who), u = unitFor(v, who);
     const [shown, setShown] = useState(6);
@@ -839,6 +876,10 @@ svg text { font-family: var(--font); }
     const stepFor = job && job.since ? now - job.since : 0, LIMIT = 600e3;
     const gateFails = v.events.filter(e => e.kind === 'gateFail' && e.who === who).length;
     const errs = u ? u.errors || 0 : calls.filter(c => c.ok === false).length;
+    // The tree card only shows when some agent was launched by another agent, so a flat build looks as it always did.
+    const nested = (v.tree || []).some(n => n.depth > 1);
+    const treeCard = html`<div class="card pad col" style="gap:8px" data-testid="tree-card"><div class="ch"><h3 data-testid="tree-title">Agent tree</h3><span class="r desc" data-testid="tree-desc">who launched whom</span></div>
+      <div class="list" style="margin-top:4px">${treeRows(v).map(n => html`<button class=${`tree-row${(main && n.id === 'main') || (u && u.id === n.id) ? ' on' : ''}`} style=${`padding-left:${10 + n.d * 20}px`} data-testid=${`tree-${n.id}`} onClick=${() => { if (n.id !== 'main') set({ v: 'job', j: n.name }); }}><span class=${`dot ${n.running ? 'live' : 'idle'}`}></span><span class="tree-name">${n.id === 'main' ? 'Main thread' : n.name}</span><span class="desc" style="margin-left:auto">${n.id === 'main' ? 'main' : n.type}</span></button>`)}</div></div>`;
     const icon = c => (c.end == null ? ['run', html`<span class="spin" style="width:10px;height:10px;border-width:1.5px"></span>`] : c.ok === false ? ['bad', c.cat === 'gate' ? I.gate : I.x] : c.cat === 'git' ? ['run', I.commit] : c.cat === 'edit' ? ['work', I.edit] : c.cat === 'read' ? ['work', I.search] : ['', I.shell]);
     return html`<div class="head"><button class="btn out" data-testid="back" onClick=${() => set({ v: null, j: null })}>${I.back}${v.title}</button><h1 style="margin-left:6px" data-testid="title">${who}</h1><span class="badge" data-testid="job-type">${main ? 'main thread' : (u && u.type) || (job && job.type) || 'agent'}</span><span class="badge" data-testid="job-lane">${(u && u.where) || (job && job.where) || 'main'}</span></div>
       <div class="grid" style="grid-template-columns:1fr 1fr;height:200px">
@@ -855,6 +896,7 @@ svg text { font-family: var(--font); }
       <div class="card pad" data-testid="steps-card"><div class="ch"><h3 data-testid="steps-title">Steps</h3><span class="desc" data-testid="steps-total">${dur(now - start)}, oldest to newest</span><span class="r"><div class="tleg" data-testid="steps-legend">${groups.map(f => html`<span><i class=${f === 'idle' ? 'hatch' : ''} style=${`background:${GCOL[f]}`}></i>${GNAME[f]}</span>`)}</div></span></div>
         <div style="display:flex;gap:3px;height:36px;margin-top:14px" data-testid="steps-bar">${steps.slice(-12).map((s, i, a) => { const d = stepMs(s), run = s.calls.some(c => c.end == null); return html`<i style=${`flex:${Math.max(d, 25e3)};background:${GCOL[GROUP[s.cat]] || 'var(--c-cmd)'};border-radius:4px;${run ? 'background-image:repeating-linear-gradient(90deg,transparent 0 10px,rgb(255 255 255 / .18) 10px 12px)' : ''}`} data-tip=${`<b>${STEP_NAME[s.cat] || esc(s.cat)}</b> · ${dur(d)}${run ? ' · running' : ''}`}></i>`; })}</div>
         <div style="display:flex;gap:3px;margin-top:6px;font-size:11.5px;color:var(--muted-foreground)">${steps.slice(-12).map((s, i) => html`<span style=${`flex:${Math.max(stepMs(s), 25e3)};overflow:hidden;white-space:nowrap;text-overflow:ellipsis`} data-testid=${`step-${i + 1}`}>${dur(stepMs(s))}</span>`)}</div></div>
+      ${nested ? treeCard : null}
       <div class="grid" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
         <div class="card pad" style="overflow:auto" data-testid="activity-card"><div class="ch"><h3 data-testid="activity-title">Activity</h3><span class="desc" data-testid="activity-desc">every tool call, newest first</span></div>
           <div class="list" style="margin-top:4px">${calls.slice(0, shown).map((c, k) => { const [cls, ico] = icon(c); return html`<${Li} id=${`call-${k + 1}`} r=${{ t: c.t, cls, ico, text: codey(c.desc), tag: html`<span class="mono mf">${c.end == null ? timer(took(c)) : durS(took(c))}</span>` }} />`; })}</div>

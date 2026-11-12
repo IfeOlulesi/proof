@@ -60,14 +60,15 @@ It runs at `http://127.0.0.1:47331/`; the port comes from `~/.config/proof/machi
 | `id, title, cwd, project, branch, model` | identity; `title` is Claude Code's title for the session |
 | `start, last, from, to` | session start, last activity (agents included), window shown |
 | `status` | `{ state, since, cat, label, parallel, agents }`. `state` is one of: `working`, `thinking`, `agents` (main thread waiting for background agents), `approval`, `waiting` (on you), `needsInput`, `stalled`. While the gate runs it shows `working` with `cat: 'gate'`. |
-| `now` | `[{ who, type, where, state, since, cat, label }]`: the main thread first, then every agent mid-work; `where` is its worktree |
+| `now` | `[{ who, type, where, state, since, cat, label, id, parent, depth }]`: the main thread first, then every agent mid-work; `where` is its worktree; `id` is the agent's id, `parent` the id of the thread that launched it (`main` for the main thread), `depth` how many launches deep it is (1 for a direct launch) |
 | `rows` | `[{ key, label, sub, agents, who, lane: [[from, to, cat], …] }]`: timeline rows (main thread, one per worktree, reviews), each drawn by category; `who` names the agents in the row, so commits and gate failures land on their lane |
 | `asleep` | sleep windows inside this session |
 | `share` | `{ <cat>: ms }`: whole session; parallel work splits a moment's time, and waiting on you counts only when nothing else runs |
 | `windowShare` | the same, for the window only |
 | `busyMs`, `parallel` | time anything was running; average number of things running at once |
 | `tasks` | `[{ id, subject, status, active, owner }]`: Claude's task list; `owner` is who took the task, when the task file says |
-| `units` | `[{ desc, type, prompt, result, where, start, end, running, commits, errors }]`: agents as work items; `prompt` is what the agent was launched with (the drill-down's brief), `result` its last message once it has finished |
+| `tree` | `[{ id, parent, depth, name, type, running, start, end, commits }]`: the launch tree, every agent and reviews included, plus the main thread as `id: main`, `depth: 0`. The drill-down draws it when some agent has `depth > 1`. |
+| `units` | `[{ id, parent, depth, desc, type, prompt, result, where, start, end, running, commits, errors }]`: agents as work items; `prompt` is what the agent was launched with (the drill-down's brief), `result` its last message once it has finished |
 | `unitsDone` | how many agents have finished |
 | `features` | `{ passing, total }` from features.json, or null |
 | `commits` | `[{ t, sha, msg, who }]`: up to 40, main thread and agents |
@@ -138,3 +139,11 @@ frame with `fidelity/verify-screen.mjs <screen>` (see PROGRESS.md on the branch 
 6. **Tokens and cost per session** from the usage recorded in the logs.
 7. **All sessions on one screen.** A compact strip per session above the detail view.
 8. **Controls.** Stop a run, open a trace, open the worktree in the editor. Each action needs the monitor's token, so a web page can't trigger it.
+9. **Agent tree (implemented).** Show who launched whom: the main thread, its subagents, and any subagent that launched its own.
+   - The data already has the links. `timeline.mjs` reads each subagent's parent session and `spawnDepth` (around line 429), but `units` drops them. Add `parent` (the launching agent's id, or `main`) and `depth` to each unit, and to `now[]`.
+   - Draw a tree with the launching tool call on each edge, in the agent drill-down, with the run graph kept as the flat overview.
+   - Check: a fixture with a subagent that launches a subagent renders three levels, and the drill-down of the inner one names its parent.
+10. **Responsive layout (implemented: one column below 1024 px, the run graph scrolls sideways).** The page had no width breakpoints. Its only `@media` rules are for dark mode and reduced motion. The grids use fixed or fractional columns inline (for example `420px 1fr`, `520px 1fr`, `440px` and `1.25fr 1fr 1fr`), and the run graph uses a fixed main-node width (`mainW = 210`), so a narrow window squeezes or overflows.
+   - Below about 1024 px, stack the grids to one column. Use `minmax(0, …)` columns so nothing forces the width, and let the run graph scroll sideways instead of shrinking its nodes.
+   - Check: the existing fidelity frames at 1440 px stay the same, and the page is checked at 390 px and 768 px with Playwright, with no horizontal page scroll.
+   - The design source is `mockup/app.html`. Responsive rules need a matching frame there, so the mockup stays the reference.
