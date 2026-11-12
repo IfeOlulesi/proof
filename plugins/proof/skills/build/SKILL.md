@@ -9,7 +9,7 @@ description: Engineering work of any kind — implementing features, fixing bugs
 
 1. **Read the state.** Read SPEC.md, features.json and PROGRESS.md (whichever exist), and `git log --oneline -15`.
 2. **Make sure the gate exists.** `.claude/proof.json` lists the commands that prove this project works.
-   - If it's missing, create it from the project's real scripts (package.json, Makefile, pubspec.yaml, Gradle, Cargo) and run each command once.
+   - If it's missing, set it up with the proof:setup skill. It finds the checks the project already defines, writes them and runs each once. For a stack it doesn't read (pubspec.yaml, Gradle), write the file by hand from the project's real scripts.
    - If the project has no tests at all, set up the lightest runner for its stack from `${CLAUDE_SKILL_DIR}/references/test-tools.md`, and tell the user in one line. Don't swap out a runner the project already uses.
    - Setting it up and adding checks is your job: don't ask the user to review the file. Tell them in one line what is now checked.
    - Removing a check, changing its command or narrowing its `when` is flagged, and needs the user's OK.
@@ -71,9 +71,9 @@ The fields:
    - If the proof guard stops a run for memory or time, it's a loop, a leak or a hang, not a flaky test. Find the cause (the output shows where it was) before running it again. If it says the *machine* ran short of memory, the run may be fine: free memory, then run it again. If it keeps happening with a heavy runner (Jest, a JVM runner, a simulator), suggest the lighter option from `${CLAUDE_SKILL_DIR}/references/test-tools.md` to the user once.
    - For a run that takes minutes, start it in the background and wait on it with TaskOutput, which returns when the run exits. Never poll its log with `until grep …` or wait with `pgrep`: a line that never comes, or another session's run that matches, holds you until the limit. proof stops wait loops after 5 minutes.
    - Then run the app and use the feature: in the browser through Playwright or Chrome, or on a simulator through the platform tools (the agent tools in `${CLAUDE_SKILL_DIR}/references/test-tools.md` say which to suggest when none is set up). "Tests pass" is not the end.
-7. **Review.** For anything non-trivial, ask the proof:verifier agent to review the change against the unit's acceptance criteria. Do this once per unit, before committing. Fix the real gaps; ignore taste.
-8. **Commit and record.**
-   - Commit one unit per commit. The commit runs the full checks; if they fail, fix the cause and commit again.
+7. **Review.** For anything non-trivial, ask the proof:verifier agent to review the change against the unit's acceptance criteria. Do this once per unit, before calling it done. Fix the real gaps; ignore taste.
+8. **Record, then go on to the next unit.**
+   - Don't commit per unit. Each commit runs every check in full, so five units committed one by one run the whole suite five times. Commit once, when the whole task is done (in a parallel build, once per lane). If the commit's checks fail, fix the cause and commit again.
    - Add to PROGRESS.md: what changed, the checks that ran, what is still unverified, and what's next.
    - Set `passes: true` in features.json only with `evidence` naming the command that passed.
 

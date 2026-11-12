@@ -183,6 +183,9 @@ button.jn:hover { border-color: var(--subtle); box-shadow: var(--shadow-lg); }
 .jn .d { margin-left: auto; color: var(--muted-foreground); font-family: var(--mono); font-size: 11.5px; font-weight: 400; }
 .jn.run { border-color: var(--run-line); }
 .jn.root { height: 42px; padding: 0 12px; border-color: var(--run-line); box-shadow: 0 0 0 3px color-mix(in srgb, var(--run) 12%, transparent); }
+.jn.root .nm { flex-shrink: 0; }
+/* A long step ends in an ellipsis inside the node; the tooltip has it whole. */
+.jn.root .badge { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: 18px; }
 .jn.fail { border-color: var(--bad-line); }
 .ck { width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; background: var(--run-soft); color: var(--run-ink); flex-shrink: 0; }
 .ck.bad { background: var(--bad-soft); color: var(--bad-ink); }
@@ -524,17 +527,20 @@ svg text { font-family: var(--font); }
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
   // Every activity block of a session (all lanes: main thread and agents), as [start, end, group].
   const blocksOf = v => v.rows.flatMap(r => (r.lane || []).filter(b => GROUP[b[2]]).map(b => [b[0], b[1], GROUP[b[2]]]));
-  // The home's scope: the whole session, or its last hour (range tabs).
+  // The home's scope (range tabs): the last 5 minutes, hour or 6 hours, or the whole session.
+  // [key in the URL, label, how far back, bar size]. 'hour' keeps links saved before there were more ranges working.
+  const RANGES = [['5m', '5m', 5 * 60e3, 60e3], ['hour', '1h', 3600e3, 5 * 60e3], ['6h', '6h', 6 * 3600e3, 15 * 60e3], [null, 'Session', 0, 0]];
   function scopeOf(v, st, now) {
-    const hour = st.r === 'hour', from = Math.max(v.start, v.from || 0, hour ? now - 3600e3 : 0);   // lanes only cover the data window
+    const [, , back, bar] = RANGES.find(r => r[0] === (st.r || null)) || RANGES[3], ranged = back > 0;
+    const from = Math.max(v.start, v.from || 0, ranged ? now - back : 0);   // lanes only cover the data window
     let g = byGroup(v.share);
-    if (hour) {   // the main thread's time in the last hour, from its timeline lane
+    if (ranged) {   // the main thread's time in the range, from its timeline lane
       const main = v.rows.find(r => r.key === 'main');
       g = {};
       if (main) for (const [a, b, c] of main.lane) { const gr = GROUP[c], ov = Math.min(b, now) - Math.max(a, from); if (gr && ov > 0) g[gr] = (g[gr] || 0) + ov; }
     }
-    const span = Math.max(1, now - (hour ? from : v.start));   // the rings' share covers the whole session
-    return { hour, from, span, g, bucket: hour || span < 3600e3 ? 5 * 60e3 : 10 * 60e3 };
+    const span = Math.max(1, now - (ranged ? from : v.start));   // the rings' share covers the range, or the whole session
+    return { ranged, from, span, g, bucket: ranged ? bar : span < 3600e3 ? 5 * 60e3 : 10 * 60e3 };
   }
 
   // Width of an element, kept current: the charts draw to the pixel width they get.
@@ -606,7 +612,7 @@ svg text { font-family: var(--font); }
         const y1 = i * stepY + nh / 2;
         return html`<path d=${`M${mainW} ${gy} C ${mainW + 34} ${gy}, ${x - 34} ${y1}, ${x} ${y1}`} stroke=${a.run ? 'var(--run)' : 'var(--border)'} stroke-width=${a.run ? 1.8 : 1.5} fill="none" stroke-dasharray=${a.run ? '5 4' : null} class=${a.run ? 'flow' : null} /><path d=${`M${x + nodeW} ${y1} C ${x + nodeW + 34} ${y1}, ${gateX - 34} ${gy}, ${gateX} ${gy}`} stroke="var(--border)" stroke-width="1.5" fill="none" />`;
       })}</svg>
-      <button class="jn root" style=${`left:0;top:${gy - 21}px;width:${mainW}px`} data-tip=${`<b>Main thread</b><br><span class=m>orchestrates, talks to you · ${plural(v.commits.length, 'commit')}</span>`} data-testid="node-main" onClick=${() => set({ v: 'job', j: 'Main thread' })}><span class=${`dot ${running.length || !BUSY(v.status.state) ? 'idle' : 'live'}`}></span><span class="nm">Main thread</span><span class="badge" style="margin-left:auto;height:20px">${mainBadge}</span></button>
+      <button class="jn root" style=${`left:0;top:${gy - 21}px;width:${mainW}px`} data-tip=${`<b>Main thread</b><br>${mainJob && mainJob.label && !running.length ? `${esc(mainJob.label)}<br>` : ''}<span class=m>orchestrates, talks to you · ${plural(v.commits.length, 'commit')}</span>`} data-testid="node-main" onClick=${() => set({ v: 'job', j: 'Main thread' })}><span class=${`dot ${running.length || !BUSY(v.status.state) ? 'idle' : 'live'}`}></span><span class="nm">Main thread</span><span class="badge" style="margin-left:auto;height:20px">${mainBadge}</span></button>
       ${agents.map((a, i) => {
         if (a.more) return html`<div class="jn" style=${`left:${x}px;top:${i * stepY}px;width:${nodeW}px;height:${nh}px;color:var(--muted-foreground);font-weight:400`} data-testid="node-more">+${a.more} more agents · the drawers list them all</div>`;
         const d = (a.end || now) - a.start;
@@ -673,7 +679,7 @@ svg text { font-family: var(--font); }
     </div>`;
   }
 
-  const RangeTabs = ({ st, set }) => html`<div class="tabs" data-testid="range">${[['hour', 'Last hour'], [null, 'Session']].map(([r, label], i) => html`<button class=${(st.r || null) === r ? 'on' : ''} data-testid=${`range-${i + 1}`} aria-pressed=${(st.r || null) === r} onClick=${() => set({ r })}>${label}</button>`)}</div>`;
+  const RangeTabs = ({ st, set }) => html`<div class="tabs" data-testid="range">${RANGES.map(([r, label], i) => html`<button class=${(st.r || null) === r ? 'on' : ''} data-testid=${`range-${i + 1}`} aria-pressed=${(st.r || null) === r} onClick=${() => set({ r })}>${label}</button>`)}</div>`;
   const Head2 = ({ v, right }) => html`<div class="head"><h1 data-testid="title">${v.title}</h1><span class="meta" data-testid="meta">${v.project}${v.branch ? html` · <code>${v.branch}</code>` : null} · started ${ago(NOW() - v.start)}${v.model ? ` · ${modelName(v.model)}` : ''}</span><div class="r">${right}</div></div>`;
 
   // Home while Claude works: status rings, the run graph, KPI cards, activity.
@@ -690,7 +696,7 @@ svg text { font-family: var(--font); }
           <${JobGraph} v=${v} h=${banner ? 168 : 190} set=${set} /></div>
       </div>
       <${Kpis} v=${v} data=${data} sc=${sc} />
-      <div class="card pad col" style="flex:1;min-height:0;gap:10px"><div class="ch"><h3 data-testid="act-title">Activity</h3><span class="desc" data-testid="act-desc">every ${sc.bucket / 60e3} minutes, all agents combined</span><span class="r"><${ActLegend} /></span></div>
+      <div class="card pad col" style="flex:1;min-height:0;gap:10px"><div class="ch"><h3 data-testid="act-title">Activity</h3><span class="desc" data-testid="act-desc">every ${sc.bucket === 60e3 ? 'minute' : `${sc.bucket / 60e3} minutes`}, all agents combined</span><span class="r"><${ActLegend} /></span></div>
         <${ActivityChart} blocks=${blocksOf(v)} t0=${sc.from} t1=${now} bucket=${sc.bucket} id="activity" /></div>`;
   }
 

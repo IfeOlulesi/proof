@@ -96,6 +96,18 @@ expect "a top-level agent is launched by the main thread, at depth 1" "[ \"\$top
 expect "an agent launched by another agent names that agent as its parent, at depth 2" "[ \"\$inner\" = '\"a1\"' ] && [ \"\$inner_depth\" = 2 ]"
 expect "the tree lists the main thread at depth 0 and every agent, once" "[ \$(field 'v.tree.length' <<<\"\$v\") = 3 ] && field 'v.tree[0].id' <<<\"\$v\" | grep -q main"
 
+echo "== the agent tree: a fork, whose log starts with a copy of its parent's history"
+call "$A1" 16 Agent 4 '{"description":"Fork: copy review","subagent_type":"fork","prompt":"Review the copy.","run_in_background":true}'
+result "$A1" 16 4 '"Async agent launched"'
+F1="$T/l5/s1/subagents/agent-f1.jsonl"
+printf '{"agentType":"fork","isFork":true,"description":"Fork: copy review","toolUseId":"t4","parentAgentId":"a1","spawnDepth":2}' > "$T/l5/s1/subagents/agent-f1.meta.json"
+call "$F1" 16 Agent 4 '{"description":"Fork: copy review","subagent_type":"fork","prompt":"Review the copy.","run_in_background":true}'
+call "$F1" 15 Read 5 '{"file_path":"/tmp/app/src/copy.ts"}'
+result "$F1" 15 5 '"ok"'
+v=$(view "$L5")
+fork=$(field 'v.tree.find(n => n.name === "Fork: copy review").parent' <<<"$v")
+expect "a fork names the agent that launched it, not itself or the main thread" "[ \"\$fork\" = '\"a1\"' ]"
+
 echo "== the page"
 H="$S/dashboard.html"
 expect "keeps its title and the replay placeholder" "grep -q '<title>proof · live</title>' '$H' && grep -q '/\*__PROOF_DATA__\*/' '$H'"

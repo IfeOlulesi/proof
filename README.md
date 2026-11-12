@@ -91,13 +91,13 @@ Restart Claude Code. `claude plugin list` should show `proof@proof` as enabled. 
 
 ## Turn it on in a project
 
-The gate only runs in a repo that has a `.claude/proof.json` listing its checks. The install prompt writes it for the project you installed from. For any other project, open Claude Code there and paste:
+The gate only runs in a repo that has a `.claude/proof.json` listing its checks. The install prompt writes it for the project you installed from. For any other project, open Claude Code there and run:
 
 ```
-Set up proof in this repo: write .claude/proof.json with checks for the type
-check, lint and tests this project already uses. Then run every check once and
-show me which pass and which fail.
+/proof:setup
 ```
+
+It finds the type check, lint and test commands the project already has (in `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod` or a `Makefile`), writes them to `.claude/proof.json` without touching checks already there, then runs each one once and tells you which pass.
 
 Or write the file yourself:
 
@@ -118,13 +118,14 @@ Checked at every step. Your agent plans it, designs it, then builds it. Each ste
 
 | Command | For | Checks that |
 |---|---|---|
+| [`/proof:setup`](plugins/proof/skills/setup/SKILL.md) | Turn proof on in a project | Every check it writes runs once |
 | [`/proof:discover`](plugins/proof/skills/discover/SKILL.md) | Idea → spec | Every requirement says how it's verified |
 | [`/proof:design`](plugins/proof/skills/design/SKILL.md) | Spec → HTML mockup | Every screen, state and test ID exists |
 | [`/proof:build`](plugins/proof/skills/build/SKILL.md) | Any code change | Tests come first, the app is run, screens match the mockup |
 | [`/proof:quick`](plugins/proof/skills/quick/SKILL.md) | Fixes up to 3 files | The narrowest check passes, then the commit gate |
 | [`/proof:watch`](plugins/proof/skills/watch/SKILL.md) | Long or parallel work | Opens the live dashboard |
 
-The second agent is `proof:verifier`: before each unit of work is committed, it reviews it against what was asked, in a fresh context.
+The second agent is `proof:verifier`: before each unit of work is called done, it reviews it against what was asked, in a fresh context.
 
 ## The dashboard
 
@@ -152,7 +153,6 @@ On macOS it also keeps the machine from idle-sleeping while your agent is workin
 
 - **Other agent harnesses.** Codex CLI first, then Gemini CLI, Antigravity and OpenCode. The checks and limits are plain Node; what needs adapting is the hook wiring and the dashboard's log reader.
 - **Checks in CI.** A GitHub Action that runs the same `.claude/proof.json`, for cloud sessions and pull requests that didn't come from your agent.
-- **Setup that writes `proof.json` for you.** Suggests checks from `package.json`, `pyproject.toml` or `Cargo.toml`.
 - **Flaky tests named, not hidden.** A failure that passes on a re-run is reported as flaky.
 - **Notifications when your agent needs you.** A desktop or phone alert when a session stops on a question or runs out of rounds.
 - **Accessibility checks** in the design gate: contrast and basic rules on every screen.

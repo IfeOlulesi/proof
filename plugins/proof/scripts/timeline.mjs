@@ -137,7 +137,7 @@ export class Session {
   constructor(file, meta = {}) {
     this.file = file;
     this.id = meta.id || basename(file, '.jsonl');
-    this.agent = meta.agent || null;           // subagent logs: { agentType, description, toolUseId }
+    this.agent = meta.agent || null;           // subagent logs: { agentType, description, toolUseId, depth, parentId, fork }
     this.cwd = null; this.branch = null; this.title = null; this.model = null;
     this.start = Infinity; this.end = -Infinity;
     this.tools = []; this.open = new Map(); this.byId = new Map();
@@ -426,7 +426,7 @@ export function subagentInfo(file) {
 
 export function newSession(file, seen, until) {
   const sub = subagentInfo(file);
-  const s = new Session(file, sub ? { id: sub.id, agent: { agentType: sub.meta.agentType || 'subagent', description: sub.meta.description || '', toolUseId: sub.meta.toolUseId, depth: sub.meta.spawnDepth || 1 } } : {});
+  const s = new Session(file, sub ? { id: sub.id, agent: { agentType: sub.meta.agentType || 'subagent', description: sub.meta.description || '', toolUseId: sub.meta.toolUseId, depth: sub.meta.spawnDepth || 1, parentId: sub.meta.parentAgentId || null, fork: !!sub.meta.isFork } } : {});
   s.seen = seen || null;
   s.until = until || null;
   return { s, parent: sub?.parent || null };

@@ -13,17 +13,19 @@ export const VERSION = '0.4.0';
 const REVIEW = /verifier|judge|review/i;
 const BUSY_STATES = new Set(['working', 'thinking', 'agents']);
 
-// Who launched whom. An agent's meta names the Agent or Task call that launched it (toolUseId), and that call sits in
-// the main log or in another agent's log. The owner of the call is the launching thread. When the call isn't found,
-// the parent is the main thread and the depth falls back to the agent's spawnDepth (1 if it has none).
-// Not tested against real nested logs yet: the monitor only lists <session>/subagents/*.jsonl, so a nested agent
-// is read only if its log is there.
+// Who launched whom. Claude Code's meta names the launching agent (parentAgentId) for an agent launched by an agent;
+// failing that, the meta's toolUseId is the Agent or Task call that launched it, and the thread whose log holds that
+// call is the parent. A fork's log starts with a copy of its parent's history, calls included, so a fork only owns
+// calls no other log has. When neither is found, the parent is the main thread and the depth falls back to the
+// agent's spawnDepth (1 if it has none). Nested agents' logs sit beside the others in <session>/subagents/.
 export function lineage(s, agents) {
   const owner = new Map();
   for (const t of s.tools) if (t.id) owner.set(t.id, 'main');
-  for (const a of agents) for (const t of a.tools) if (t.id) owner.set(t.id, a.id);
+  for (const fork of [false, true]) {
+    for (const a of agents) if (!!a.agent?.fork === fork) for (const t of a.tools) if (t.id && !owner.has(t.id)) owner.set(t.id, a.id);
+  }
   const byAgentId = new Map(agents.map(a => [a.id, a]));
-  const linkOf = a => owner.get(a.agent?.toolUseId) || null;
+  const linkOf = a => (byAgentId.has(a.agent?.parentId) ? a.agent.parentId : owner.get(a.agent?.toolUseId) || null);
   const parentOf = a => { const p = linkOf(a); return p && p !== a.id ? p : 'main'; };
   const depthOf = a => {
     let d = 1, cur = a;

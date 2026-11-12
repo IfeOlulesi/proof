@@ -39,7 +39,7 @@ if (error) {
   if (config.phase) lines.push(`Project phase (from .claude/proof.json): ${config.phase}.`);
 } else {
   lines.push(root
-    ? 'Completion gate: OFF here (no .claude/proof.json). Before any build work, run the proof:init-proof skill to set it up from this project\'s own checks (or set it up as the proof:build skill describes).'
+    ? 'Completion gate: OFF here (no .claude/proof.json). Before any build work, run the proof:setup skill to set it up from this project\'s own checks (or set it up as the proof:build skill describes).'
     : 'Completion gate: OFF (not a git repository).');
 }
 lines.push(`To run every check by hand (the baseline at session start, or when asked): node "${join(pluginRoot, 'scripts', 'gate.mjs')}" --run. Otherwise let the gate run them; while fixing a failure, run only the failing test.`);

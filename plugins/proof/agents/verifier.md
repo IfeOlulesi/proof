@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: Fresh-context verifier. Use once per unit of work, after it works and before it is committed — a spec against the user's goal, a mockup against the spec, or a change against its acceptance criteria or features.json item. Checks each requirement against evidence and reports only correctness and requirement gaps. Never edits.
+description: Fresh-context verifier. Use once per unit of work, after it works and before the unit is called done — a spec against the user's goal, a mockup against the spec, or a change against its acceptance criteria or features.json item. Checks each requirement against evidence and reports only correctness and requirement gaps. Never edits.
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---

@@ -30,6 +30,10 @@ const JS_WHEN = ['**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,vue,svelte}', '**/tsconfig
 const PY_WHEN = ['**/*.py', 'pyproject.toml', 'setup.cfg', 'requirements*.txt'];
 const watchMode = s => /(^|\s)(--watch|-w)(\s|=|$)/.test(s);
 const fixMode = s => /(^|\s)--fix(\s|=|$)/.test(s);
+// The tools a command runs, of those whose check would otherwise run twice under two names. A tool counts as a word
+// of its own or as node_modules/.bin/<tool>, not as a folder name (tools/ruff).
+const TOOLS = ['jest', 'vitest', 'mocha', 'ava', 'tsc', 'eslint', 'biome', 'oxlint', 'mypy', 'ruff', 'pytest'];
+const toolsOf = s => TOOLS.filter(t => new RegExp(`(^|[\\s;&|(]|\\.bin/)${t}(\\s|$|[;&|)])`).test(s || ''));
 
 // ---- Node (package.json scripts) ----
 if (has('package.json')) {
@@ -46,7 +50,7 @@ if (has('package.json')) {
   const pick = (names, ok = () => true) => names.find(n => typeof scripts[n] === 'string' && ok(scripts[n]));
 
   const types = pick(['typecheck', 'type-check', 'check:types', 'types', 'tsc']);
-  if (types) found.push({ kind: 'types', name: 'types', run: runScript(types), source: `package.json "${types}"`, when: JS_WHEN });
+  if (types) found.push({ kind: 'types', name: 'types', run: runScript(types), tools: toolsOf(scripts[types]), source: `package.json "${types}"`, when: JS_WHEN });
   else if (has('tsconfig.json') && deps.typescript) {
     found.push({ kind: 'types', name: 'types', run: `${exec} tsc --noEmit`, source: 'tsconfig.json + typescript', when: JS_WHEN });
   }
@@ -54,7 +58,7 @@ if (has('package.json')) {
   const lintName = pick(['lint', 'lint:check']);
   if (lintName) {
     if (fixMode(scripts[lintName])) notes.push(`skipped lint script "${lintName}": it passes --fix, so it edits files during the check.`);
-    else found.push({ kind: 'lint', name: 'lint', run: runScript(lintName), source: `package.json "${lintName}"`, when: JS_WHEN });
+    else found.push({ kind: 'lint', name: 'lint', run: runScript(lintName), tools: toolsOf(scripts[lintName]), source: `package.json "${lintName}"`, when: JS_WHEN });
   }
 
   const testName = pick(['test', 'test:ci'], realTest);
@@ -62,7 +66,7 @@ if (has('package.json')) {
     const s = scripts[testName];
     if (watchMode(s)) notes.push(`skipped test script "${testName}": it runs in watch mode (${s}), so the gate would hang.`);
     else {
-      const entry = { kind: 'test', name: 'test', run: runScript(testName), source: `package.json "${testName}"` };
+      const entry = { kind: 'test', name: 'test', run: runScript(testName), tools: toolsOf(s), source: `package.json "${testName}"` };
       const filesGlob = ['**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}'];
       const fullWhen = ['package.json', 'jest.config.*', 'vitest.config.*', ...(lockfile ? [lockfile] : [])];
       if (/\bjest\b/.test(s)) Object.assign(entry, { fast: `${exec} jest --ci --passWithNoTests --findRelatedTests {files}`, files: filesGlob, fullWhen });
@@ -120,18 +124,28 @@ if (existed) {
   catch (e) { die(`.claude/proof.json exists but is not valid JSON (${e.message}). Fix or remove it, then run this again. Nothing was written.`, 2); }
   if (!Array.isArray(config.checks)) die('.claude/proof.json has no "checks" list. Nothing was written.', 2);
 }
-const existingRuns = new Set(config.checks.map(c => (typeof c === 'string' ? c : c?.run)));
+// A check is already covered when proof.json has one with the same command or name, or when every tool it runs is
+// already run by a check there (an existing `npx jest` covers a detected `npm run test` that runs jest), so a suite
+// never runs twice.
+const existing = config.checks.map(c => (typeof c === 'string' ? { name: c, run: c } : c || {}));
+const coveredBy = f => {
+  const same = existing.find(c => c.run === f.run || c.name === f.name);
+  if (same) return same.name || same.run;
+  const tools = f.tools || toolsOf(f.run), by = tools.map(t => existing.find(c => toolsOf(c.run).includes(t)));
+  return tools.length && by.every(Boolean) ? [...new Set(by.map(c => c.name || c.run))].join('", "') : null;
+};
 // Only the fields the gate reads go into proof.json; `kind` and `source` stay in the printout.
 const CHECK_FIELDS = ['name', 'run', 'fast', 'files', 'fullWhen', 'when'];
 const toEntry = f => Object.fromEntries(CHECK_FIELDS.filter(k => f[k] !== undefined).map(k => [k, f[k]]));
-const additions = found.filter(f => !existingRuns.has(f.run)).map(toEntry);
+const additions = found.filter(f => !coveredBy(f)).map(toEntry);
 const proposed = { ...config, checks: [...config.checks, ...additions] };
 
 console.log(`Project: ${root}`);
 if (!found.length) console.log('No type check, lint or test command found in this project.');
 for (const f of found) {
   const extra = f.fast ? ', per-reply filter for changed files' : '';
-  console.log(`  ${f.kind.padEnd(5)} ${f.run}   (from ${f.source}${existingRuns.has(f.run) ? ', already in proof.json' : extra})`);
+  const by = coveredBy(f);
+  console.log(`  ${f.kind.padEnd(5)} ${f.run}   (from ${f.source}${by ? `, already covered by "${by}" in proof.json` : extra})`);
 }
 for (const n of notes) console.log(`  note: ${n}`);
 console.log(existed ? '.claude/proof.json exists.' : '.claude/proof.json does not exist yet.');

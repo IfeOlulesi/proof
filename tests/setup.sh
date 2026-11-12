@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# The init-proof skill: the detector finds the checks a project already defines, --write adds them to .claude/proof.json
+# The setup skill: the detector finds the checks a project already defines, --write adds them to .claude/proof.json
 # without touching the checks already there, a broken file is left alone, the written file passes the gate, and the
 # session-start notice points at the skill.
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
-DET="$P/skills/init-proof/scripts/detect-checks.mjs"
+DET="$P/skills/setup/scripts/detect-checks.mjs"
 clean() { find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +; }
 count() { node -e 'const c=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).checks;console.log(c.length)' "$1"; }
 
@@ -43,6 +43,27 @@ out=$(node "$DET" --write)
 expect "a second --write adds nothing and leaves the file as it is" "grep -q 'Nothing to add' <<<\"\$out\" && [ \"\$(cat .claude/proof.json)\" = \"\$before\" ]"
 
 clean
+printf '{"scripts":{"lint":"eslint .","test":"jest --ci"}}' > package.json
+: > package-lock.json
+mkdir -p .claude
+printf '{"checks":[{"name":"unit","run":"npx jest"},{"name":"lint","run":"make lint"}]}' > .claude/proof.json
+out=$(node "$DET" --write)
+expect "a check already run under another command or name isn't added again" "! grep -q 'npm run' .claude/proof.json && grep -q 'covered by \"unit\"' <<<\"\$out\""
+clean
+printf '{"scripts":{"lint":"tsc --noEmit && eslint ."}}' > package.json
+: > package-lock.json
+mkdir -p .claude
+printf '{"checks":[{"name":"types","run":"npx tsc --noEmit"}]}' > .claude/proof.json
+node "$DET" --write >/dev/null
+expect "a script running two tools is covered only when both already run" "grep -q 'npm run lint' .claude/proof.json"
+clean
+printf '[tool.ruff]\n' > pyproject.toml
+mkdir -p .claude
+printf '{"checks":[{"name":"rust","run":"cd tools/ruff && cargo test"}]}' > .claude/proof.json
+node "$DET" --write >/dev/null
+expect "a folder named after a tool doesn't count as running it" "grep -q 'ruff check' .claude/proof.json"
+
+clean
 printf '{"scripts":{"lint":"true"}}' > package.json
 : > package-lock.json
 mkdir -p .claude
@@ -61,7 +82,7 @@ expect "gate --run passes every written check" "[ $code -eq 0 ] && grep -q 'All 
 echo "== session-start notice"
 mkdir -p "$T/bare" && cd "$T/bare" && git init -q
 out=$(node -e 'process.stdout.write(JSON.stringify({session_id:"ip1",cwd:process.argv[1],source:"startup"}))' "$T/bare" | node "$S/session-start.mjs")
-expect "a git repo without proof.json is told to run the init-proof skill" "grep -q 'proof:init-proof' <<<\"\$out\""
+expect "a git repo without proof.json is told to run the setup skill" "grep -q 'proof:setup' <<<\"\$out\""
 cd "$R"
 
 echo "== other package managers"

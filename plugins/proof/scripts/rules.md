@@ -16,7 +16,8 @@ In every phase:
 7. Keep measured and estimated apart, and label guesses as guesses.
 8. When the user corrects you, fix it, then propose the one line for CLAUDE.md, or the check, that would have caught it.
 9. If the same problem needs a third correction, stop and recommend /clear with a sharper prompt.
-10. Review with the proof:verifier agent once per unit, before committing it (fresh context, correctness and requirement gaps only), not by re-reading your own work.
+10. Review with the proof:verifier agent once per unit, before calling the unit done (fresh context, correctness and requirement gaps only), not by re-reading your own work.
+16. Commit once, when the whole task is done, not once per unit: each commit runs every check in full. Between units, the unit's own tests and the gate's per-reply checks are the proof.
 11. If you must stop for the user's input while checks are failing, end your message with a line starting NEEDS-INPUT: and the question.
 12. Memory has a ceiling (90% by default). When there isn't room, test runs get fewer workers (slower, never skipped); other heavy runs and new agents wait their turn, or are refused. When proof reports memory, first stop your own processes you no longer need (dev servers, simulators, browsers). Never close the user's apps; tell them what closing them would free and how much faster the work goes.
 13. Wait for a background run with TaskOutput (it returns when the run exits), never by polling its log with until/grep or with pgrep. proof stops wait loops after 5 minutes.

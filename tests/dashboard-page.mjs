@@ -49,10 +49,35 @@ await expect('a hidden session that needs you shows on +N more', async () => (aw
 
 console.log('== range');
 await open();
+await expect('the range tabs are 5m, 1h, 6h and Session', async () => [await text('range-1'), await text('range-2'), await text('range-3'), await text('range-4')].join(' ') === '5m 1h 6h Session');
 await id('range-1').click();
-await expect('Last hour re-draws the chart in 5-minute bars', async () => (await text('act-desc')).startsWith('every 5 minutes'));
+await expect('5m re-draws the chart in 1-minute bars', async () => (await text('act-desc')).startsWith('every minute'));
+await expect('5m counts at most 5 minutes of work', async () => /^([0-5]m|\d+s|0m)$/.test(await text('leg-1-value')));
 await id('range-2').click();
+await expect('1h re-draws the chart in 5-minute bars', async () => (await text('act-desc')).startsWith('every 5 minutes'));
+await id('range-3').click();
+await expect('6h re-draws the chart in 15-minute bars', async () => (await text('act-desc')).startsWith('every 15 minutes'));
+await id('range-4').click();
 await expect('Session goes back to 10-minute bars', async () => (await text('act-desc')).startsWith('every 10 minutes'));
+await page.goto(`${PAGE}?data=/tests/fixtures/dashboard/home--working.json#r=hour`); await id('title').waitFor();
+await expect('a link saved with the old r=hour still opens on 1h', async () => (await id('range-2').getAttribute('aria-pressed')) === 'true');
+
+console.log('== long step on the main thread');
+const LONG = 'Deploy the admin site to Vercel production and check every route answers';
+await page.route(u => u.pathname.endsWith("/home--long-step.json"), async r => {
+  const f = JSON.parse(await (await fetch(`${FIX}/home--working.json`)).text()), s = f.sessions[0];
+  s.now = s.now.filter(n => n.type === 'main').map(n => ({ ...n, label: LONG }));
+  s.units = s.units.map(u => ({ ...u, running: false, end: u.end || f.now - 60e3 }));
+  await r.fulfill({ contentType: 'application/json', body: JSON.stringify(f) });
+});
+await open('', 'home--long-step');
+await expect('a long step stays inside the main thread node', async () => page.evaluate(() => {
+  const n = document.querySelector('[data-testid="node-main"]'), b = n.querySelector('.badge');
+  return b.getBoundingClientRect().right <= n.getBoundingClientRect().right - 8 && b.scrollWidth > b.clientWidth;
+}));
+await id('node-main').hover();
+await expect('the full step is in the tooltip', async () => (await page.locator('.tip').innerText()).includes(LONG));
+await open();
 
 console.log('== tooltips');
 await page.locator('[data-testid="activity"] rect[data-tip]').nth(3).hover();
