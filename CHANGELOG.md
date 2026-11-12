@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 (2026-11-12)
+
+- **`/proof:setup` turns proof on.** It finds the type check, lint and test commands a project already defines (package.json scripts, a Makefile, Python, Rust and Go tool configs), writes them to `.claude/proof.json` and runs each once. Checks already there are kept, and a check that already runs under another name isn't added twice. A project with no tests gets the lightest runner for its stack. Contributed by [Y4NN777](https://github.com/Y4NN777).
+- **One commit per task.** Claude no longer commits after each unit of a big feature, which ran the full checks once per unit. It runs each unit's own tests as it goes and commits once, when the whole task is done.
+- **Filter a session by time.** The range tabs are now 5m, 1h, 6h and Session; the rings, gate rounds and activity chart follow the range.
+- **An agent tree, and a dashboard for phones and tablets.** An agent's page shows the agents it started and the one that started it, forks included. The layout now works on small screens. Contributed by [Y4NN777](https://github.com/Y4NN777).
+- **Fixes.** A long step on the main thread no longer spills out of its box in the run graph. `mem.mjs --json` no longer cuts off its output at 512 bytes when piped.
+
 ## 0.7.0 (2026-11-03)
 
 - **A new dashboard.** The live dashboard is redesigned, in light and dark. A session's home opens on rings for how much of it Claude spent working and how long it waited on you, a graph of the agents running and finished, cards for tasks, features, gate rounds and memory, and a chart of what kept Claude busy every 10 minutes. A session that needs you turns coral and says where to answer; a finished one shows what happened and where the time went; a stalled one shows how long nothing has run.
