@@ -36,4 +36,18 @@ sed -i.bak 's/0.3.0/0.4.0/' plugins/proof/.claude-plugin/plugin.json
 out=$(node "$REL" --check 2>&1); code=$?
 expect "is refused, naming both versions" "[ $code -ne 0 ] && grep -q 'plugin.json is 0.4.0 but the newest CHANGELOG entry is 0.3.0' <<<\"\$out\""
 
+mv plugins/proof/.claude-plugin/plugin.json.bak plugins/proof/.claude-plugin/plugin.json
+
+echo "== a version set in a merge commit"
+# A branch merged with the version bump in the merge commit itself: git log leaves merge diffs out unless asked.
+B=$(git rev-parse --abbrev-ref HEAD)
+git checkout -qb side && echo y > side && git add side && git commit -qm "Side work"
+git checkout -q "$B" && echo z > main-work && git add main-work && git commit -qm "Main work"
+git merge -q --no-commit --no-ff side >/dev/null 2>&1
+printf '{\n  "name": "proof",\n  "version": "0.4.0"\n}\n' > plugins/proof/.claude-plugin/plugin.json
+{ printf '# Changelog\n\n## 0.4.0 (2026-11-04)\n\n- fourth\n\n'; sed '1,2d' CHANGELOG.md; } > c.tmp && mv c.tmp CHANGELOG.md
+git add -A && git commit -qm "Merge side; release 0.4.0: fourth (0.4.0)"; S4=$(git rev-parse --short HEAD)
+out=$(PROOF_RELEASES=v0.1.0,v0.2.0,v0.3.0 node "$REL" --dry-run 2>&1)
+expect "is released at the merge commit (got: $(grep -m1 'v0.4.0' <<<"$out"))" "grep -q 'would release v0.4.0 at $S4 (latest)' <<<\"\$out\""
+
 finish

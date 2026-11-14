@@ -34,7 +34,7 @@ const releases = new Set((process.env.PROOF_RELEASES ?? sh('gh', ['release', 'li
 const plan = [];
 for (const e of [...entries].reverse()) {
   if (releases.has(`v${e.version}`)) continue;
-  const sha = sh('git', ['log', '--reverse', '--format=%H', '-G', `"version": "${e.version.replaceAll('.', '\\.')}"`, '--', MANIFEST]).split('\n')[0];
+  const sha = sh('git', ['log', '--reverse', '--diff-merges=first-parent', '--format=%H', '-G', `"version": "${e.version.replaceAll('.', '\\.')}"`, '--', MANIFEST]).split('\n')[0];
   if (!sha) { console.log(`skip ${e.version}: no commit sets it in plugin.json`); continue; }
   // "Release 0.7.0: the new dashboard (0.7.0)" -> "the new dashboard", as the earlier tags read.
   const subject = sh('git', ['log', '-1', '--format=%s', sha]);
