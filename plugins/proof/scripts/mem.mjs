@@ -469,12 +469,15 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const i = process.argv.indexOf('--need');
   const need = i > -1 ? Number(process.argv[i + 1]) || 0 : 0;
   const snap = snapshot({ env: true });
-  if (process.argv.includes('--json')) { console.log(JSON.stringify(snap, null, 2)); process.exit(0); }
-  const a = advice(snap, need);
-  console.log(a.text);
-  console.log(`\nBiggest users: ${snap.apps.slice(0, 8).map(x => `${x.name}${x.claude ? ' (Claude)' : ''} ${gb(x.mb)}`).join(', ')}`);
-  if (snap.sessions.length) console.log(`Claude Code sessions: ${snap.sessions.length} (${snap.sessions.map(s => `${s.cwd ? s.cwd.split('/').pop() : s.pid} ${gb(s.mb)}`).join(', ')})`);
-  if (snap.system.rough) console.log('(Rough reading: the precise memory tools were unavailable.)');
+  // Exit only once the write is done: on macOS a pipe is written asynchronously, and exiting at once cuts it off at 512 bytes.
+  if (process.argv.includes('--json')) process.stdout.write(`${JSON.stringify(snap, null, 2)}\n`, () => process.exit(0));
+  else {
+    const a = advice(snap, need);
+    console.log(a.text);
+    console.log(`\nBiggest users: ${snap.apps.slice(0, 8).map(x => `${x.name}${x.claude ? ' (Claude)' : ''} ${gb(x.mb)}`).join(', ')}`);
+    if (snap.sessions.length) console.log(`Claude Code sessions: ${snap.sessions.length} (${snap.sessions.map(s => `${s.cwd ? s.cwd.split('/').pop() : s.pid} ${gb(s.mb)}`).join(', ')})`);
+    if (snap.system.rough) console.log('(Rough reading: the precise memory tools were unavailable.)');
+  }
 }
 
 export { statSync };

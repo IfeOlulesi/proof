@@ -144,7 +144,7 @@ stop() { node -e 'process.stdout.write(JSON.stringify({session_id:process.argv[1
 commit() { node -e 'process.stdout.write(JSON.stringify({session_id:process.argv[1],cwd:process.argv[2],tool_name:"Bash",tool_input:{command:process.argv[3]}}))' "$1" "$R" "$2" | node "$S/gate.mjs" --commit 2>"$T/cerr"; echo "exit=$?"; }
 ss() { node -e 'process.stdout.write(JSON.stringify({session_id:process.argv[1],cwd:process.argv[2],source:"startup"}))' "$1" "$R" | node "$S/session-start.mjs"; }
 ctx=$(ss q1)
-expect "session context: memory line, dashboard address, 15 rules" "grep -q 'Memory now:' <<<\"\$ctx\" && grep -q 'http://127.0.0.1:47331/' <<<\"\$ctx\" && grep -q '15. Small, clear fixes' <<<\"\$ctx\""
+expect "session context: memory line, dashboard address, 16 rules" "grep -q 'Memory now:' <<<\"\$ctx\" && grep -q 'http://127.0.0.1:47331/' <<<\"\$ctx\" && grep -q '15. Small, clear fixes' <<<\"\$ctx\" && grep -q '16. Commit once, when the whole task is done' <<<\"\$ctx\""
 out=$(node "$S/gate.mjs" --quick q1); expect "--quick turns it on and says the limits" "grep -q 'Quick mode is on' <<<\"\$out\""
 echo 'export const a = 2' > src/a.ts
 out=$(stop q1 p1); expect "a one-file change passes in quick mode" "grep -q 'proof ✓' <<<\"\$out\" && ! grep -q 'decision' <<<\"\$out\""

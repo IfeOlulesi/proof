@@ -1,0 +1,33 @@
+name: release
+
+# Every push to main tags and releases any CHANGELOG version that has no tag yet, so GitHub's latest release is always
+# the version in plugin.json. Nothing to do on a push that doesn't bump the version.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - run: node .github/release.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}

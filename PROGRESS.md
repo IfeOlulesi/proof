@@ -424,3 +424,52 @@ Spec: `SPEC.md`, units in `features.json`. Branch `multi-agent`.
   screen); its states are covered by the page test. With both the replay banner and the memory banner (replay pages
   only), the card's last row is cut off. "0 failures caught. No gate runs yet" (a range with no gate runs at all) is
   copy the mockup doesn't have; needs the user's OK. Not checked in a live monitor session.
+# 2026-11-12: PRs #1 and #2 merged, one commit per task, dashboard range and overflow
+
+## PR #1 (setup from the project's own checks), merged with fixes
+
+- Renamed `/proof:init-proof` → `/proof:setup` (skill folder, test suite `tests/setup.sh`, session-start notice, README).
+- A detected check is skipped when `proof.json` already has one with the same command, the same name, or the same
+  tool (`npx jest` covers `npm run test` running jest), so a suite never runs twice.
+- No test command → set up the lightest runner (build's rule) instead of asking the user. The build skill hands
+  setup to `proof:setup`.
+- Red then green: `bash tests/setup.sh` "a check already run under another command or name isn't added again": failed, then 27/27.
+
+## PR #2 (agent tree, phones and tablets), merged with a fix
+
+- Parent comes from the meta's `parentAgentId` first; a fork's log (a copy of its parent's history) only owns calls
+  no other log has. Before: 7 of 101 real nested agents (all forks) got `main` as parent.
+- Red then green: `bash tests/dashboard.sh` "a fork names the agent that launched it": failed, then 21/21.
+- Real logs on this machine (41 sessions, 464 agents, 102 at depth 2): every parent and depth matches the meta.
+
+## One commit per task
+
+- build skill step 8 and rule 16: don't commit per unit (each commit runs every check in full); commit once when the
+  task is done, once per lane in a parallel build. Rule 10: verifier before the unit is called done.
+
+## Dashboard
+
+- Main thread node: a long step ends in an ellipsis inside the node; the full step is in its tooltip.
+- Range tabs 5m · 1h · 6h · Session (rings, gate rounds and activity; bars of 1, 5, 15 and 10 minutes). Old `#r=hour`
+  links still open on 1h.
+- Red then green: `node tests/dashboard-page.mjs` "the range tabs are 5m, 1h, 6h and Session": failed; then 59/59.
+- The fidelity inventories still show the old two tabs (range box 162px, "Last hour"): re-extract them when the
+  contract is next updated.
+
+## mem.mjs --json
+
+- Was cut off at 512 bytes when piped (exit before the async pipe write on macOS); now exits after the write.
+  `bash tests/run.sh memory-reading`: 8/12, then 12/12.
+
+## Release 0.9.0: merge main (0.8.0) into multi-agent (2026-11-14)
+
+- Gemini CLI won't be tested here (no subscription), so it ships built from docs, like Codex, Cursor, Grok Build and
+  Antigravity; the README asks users of those agents to report how it goes. F2 and F13 stay `passes: false`.
+- Conflicts resolved keeping both sides: rules.md keeps the per-agent placeholders with main's rule 10/16 wording
+  (`tests/fixtures/rules-claude.md` is now main's rules.md, the Claude render it must equal); the dashboard keeps main's
+  5m/1h/6h tabs with the agent badge and recap card; main's agent-tree test fixtures moved to `$T/l6`; run.sh runs
+  every suite from both sides.
+- Main's setup skill renders for other agents (checked in a scratch repo for opencode, codex, cursor: paths resolved,
+  the agent named in place of Claude).
+- Checks: `bash tests/run.sh` all 11 suites passed after the merge.
+- Not verified: the merged dashboard in a browser beyond tests/dashboard.sh; any agent except opencode live.
