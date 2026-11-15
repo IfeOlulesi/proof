@@ -473,3 +473,18 @@ Spec: `SPEC.md`, units in `features.json`. Branch `multi-agent`.
   the agent named in place of Claude).
 - Checks: `bash tests/run.sh` all 11 suites passed after the merge.
 - Not verified: the merged dashboard in a browser beyond tests/dashboard.sh; any agent except opencode live.
+
+## Site: works with every coding agent (2026-11-15)
+
+- Direction A from `mockup/site/v4.html` (the user picked it over the agent switcher and the logo wall). The chip above
+  the hero headline is gone. A new `#agents` section under the hero shows proof at the centre of the seven agents,
+  using their real marks (LobeHub icons, inlined). A check travels from each agent to proof while the section is on
+  screen. Hovering or tapping an agent shows its install and whether it's tested live or beta. The install section
+  picks the agent by tiles.
+- Search and share text names the agents. `assets/og.png` was re-rendered from `mockup/site/og.html`, with the marks
+  replacing the "A free plugin for Claude Code" chip.
+- Checks:
+  - `node tests/site-seo.mjs` passed.
+  - Playwright at 1440 and 390, dark and light: no sideways scroll, no page errors.
+  - Copy buttons copy the prompt and each agent's two commands.
+- Not verified: the live site on a real phone; light-mode contrast of every agent's colour mark beyond the screenshots.
