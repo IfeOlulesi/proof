@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1 (2026-11-21)
+
+- **Fixes.** On the dashboard, long text no longer spills out of its card: a long tool error ends in "…" (hover shows all of it), long step names stay inside their bars, and the activity chart's last time label isn't cut off. In a short window the page scrolls instead of squeezing the bottom row until its contents overlap the footer.
+
 ## 0.9.0 (2026-11-14)
 
 - **proof runs in other coding agents.** opencode, Gemini CLI, Codex, Cursor, Grok Build and Antigravity get the same gate, rules, memory limits and skills, and their sessions show on the same dashboard. One command installs it for an agent (`install.mjs <agent>`) and `--uninstall` puts back every file it touched. opencode is tested live; the others are built from their docs, so [tell us how they go](https://github.com/IfeOlulesi/proof/issues). The README says what works in each one and what doesn't.
