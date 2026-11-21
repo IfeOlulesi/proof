@@ -9,7 +9,14 @@ fail=0
 echo "== syntax"
 while IFS= read -r f; do node --check "$f" || { echo "  syntax error: $f"; fail=1; }; done < <(find plugins -name '*.mjs')
 while IFS= read -r f; do bash -n "$f" || { echo "  syntax error: $f"; fail=1; }; done < <(find plugins tests -name '*.sh')
-while IFS= read -r f; do node -e 'JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))' "$f" 2>/dev/null || { echo "  bad JSON: $f"; fail=1; }; done < <(find . -name '*.json' -not -path './.git/*')
+# The repo's own JSON (tracked, plus new files not ignored), in one node process: one per file took most of a minute,
+# and a find also walked other worktrees under .claude/worktrees and node_modules.
+git ls-files -z -co --exclude-standard -- '*.json' | node -e '
+  const fs = require("fs"); let bad = 0;
+  for (const f of fs.readFileSync(0, "utf8").split("\0").filter(f => f && fs.existsSync(f))) {
+    try { JSON.parse(fs.readFileSync(f, "utf8")); } catch { console.log(`  bad JSON: ${f}`); bad = 1; }
+  }
+  process.exit(bad);' || fail=1
 [ $fail -eq 0 ] && echo "  ok"
 
 if command -v claude >/dev/null 2>&1; then

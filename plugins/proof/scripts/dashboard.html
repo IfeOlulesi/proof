@@ -196,8 +196,8 @@ button.jn:hover { border-color: var(--subtle); box-shadow: var(--shadow-lg); }
 
 /* KPI cards */
 .kpi { padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
-.kpi .v { font-size: var(--fs-xl); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
-.kpi .v small { font-size: var(--fs-md); font-weight: 500; color: var(--muted-foreground); letter-spacing: 0; }
+.kpi .v { font-size: var(--fs-xl); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; display: flex; align-items: baseline; gap: 6px; white-space: nowrap; min-width: 0; }
+.kpi .v small { font-size: var(--fs-md); font-weight: 500; color: var(--muted-foreground); letter-spacing: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .kpi .foot { margin-top: auto; padding-top: 10px; }
 .tracker { display: flex; gap: 3px; height: 28px; }
 .tracker i { flex: 1; border-radius: 3px; background: var(--track); }
@@ -220,10 +220,10 @@ button.jn:hover { border-color: var(--subtle); box-shadow: var(--shadow-lg); }
 .ico.bad { background: var(--bad-soft); color: var(--bad-ink); } .ico.warn { background: var(--warn-soft); color: var(--warn-ink); }
 .ico.work { background: color-mix(in srgb, var(--c-work) 14%, transparent); color: var(--c-work); }
 .barlist { display: flex; flex-direction: column; gap: var(--bl-gap, 6px); }
-.bl { display: grid; grid-template-columns: 1fr 64px; gap: 12px; align-items: center; font-size: 13px; }
-.bl .bar { position: relative; height: var(--bl-h, 30px); display: flex; align-items: center; padding-left: 10px; }
+.bl { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 12px; align-items: center; font-size: 13px; }
+.bl .bar { position: relative; height: var(--bl-h, 30px); display: flex; align-items: center; padding: 0 10px; border-radius: 5px; background: var(--track); }
 .bl .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; opacity: .18; }
-.bl .bar span { position: relative; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bl .bar span { position: relative; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bl b { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
 .check { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
 .check:last-child { border-bottom: 0; }
@@ -245,6 +245,14 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
 svg text { font-family: var(--font); }
 
 /* footer drawer bar */
+/* A short window scrolls the page instead of squeezing the bottom row until its contents spill out; the footer stays
+   pinned. Desktop only: below 1025px the page is one scrolling column already. */
+@media (min-width: 1025px) {
+  .main { overflow-y: auto; }
+  .main > * { flex-shrink: 0; }
+  .main > .fill { flex: 1 0 300px !important; }
+  .foot-bar { position: sticky; bottom: 0; z-index: 1; }
+}
 .foot-bar { height: 46px; margin: auto -24px 0; padding: 0 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted-foreground); flex-shrink: 0; background: var(--background); }
 .foot-bar .btn { color: var(--muted-foreground); }
 .foot-bar .btn.on { background: var(--muted); color: var(--foreground); }
@@ -674,7 +682,7 @@ svg text { font-family: var(--font); }
         const x = AX + i * cw + (cw - bw) / 2; let y = Y(0);
         const tip = ORDER.filter(f => s.acc[f]).map(f => `<span style='display:inline-block;width:8px;height:8px;border-radius:50%;background:${GCOL[f]};margin-right:6px'></span>${GNAME[f]} <b style='float:right;margin-left:16px'>${fmtS(s.acc[f])}</b>`).join('<br>');
         const bars = ORDER.filter(f => s.acc[f]).map(f => { const h = s.acc[f] / (top * M) * (Hh - PB - 8); const r = html`<rect x=${x} y=${y - h} width=${bw} height=${Math.max(0, h - 1.5)} fill=${f === 'idle' ? `url(#hatch-${id})` : GCOL[f]} pointer-events="none" />`; y -= h; return r; });
-        return html`<rect x=${AX + i * cw} y="0" width=${cw} height=${Hh - PB} fill="transparent" data-tip=${`<b>${clock(s.a)}–${clock(s.b)}</b><br>${tip || '<span class=m>nothing ran</span>'}`} />${bars}${i % every === 0 ? html`<text x=${x + bw / 2} y=${Hh - 4} font-size="11.5" fill="var(--muted-foreground)" text-anchor="middle">${clock(s.a)}</text>` : null}`;
+        return html`<rect x=${AX + i * cw} y="0" width=${cw} height=${Hh - PB} fill="transparent" data-tip=${`<b>${clock(s.a)}–${clock(s.b)}</b><br>${tip || '<span class=m>nothing ran</span>'}`} />${bars}${i % every === 0 ? html`<text x=${Math.min(x + bw / 2, W - 18)} y=${Hh - 4} font-size="11.5" fill="var(--muted-foreground)" text-anchor="middle">${clock(s.a)}</text>` : null}`;
       })}
     </svg>` : null}</div></div>`;
   }
@@ -727,7 +735,7 @@ svg text { font-family: var(--font); }
           <${JobGraph} v=${v} h=${banner ? 168 : 190} set=${set} /></div>
       </div>
       <${Kpis} v=${v} data=${data} sc=${sc} />
-      <div class="grid" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
+      <div class="grid fill" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
         <${ActivityCard} v=${v} t0=${sc.from} t1=${now} bucket=${sc.bucket} desc=${`every ${sc.bucket === 60e3 ? 'minute' : `${sc.bucket / 60e3} minutes`}, all agents combined`} legendBelow=${true} />
         <${RecapCard} v=${v} data=${data} tight=${(banner ? 1 : 0) + (data.replay ? 1 : 0)} /></div>`;
   }
@@ -890,10 +898,10 @@ svg text { font-family: var(--font); }
           <div class="list" style="margin-top:6px">${rows.map((r, k) => html`<${Li} id=${`ev-${k + 1}`} r=${r} />`)}</div></div>
       </div>
       <div class="grid kpi4" style="grid-template-columns:repeat(4,1fr)">${kpis.map(([k, l, val, small, c, bars]) => html`
-        <div class="card kpi" data-testid=${`kpi-${k}`}><span class="desc" data-testid=${`kpi-${k}-label`}>${l}</span><div class="v num" data-testid=${`kpi-${k}-value`}>${val}${small ? html`<small>${small}</small>` : null}</div>
+        <div class="card kpi" data-testid=${`kpi-${k}`}><span class="desc" data-testid=${`kpi-${k}-label`}>${l}</span><div class="v num" data-testid=${`kpi-${k}-value`}>${val}${small ? html`<small title=${small}>${small}</small>` : null}</div>
           <div class="foot"><div class="tracker sm" data-testid=${`kpi-${k}-bars`}>${bars.map((b, i) => html`<i style=${`background:${b ? c : 'var(--track)'};opacity:${b ? .35 + Math.min(b, 5) * .13 : 1}`} data-tip=${`${clock(s0 + i * 600e3)} · ${b} ${l.toLowerCase()}`}></i>`)}</div></div></div>`)}
       </div>
-      <div class="grid" style="grid-template-columns:1fr 1.4fr;flex:1;min-height:0">
+      <div class="grid fill" style="grid-template-columns:1fr 1.4fr;flex:1;min-height:0">
         <div class="card pad col" style="gap:12px" data-testid="time-card"><div class="ch"><h3 data-testid="time-title">Where the time went</h3><button class="r btn ghost" data-testid="time-open" onClick=${() => set({ d: 'time' })}>Open in full ${I.right}</button></div>
           <div class="catbar" style="height:10px" data-testid="time-bar"><i style=${`flex:${mins(work)};background:var(--c-think)`} data-tip=${`${AG(v)} working · ${ago2(work)}`}></i><i style=${`flex:${mins(you)};background:var(--c-you)`} data-tip=${`Waiting on you · ${ago2(you)}`}></i><i class="hatch" style=${`flex:${mins(stall)}`} data-tip=${`Stalls · ${ago2(stall)}`}></i></div>
           <div class="desc" data-testid="time-note">${AG(v)} working ${ago2(work)} · waiting on you ${ago2(you)} · stalls ${ago2(stall)}. Includes the ${dur(now - s.since)} since it finished.</div>
@@ -980,7 +988,7 @@ svg text { font-family: var(--font); }
         <div style="display:flex;gap:3px;height:36px;margin-top:14px" data-testid="steps-bar">${steps.slice(-12).map((s, i, a) => { const d = stepMs(s), run = s.calls.some(c => c.end == null); return html`<i style=${`flex:${Math.max(d, 25e3)};background:${GCOL[GROUP[s.cat]] || 'var(--c-cmd)'};border-radius:4px;${run ? 'background-image:repeating-linear-gradient(90deg,transparent 0 10px,rgb(255 255 255 / .18) 10px 12px)' : ''}`} data-tip=${`<b>${STEP_NAME[s.cat] || esc(s.cat)}</b> · ${dur(d)}${run ? ' · running' : ''}`}></i>`; })}</div>
         <div style="display:flex;gap:3px;margin-top:6px;font-size:11.5px;color:var(--muted-foreground)">${steps.slice(-12).map((s, i) => html`<span style=${`flex:${Math.max(stepMs(s), 25e3)};overflow:hidden;white-space:nowrap;text-overflow:ellipsis`} data-testid=${`step-${i + 1}`}>${dur(stepMs(s))}</span>`)}</div></div>
       ${nested ? treeCard : null}
-      <div class="grid" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
+      <div class="grid fill" style="grid-template-columns:1fr 440px;flex:1;min-height:0">
         <div class="card pad" style="overflow:auto" data-testid="activity-card"><div class="ch"><h3 data-testid="activity-title">Activity</h3><span class="desc" data-testid="activity-desc">every tool call, newest first</span></div>
           <div class="list" style="margin-top:4px">${calls.slice(0, shown).map((c, k) => { const [cls, ico] = icon(c); return html`<${Li} id=${`call-${k + 1}`} r=${{ t: c.t, cls, ico, text: codey(c.desc), tag: html`<span class="mono mf">${c.end == null ? timer(took(c)) : durS(took(c))}</span>` }} />`; })}</div>
           ${calls.length > shown ? html`<button class="btn ghost" style="margin-top:4px" data-testid="show-earlier" onClick=${() => setShown(n => n + 40)}>Show ${calls.length - shown} earlier</button>` : null}</div>
@@ -1200,7 +1208,7 @@ svg text { font-family: var(--font); }
           <div class="barlist">${apps.map((a, i) => html`<div class="bl"><div class="bar"><i style=${`width:${a.mb / top * 100}%;background:${userApps.some(u => u.name === a.name) ? 'var(--warn)' : 'var(--subtle)'}`}></i><span data-testid=${`app-${i + 1}-name`}>${a.name}${a.claude ? html` <span class="badge" style="height:18px;margin-left:4px">Claude</span>` : null}</span></div><b data-testid=${`app-${i + 1}-size`}>${gb(a.mb)}</b></div>`)}</div>
           ${over && userApps.length ? html`<div class="desc" style="margin-top:auto" data-testid="apps-advice">Close ${userApps.map(a => a.name).join(' and ')} to free about ${gb(free)}. Checks and agents then run side by side instead of waiting their turn${swapping ? ', and macOS stops swapping' : ''}.</div>` : null}</div>
       </div>
-      <div class="grid" style="grid-template-columns:1fr 400px;flex:1;min-height:0">
+      <div class="grid fill" style="grid-template-columns:1fr 400px;flex:1;min-height:0">
         <div class="card pad" data-testid="runs-card"><div class="ch"><h3 data-testid="runs-title">Claude's runs, the ones proof may stop</h3></div>
           ${(m.runs || []).length ? html`<table class="tbl" style="margin-top:6px"><thead><tr><th data-testid="runs-h-cmd">Command</th><th data-testid="runs-h-session">Session</th><th data-testid="runs-h-time">Running</th><th class="rt" data-testid="runs-h-mem">Memory</th></tr></thead><tbody>
             ${m.runs.slice(0, 5).map((r, i) => html`<tr><td><code data-testid=${`run-${i + 1}-cmd`}>${r.command}</code></td><td><span class="badge" data-testid=${`run-${i + 1}-session`}>${String(r.cwd || '').split('/').filter(Boolean).pop() || r.session}</span></td><td class="num" data-testid=${`run-${i + 1}-time`}>${now - r.start < 3600e3 ? durS(now - r.start) : dur(now - r.start)}</td><td class="rt num" data-testid=${`run-${i + 1}-mem`}>${size(r.mb)}</td></tr>`)}</tbody></table>` : html`<div class="desc" style="margin-top:8px">None right now.</div>`}</div>
